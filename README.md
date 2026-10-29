@@ -6,6 +6,7 @@
 
 <p align="center">
   <a href="https://aboodmasri2.github.io/palmas-real-estate/"><b>Live demo</b></a> ·
+  <a href="#the-business-behind-the-build">Business</a> ·
   <a href="#features">Features</a> ·
   <a href="#architecture">Architecture</a> ·
   <a href="#run-it-locally">Run locally</a> ·
@@ -25,6 +26,23 @@ visitor books a viewing or chats → lead lands in the CRM → deal closes → c
 
 Fully bilingual (Arabic RTL / English LTR), light and dark themes, multi-currency (USD / ILS / JOD),
 and responsive down to small phones.
+
+## The business behind the build
+
+I'm an **MIS graduate**, and this project is where management and technology meet: I started from
+how a brokerage office actually makes money and works day to day, then designed the system around it.
+
+| Business question | How the platform answers it |
+|---|---|
+| Where does revenue come from? | Brokerage **contracts with commission rates**, expected vs. realized commission, contracts expiring within 14 days flagged for renewal |
+| How do we turn visitors into deals? | One **sales funnel**: every booking, message, chat and listing request becomes a lead in the CRM pipeline (new → contacted → viewing → negotiation → won / lost) |
+| How do we win more supply? | A "list your property" flow for owners and companies feeding straight into owner management |
+| Is the marketing working? | Real **KPIs** — monthly visits, traffic sources, most-viewed listings, pipeline value, revenue split by sale / rent |
+| Can the office run without a developer? | Every piece of site content, listing, photo and currency rate is managed from the admin panel |
+| How do buyers decide faster? | Side-by-side **comparison** with best-value highlights and a one-tap WhatsApp inquiry to sales |
+
+The focus throughout is **business development and sales**: shorten the path from first visit to
+signed deal, keep every lead visible to the team, and give management numbers they can act on.
 
 ## Features
 
@@ -150,7 +168,18 @@ see [palmas-backend/README.md](palmas-backend/README.md).
 - **التطبيق:** أندرويد و iOS بنفس البيانات ونفس المنطق
 - **الأمان:** صلاحيات على مستوى قاعدة البيانات (RLS) — الزائر بيرسل وما بيقرأ، وبيانات المالكين والفواتير للأدمن بس
 
+**الجانب الإداري:** أنا خريج **نظم معلومات إدارية (MIS)**، والمشروع بيجمع بين الإدارة والتقنية.
+بلّشت من سؤال: كيف مكتب الوساطة بيربح وكيف بيشتغل يومياً؟ وبنيت النظام حوالين الجواب —
+عقود وعمولات، مسار مبيعات واحد لكل العملاء، مؤشرات أداء حقيقية للإدارة، ولوحة تحكم بتخلّي المكتب
+يدير كل المحتوى بدون مبرمج. التركيز كله على **تطوير الأعمال والمبيعات**: أقصر طريق من أول زيارة لعقد موقّع.
+
 ---
 
-Built by **Abood Masri**. Developed with AI-assisted tooling for design and code; product decisions,
-data model, integration and testing by me.
+## About me
+
+**Abood Masri** — MIS graduate working where business and technology meet: business development,
+sales operations, CRM/ERP processes, and building the digital tools that support them.
+
+I owned this project end to end — the business model, the brokerage workflow, the data model,
+the feature priorities and the testing — and built it with AI-assisted development tools for
+design and code.
