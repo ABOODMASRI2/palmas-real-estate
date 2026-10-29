@@ -13,6 +13,9 @@
   <a href="#بالعربي">بالعربي</a>
 </p>
 
+> **Status: in active development.** The core platform is live and working end to end; next up are
+> an AI sales assistant in the chat, mobile app store release, and launch on the Palmas.ps domain.
+
 ![Home page](docs/screenshots/home.png)
 
 ## What it is
@@ -158,6 +161,9 @@ see [palmas-backend/README.md](palmas-backend/README.md).
 
 **بالماس (Palmas.ps)** منصّة وساطة عقارية متكاملة لفلسطين: موقع، لوحة إدارة، CRM و ERP، وتطبيق جوال —
 كلها على قاعدة بيانات واحدة.
+
+> **الحالة: قيد التطوير.** المنصّة الأساسية شغّالة بالكامل، والمراحل الجاية: مساعد مبيعات ذكي بالشات،
+> نشر التطبيق على المتاجر، والإطلاق على دومين Palmas.ps.
 
 المالك أو الشركة بيسلّموا العقار للمكتب بعقد وساطة، المكتب بينشره، والزبون بيتواصل مع المكتب.
 المنصّة بتغطّي الدورة كاملة: طلب عرض عقار ← عقد مع المالك ← نشر العقار بالصور ← حجز معاينة أو محادثة ←
