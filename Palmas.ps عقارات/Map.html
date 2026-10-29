@@ -1,0 +1,728 @@
+﻿<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palmas.ps</title>
+<link rel="icon" type="image/png" href="uploads/palmas-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<script src="palmas-core.js"></script>
+<script src="palmas-config.js"></script>
+<script src="palmas-backend.js"></script>
+<script>
+  (function(){ try { var t = localStorage.getItem('palmas_theme'); document.documentElement.setAttribute('data-theme', (t==='light'||t==='dark')?t:'light'); } catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
+  try { var l = localStorage.getItem('palmas_lang'); if(l==='en'){ document.documentElement.lang='en'; document.documentElement.dir='ltr'; } } catch(e){} })();
+</script>
+<style>
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.34s;animation-timing-function:cubic-bezier(.4,0,.2,1)}
+:root{--page-bg:#edeef0;--surface:#ffffff;--surface-2:#f2f3f5;--heading:#141414;--body:#4b4b4d;--body-dim:rgba(20,20,22,.5);--border:rgba(20,20,22,.12);--orange:#f68743;--orange-2:#ffab7a}
+html[data-theme='dark']{--page-bg:#0d0d0f;--surface:#161618;--surface-2:#0f0f11;--heading:#f7f7f5;--body:rgba(240,240,238,.86);--body-dim:rgba(255,255,255,.5);--border:rgba(255,255,255,.1)}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;font-family:'Cairo',sans-serif;background:var(--page-bg);color:var(--body);transition:background .5s ease,color .5s ease}
+a{color:var(--orange);text-decoration:none}
+::selection{background:var(--orange);color:#121212}
+.app{display:flex;flex-direction:column;height:100vh}
+/* header — shared site nav (matches SiteHeader) */
+.site-nav{flex-shrink:0;z-index:1000;view-transition-name:site-header;background:rgba(237,238,240,.82);backdrop-filter:blur(16px);border-bottom:1px solid rgba(20,20,22,.1)}
+html[data-theme='dark'] .site-nav{background:rgba(13,13,15,.72);border-bottom-color:rgba(255,255,255,.1)}
+.site-nav-in{max-width:min(1680px,94vw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px clamp(16px,4vw,40px)}
+.brand{display:flex;align-items:center;flex-shrink:0}
+.brand img{height:34px;width:auto}
+.sh-nav-dark{display:block}.sh-nav-light{display:none}
+html[data-theme='dark'] .sh-nav-dark{display:none}
+html[data-theme='dark'] .sh-nav-light{display:block}
+.site-links{display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:center}
+.sh-link{color:var(--body);font-size:15px;font-weight:600;white-space:nowrap;transition:color .3s ease;text-decoration:none}
+.sh-link:hover,.sh-link.active{color:var(--orange)}
+.site-ctrl{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sh-icon{width:42px;height:42px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--heading);display:grid;place-items:center;cursor:pointer;transition:transform .3s ease,border-color .3s ease;font-family:'Cairo',sans-serif;text-decoration:none}
+.sh-icon:hover{transform:translateY(-2px);border-color:var(--orange)}
+.sh-icon.lang{width:auto;padding:0 15px;border-radius:21px;font-weight:800;font-size:13px;color:var(--orange)}
+.sh-cta{background:var(--orange);color:#fff;font-weight:800;font-size:14px;padding:11px 22px;border-radius:24px;box-shadow:0 10px 26px rgba(246,135,67,.28);transition:transform .35s cubic-bezier(.25,.8,.35,1),box-shadow .35s ease;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-family:'Cairo',sans-serif}
+.sh-cta:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(246,135,67,.38)}
+.sh-menu-item{text-decoration:none;transition:background .25s ease}
+.sh-menu-item:hover{background:rgba(246,135,67,.12)}
+@keyframes shMenu{from{opacity:0;transform:translateY(-8px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes shFade{from{opacity:0}to{opacity:1}}
+@keyframes shPop{from{opacity:0;transform:translateY(22px) scale(.96)}to{opacity:1;transform:none}}
+.hsel{width:100%;height:42px;padding:0 14px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--heading);font-family:'Cairo',sans-serif;font-weight:700;font-size:13.5px;cursor:pointer;outline:none}
+.hsel option{background:var(--surface);color:var(--heading)}
+/* body */
+.wrap{flex:1;display:flex;min-height:0}
+aside{width:400px;flex-shrink:0;background:var(--surface-2);border-inline-start:1px solid var(--border);display:flex;flex-direction:column;min-height:0}
+.aside-head{padding:16px 18px 12px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:12px}
+.aside-head h2{margin:0;font-size:18px;font-weight:800;color:var(--heading)}
+.count{font-size:13px;color:var(--body-dim);font-weight:600}
+/* quick offer tabs */
+.mf-tabs{display:flex;flex-wrap:wrap;gap:6px}
+.mf-tab{font-family:'Cairo',sans-serif;font-size:12.5px;font-weight:800;padding:7px 13px;border-radius:16px;border:1px solid var(--border);background:var(--surface);color:var(--body);cursor:pointer;transition:background .3s ease,color .3s ease,border-color .3s ease}
+.mf-tab.on{background:var(--orange);color:#fff;border-color:transparent}
+/* search + filter trigger row */
+.mf-row{display:flex;align-items:center;gap:10px}
+.mf-search{flex:1;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:0 12px;height:44px}
+.mf-search input{flex:1;border:0;background:transparent;outline:none;font-family:'Cairo',sans-serif;font-size:14px;color:var(--heading)}
+.mf-search input::placeholder{color:var(--body-dim)}
+.mf-filterbtn{position:relative;width:44px;height:44px;flex-shrink:0;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--heading);display:grid;place-items:center;cursor:pointer;transition:border-color .3s ease}
+.mf-filterbtn:hover{border-color:var(--orange)}
+.mf-dot{display:none;position:absolute;top:-3px;inset-inline-end:-3px;width:11px;height:11px;border-radius:50%;background:var(--orange);border:2px solid var(--surface-2)}
+/* active chips */
+.mf-chips{display:none;flex-wrap:wrap;gap:7px}
+.mf-chip{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;background:var(--surface);border:1px solid var(--border);color:var(--heading);font-family:'Cairo',sans-serif;font-weight:700;font-size:11.5px;padding:6px 12px;border-radius:16px;cursor:pointer}
+.mf-chip:hover{border-color:var(--orange)}
+.mf-chip span{font-size:13px;color:var(--body-dim)}
+/* sort row */
+.mf-sortrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mf-sortrow select{width:auto;height:34px;font-size:12px;padding:0 10px}
+.legend{display:flex;flex-wrap:wrap;gap:7px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--body);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 10px}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.list{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:13px 14px;cursor:pointer;transition:transform .3s cubic-bezier(.25,.8,.35,1),box-shadow .3s ease,border-color .3s ease;display:flex;gap:12px;align-items:flex-start}
+.card:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(0,0,0,.22);border-color:rgba(246,135,67,.5)}
+.card.active{border-color:var(--orange);box-shadow:0 0 0 2px rgba(246,135,67,.35)}
+.card .ci{width:44px;height:44px;border-radius:12px;flex-shrink:0;display:grid;place-items:center}
+.card .cbody{min-width:0;flex:1}
+.card .cname{font-weight:800;font-size:15px;color:var(--heading);line-height:1.35}
+.card .cmeta{font-size:12.5px;color:var(--body-dim);margin-top:3px;display:flex;align-items:center;gap:5px}
+.card .cbottom{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:8px}
+.card .cprice{color:var(--orange);font-weight:900;font-size:15px}
+.card .cbadge{font-size:11px;font-weight:800;color:#121212;padding:2px 9px;border-radius:11px}
+#map{flex:1;min-height:0;position:relative}
+.map-empty{position:absolute;inset:0;z-index:600;display:none;align-items:center;justify-content:center;padding:24px;text-align:center;background:rgba(10,12,10,.55);backdrop-filter:blur(3px)}
+.map-empty.show{display:flex}
+.map-empty .box{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:26px 30px;max-width:340px;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.map-empty h3{margin:0 0 8px;color:var(--heading);font-size:19px;font-weight:800}
+.map-empty p{margin:0;color:var(--body-dim);font-size:14px;line-height:1.7}
+.map-empty .emoji{width:56px;height:56px;border-radius:50%;background:rgba(246,135,67,.15);display:grid;place-items:center;margin:0 auto 14px}
+/* leaflet dark tiles */
+html[data-theme='dark'] .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.93) contrast(.9)}
+.leaflet-container{background:var(--page-bg);font-family:'Cairo',sans-serif}
+.pin{display:block;transform-origin:50% 100%;transition:transform .2s ease;filter:drop-shadow(0 4px 6px rgba(0,0,0,.4))}
+.pin:hover{transform:scale(1.14)}
+.pin.active{transform:scale(1.28)}
+.leaflet-popup-content-wrapper{background:var(--surface);color:var(--body);border-radius:15px;box-shadow:0 14px 40px rgba(0,0,0,.4);padding:2px}
+.leaflet-popup-tip{background:var(--surface)}
+.leaflet-popup-content{margin:14px 16px;font-family:'Cairo',sans-serif}
+.leaflet-popup-close-button{color:var(--body-dim)!important}
+.pp-badge{display:inline-block;font-size:11px;font-weight:800;color:#121212;padding:3px 10px;border-radius:11px;margin-bottom:8px}
+.pp-name{font-weight:800;font-size:16px;color:var(--heading);line-height:1.35}
+.pp-city{font-size:13px;color:var(--body-dim);margin:4px 0 8px;display:flex;align-items:center;gap:5px}
+.pp-price{color:var(--orange);font-weight:900;font-size:17px;margin-bottom:12px}
+.pp-btn{display:block;text-align:center;background:var(--orange);color:#121212;font-weight:800;font-size:13.5px;padding:9px;border-radius:11px;transition:background .3s ease}
+.pp-btn:hover{background:#ffab7a}
+.leaflet-bar a{background:var(--surface);color:var(--body);border-color:var(--border)}
+.leaflet-bar a:hover{background:var(--surface-2)}
+/* filter bottom sheet — same pattern as PropertyList */
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes dropIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.sheet-overlay{position:fixed;inset:0;z-index:2000;font-family:'Cairo',sans-serif}
+.sheet-bg{position:absolute;inset:0;background:rgba(6,6,10,.5);animation:fadeIn .25s ease}
+.sheet-panel{position:absolute;left:0;right:0;bottom:0;background:var(--page-bg);border-radius:24px 24px 0 0;padding:10px 20px 30px;max-height:86vh;overflow-y:auto;animation:sheetUp .32s cubic-bezier(.2,.8,.3,1);box-shadow:0 -20px 60px rgba(0,0,0,.28)}
+.sheet-panel-in{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.sf-field-btn{width:100%;height:52px;border-radius:14px;border:1px solid var(--border);background:var(--surface);color:var(--heading);font-family:'Cairo',sans-serif;font-weight:700;font-size:14.5px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.sf-drop{margin-top:8px;border-radius:14px;border:1px solid var(--border);background:var(--surface);max-height:198px;overflow-y:auto;animation:fadeIn .2s ease}
+.sf-opt{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;border:0;border-bottom:1px solid var(--border);font-family:'Cairo',sans-serif;font-weight:700;font-size:14px;padding:13px 16px;cursor:pointer;text-align:start;background:transparent;color:var(--heading)}
+.sf-opt:hover{background:rgba(246,135,67,.08)}
+/* account modal */
+.acct-modal-overlay{position:fixed;inset:0;z-index:1900;display:grid;place-items:center;padding:20px;background:rgba(8,9,11,.62);backdrop-filter:blur(6px);animation:shFade .3s ease both;font-family:'Cairo',sans-serif}
+.acct-modal-box{position:relative;width:100%;max-width:480px;max-height:92vh;overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:32px 30px 26px;box-shadow:0 40px 90px rgba(0,0,0,.5);animation:shPop .5s cubic-bezier(.25,.8,.35,1) both}
+.acct-field{background:var(--surface-2);border:1.5px solid var(--border);border-radius:12px;padding:13px 15px;color:var(--heading);font-size:14.5px;outline:none;transition:border-color .3s ease;font-family:'Cairo',sans-serif}
+.acct-field:focus{border-color:var(--orange)}
+@media (max-width:840px){
+  .htitle{display:none}
+  .wrap{flex-direction:column}
+  aside{width:auto;border-inline-start:none;border-top:1px solid var(--border);max-height:50vh}
+  #map{min-height:50vh}
+  .site-links{display:none}
+  /* بلا روابط ظاهرة كان زائر الجوال عالقاً في الخريطة — زر قائمة يفتحها كدرج */
+  .map-burger{display:grid!important}
+  .site-links.open{display:flex;flex-direction:column;align-items:stretch;gap:0;position:fixed;top:70px;inset-inline:12px;z-index:300;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:8px;box-shadow:0 24px 60px rgba(0,0,0,.28)}
+  .site-links.open .sh-link{padding:12px 14px;border-radius:12px;font-size:15.5px}
+}
+.map-burger{display:none}
+@media (max-width:600px){
+  #listBtnLabel{display:none}
+  #listBtn{padding:0!important;width:42px;height:42px;justify-content:center}
+  .site-ctrl{gap:8px!important}
+  .brand img{height:28px!important}
+}
+@media (max-width:380px){
+  .site-ctrl .sh-icon,#listBtn{width:38px!important;height:38px!important}
+  .site-ctrl .sh-icon.lang{padding:0!important}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="site-nav">
+    <div class="site-nav-in">
+      <a class="brand" href="Palmas Home.dc.html">
+        <img class="sh-nav-dark" src="uploads/palmas-logo-dark.png" alt="PALMAS.ps" decoding="sync">
+        <img class="sh-nav-light" src="uploads/palmas-logo.png" alt="PALMAS.ps" decoding="sync">
+      </a>
+      <nav class="site-links" id="navLinks">
+        <a class="sh-link" data-k="home" href="Palmas Home.dc.html">الرئيسية</a>
+        <a class="sh-link" data-k="props" href="PropertyList.dc.html">العقارات</a>
+        <a class="sh-link active" data-k="map" href="Map.html">الخريطة</a>
+        <a class="sh-link" data-k="projects" href="Projects.dc.html">المشاريع</a>
+        <a class="sh-link" data-k="services" href="Services.dc.html">خدماتنا</a>
+        <a class="sh-link" data-k="about" href="About.dc.html">من نحن</a>
+        <a class="sh-link" data-k="contact" href="Contact.dc.html">تواصل معنا</a>
+      </nav>
+      <div class="site-ctrl">
+        <a id="wishIcon" class="sh-icon" href="Wishlist.dc.html" title="المفضلة" style="position:relative;display:none">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path></svg>
+          <span id="wishBadge" style="display:none;position:absolute;top:-4px;inset-inline-end:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#e0245e;color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;line-height:1"></span>
+        </a>
+        <button class="sh-icon lang" id="langBtn">EN</button>
+        <button class="sh-icon" id="themeBtn" title="theme"></button>
+        <a id="loginIcon" class="sh-icon" href="Auth.dc.html" title="تسجيل الدخول" style="display:none">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </a>
+        <div id="acctWrap" style="position:relative;display:none">
+          <button id="acctBtn" class="sh-icon" style="background:linear-gradient(140deg,#f68743,#d1662a);border-color:transparent;color:#121212;font-weight:900;font-size:16px"></button>
+          <div id="acctMenu" style="display:none;position:absolute;top:calc(100% + 12px);inset-inline-end:0;min-width:218px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.28);padding:8px;z-index:200;animation:shMenu .3s cubic-bezier(.25,.8,.35,1) both">
+            <div style="padding:10px 12px 12px;border-bottom:1px solid var(--border);margin-bottom:6px">
+              <div id="acctName" style="font-weight:800;font-size:14.5px;color:var(--heading);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+              <div id="acctEmail" style="font-size:12px;color:var(--body-dim);direction:ltr;text-align:start;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px"></div>
+            </div>
+            <a id="acctDash" href="Admin.dc.html" class="sh-menu-item" style="display:none;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;color:var(--heading);font-size:14px;font-weight:700">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>
+              <span id="acctDashLabel">لوحة التحكم</span>
+            </a>
+            <a href="Wishlist.dc.html" class="sh-menu-item" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;color:var(--heading);font-size:14px;font-weight:700">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path></svg>
+              <span id="acctWishLabel">قائمة الرغبات</span>
+            </a>
+            <button id="acctLogout" class="sh-menu-item" style="display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border:none;border-radius:11px;background:none;color:#e0245e;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-align:start">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              <span id="acctLogoutLabel">تسجيل الخروج</span>
+            </button>
+          </div>
+        </div>
+        <button id="listBtn" class="sh-cta" title="اعرض عقارك">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path></svg>
+          <span id="listBtnLabel">اعرض عقارك</span>
+        </button>
+        <button class="sh-icon map-burger" id="navBurger" aria-label="القائمة" aria-expanded="false" onclick="var n=document.getElementById('navLinks');var o=n.classList.toggle('open');this.setAttribute('aria-expanded',o?'true':'false');">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="wrap">
+    <aside>
+      <div class="aside-head">
+        <div>
+          <h2 id="asideTitle">العقارات على الخريطة</h2>
+          <div class="count" id="count"></div>
+        </div>
+        <div class="mf-tabs" id="mfTabs"></div>
+        <div class="mf-row">
+          <div class="mf-search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--body-dim);flex-shrink:0"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4-4"></path></svg><input id="mfSearch" placeholder=""></div>
+          <button id="mfOpenSheet" class="mf-filterbtn" aria-label="filters">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>
+            <span class="mf-dot" id="mfDot"></span>
+          </button>
+        </div>
+        <div class="mf-chips" id="mfChips"></div>
+        <div class="mf-sortrow">
+          <select id="mfSort" class="hsel"></select>
+        </div>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="list" id="list"></div>
+    </aside>
+    <div id="map">
+      <div class="map-empty" id="mapEmpty">
+        <div class="box">
+          <div class="emoji"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+          <h3 id="emptyTitle">لا نتائج</h3>
+          <p id="emptyBody">لا توجد عقارات مطابقة للفلاتر الحالية. جرّب توسيع الفلاتر أو إعادة ضبطها.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- filter bottom sheet -->
+<div class="sheet-overlay" id="sheetOverlay" style="display:none">
+  <div class="sheet-bg" id="sheetBg"></div>
+  <div class="sheet-panel">
+    <div style="display:flex;justify-content:center;padding:6px 0 14px"><span style="width:42px;height:5px;border-radius:4px;background:var(--border)"></span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div id="sheetTitle" style="font-weight:900;font-size:20px;color:var(--heading)">الفلاتر</div>
+      <button id="sheetReset" style="background:transparent;border:0;color:var(--orange);font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer">إعادة تعيين</button>
+    </div>
+    <div class="sheet-panel-in">
+      <div id="sheetFields"></div>
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span id="maxPriceLbl" style="font-weight:800;font-size:13.5px;color:var(--heading)"></span>
+          <span id="maxPriceVal" style="font-weight:800;font-size:14px;color:var(--orange)"></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+        <input type="number" inputmode="numeric" id="sheetMinPrice" min="0" step="1000" class="field" style="flex:1;min-width:0;padding:12px 14px;font-size:14px">
+        <span style="color:var(--body-dim);font-weight:800">—</span>
+        <input type="number" inputmode="numeric" id="sheetMaxPrice" min="0" step="1000" class="field" style="flex:1;min-width:0;padding:12px 14px;font-size:14px">
+      </div>
+      <div id="priceHint" style="margin-top:7px;font-size:12px;color:var(--body-dim)"></div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span id="minAreaLbl" style="font-weight:800;font-size:13.5px;color:var(--heading)"></span>
+          <span id="minAreaVal" style="font-weight:800;font-size:14px;color:var(--orange)"></span>
+        </div>
+        <input type="range" id="sheetMinArea" style="width:100%;accent-color:#f68743;cursor:pointer">
+      </div>
+      <button id="sheetApply" style="width:100%;height:54px;border-radius:14px;border:0;background:var(--orange);color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:15.5px;cursor:pointer;margin-top:6px"></button>
+    </div>
+  </div>
+</div>
+
+<!-- "list your property" modal (header CTA, same as SiteHeader) -->
+<div class="acct-modal-overlay" id="listModalOverlay" style="display:none">
+  <div class="acct-modal-box" id="listModalBox">
+    <button id="listModalClose" title="إغلاق" style="position:absolute;top:16px;inset-inline-end:16px;width:34px;height:34px;border:none;border-radius:50%;background:var(--surface-2);color:var(--body-dim);cursor:pointer;display:grid;place-items:center">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+    </button>
+    <div id="listModalForm">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+        <span style="width:46px;height:46px;min-width:46px;border-radius:13px;background:rgba(246,135,67,.14);display:grid;place-items:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path></svg></span>
+        <h2 id="listModalTitle" style="margin:0;font-size:20px;font-weight:800;color:var(--heading);line-height:1.35">اعرض عقارك على بالماس</h2>
+      </div>
+      <p id="listModalSub" style="margin:0 0 20px;font-size:13.5px;line-height:1.8;color:var(--body-dim)">املأ التفاصيل وسيتواصل معك فريقنا لعرض عقارك أمام آلاف الباحثين.</p>
+      <form id="listModalFormEl" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <input id="lName" class="acct-field" style="grid-column:1/-1">
+        <input id="lPhone" class="acct-field" style="direction:ltr;text-align:start">
+        <input id="lCity" class="acct-field">
+        <select id="lType" class="acct-field" style="cursor:pointer">
+          <option value="sale" id="lTypeSale"></option><option value="rent" id="lTypeRent"></option>
+        </select>
+        <input id="lPrice" class="acct-field" style="grid-column:1/-1">
+        <textarea id="lNotes" class="acct-field" rows="3" style="grid-column:1/-1;resize:vertical"></textarea>
+        <div id="listModalErr" style="display:none;grid-column:1/-1;color:#e0245e;font-size:12.5px;font-weight:700;margin-top:-4px"></div>
+        <button type="submit" id="listModalSubmit" style="grid-column:1/-1;margin-top:4px;background:linear-gradient(135deg,#f68743,#d1662a);border:none;border-radius:14px;padding:14px;font-family:'Cairo',sans-serif;font-weight:800;font-size:15.5px;color:#fff;cursor:pointer;box-shadow:0 10px 24px rgba(246,135,67,.3)"></button>
+      </form>
+    </div>
+    <div id="listModalSent" style="display:none;text-align:center;padding:18px 6px 10px">
+      <div style="width:74px;height:74px;margin:0 auto 18px;border-radius:50%;background:rgba(31,157,92,.14);display:grid;place-items:center"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#1f9d5c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>
+      <h2 id="listSentTitle" style="margin:0 0 10px;font-size:21px;font-weight:800;color:var(--heading)"></h2>
+      <p id="listSentSub" style="margin:0 0 22px;font-size:14px;line-height:1.8;color:var(--body-dim)"></p>
+      <button id="listSentDone" style="background:var(--surface-2);border:1.5px solid var(--border);border-radius:13px;padding:12px 32px;font-family:'Cairo',sans-serif;font-weight:800;font-size:14.5px;color:var(--heading);cursor:pointer">تم</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ------------------------------------------------------------ i18n (page chrome) */
+const T = {
+  ar:{ mapTitle:'الخريطة <span>العقارية</span>', aside:'العقارات على الخريطة', searchPh:'ابحث بالاسم أو الموقع...',
+       emptyT:'لا نتائج', emptyB:'لا توجد عقارات مطابقة للفلاتر الحالية. جرّب توسيع الفلاتر أو إعادة ضبطها.',
+       count:(n)=> n===1?'عقار واحد على الخريطة':(n+' عقار على الخريطة'), details:'عرض التفاصيل ←',
+       filters:'الفلاتر', reset:'إعادة تعيين', apply:(n)=>'عرض ('+n+')', wish:'المفضلة', login:'تسجيل الدخول',
+       dash:'لوحة التحكم', logout:'تسجيل الخروج', listBtn:'اعرض عقارك',
+       listTitle:'اعرض عقارك على بالماس', listSub:'املأ التفاصيل وسيتواصل معك فريقنا لعرض عقارك أمام آلاف الباحثين.',
+       lName:'الاسم الكامل *', lPhone:'رقم الهاتف *', lCity:'المدينة / الموقع', lSale:'للبيع', lRent:'للإيجار',
+       lPrice:'السعر المتوقع ($)', lNotes:'تفاصيل العقار (النوع، المساحة، الغرف...)', lSubmit:'إرسال الطلب',
+       lErr:'الرجاء إدخال الاسم ورقم الهاتف.', sentTitle:'تم استلام طلبك!', sentSub:'شكراً لك — سيتواصل معك فريق بالماس قريباً لإتمام عرض عقارك.' },
+  en:{ mapTitle:'Property <span>Map</span>', aside:'Properties on the map', searchPh:'Search by name or location...',
+       emptyT:'No results', emptyB:'No properties match the current filters. Try widening them or resetting.',
+       count:(n)=> n===1?'1 property on the map':(n+' properties on the map'), details:'View details →',
+       filters:'Filters', reset:'Reset', apply:(n)=>'Show ('+n+')', wish:'Wishlist', login:'Log in',
+       dash:'Dashboard', logout:'Log out', listBtn:'List property',
+       listTitle:'List your property with Palmas', listSub:'Fill in the details and our team will contact you to showcase it to thousands of buyers.',
+       lName:'Full name *', lPhone:'Phone number *', lCity:'City / location', lSale:'For sale', lRent:'For rent',
+       lPrice:'Expected price ($)', lNotes:'Property details (type, area, rooms...)', lSubmit:'Submit request',
+       lErr:'Please enter your name and phone number.', sentTitle:'Request received!', sentSub:'Thank you — the Palmas team will reach out shortly to complete your listing.' }
+};
+const NAV = {
+  ar:{home:'الرئيسية',props:'العقارات',map:'الخريطة',projects:'المشاريع',services:'خدماتنا',about:'من نحن',contact:'تواصل معنا'},
+  en:{home:'Home',props:'Properties',map:'Map',projects:'Projects',services:'Services',about:'About',contact:'Contact'}
+};
+/* pin/legend colours by real deal category (matches brand semantics: sale/rent/residential/land) */
+const CAT_COLOR = { sale:'#f68743', rent:'#5fb0e6', residential:'#e0a92e', land:'#a97fe0' };
+function catOf(x){ return x.type === 'land' ? 'land' : x.offer; }
+function catColor(x){ return CAT_COLOR[catOf(x)] || '#8a8a90'; }
+function catLabel(x, lang){ const P = window.Palmas; const k = catOf(x); return k === 'land' ? P.LABELS[lang].offer.landOffer : P.LABELS[lang].offer[k]; }
+
+let lang = document.documentElement.lang === 'en' ? 'en' : 'ar';
+let theme = document.documentElement.getAttribute('data-theme') || 'light';
+let markers = {}, activeId = null;
+let f = null, q = '', sort = 'newest';
+let sheetOpen = false, openDrop = '', menuOpen = false;
+
+const PS_BOUNDS = L.latLngBounds([[31.28,34.75],[32.42,35.62]]);
+const map = L.map('map', { zoomControl:true, scrollWheelZoom:true, attributionControl:true }).fitBounds(PS_BOUNDS, {padding:[30,30]});
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'© OpenStreetMap contributors' }).addTo(map);
+const markerLayer = L.layerGroup().addTo(map);
+
+function boot(){
+  const P = window.Palmas;
+  if (!P) { setTimeout(boot, 60); return; }
+  f = P.defaultFilters();
+  const u = new URLSearchParams(location.search);
+  const cat = u.get('cat') || u.get('offer');
+  if (cat && P.OFFERS.indexOf(cat) !== -1) f.offer = cat;
+  const ty = u.get('type');
+  if (ty && P.TYPES.indexOf(ty) !== -1) f.type = ty;
+  const city = u.get('city');
+  if (city && P.cityBy(city)) { f.city = city; f.country = P.cityBy(city).c; }
+  const country = u.get('country');
+  if (country && P.countryBy(country)) f.country = country;
+  else if (!city) f.country = 'ps'; /* sensible default view for the map */
+  q = u.get('q') || '';
+  applyLang();
+  syncAccount();
+  P.API.onAuthChange(syncAccount);
+  render(true);
+  setTimeout(()=> map.invalidateSize(), 200);
+}
+
+/* ------------------------------------------------------------ header account state */
+function syncAccount(){
+  const P = window.Palmas; if (!P) return;
+  const s = P.API.session(); const loggedIn = !!(s && s.loggedIn);
+  document.getElementById('wishIcon').style.display = loggedIn ? 'grid' : 'none';
+  document.getElementById('loginIcon').style.display = loggedIn ? 'none' : 'grid';
+  document.getElementById('acctWrap').style.display = loggedIn ? 'block' : 'none';
+  const favs = P.API.favorites();
+  const badge = document.getElementById('wishBadge');
+  if (favs.length){ badge.style.display='grid'; badge.textContent = favs.length>9?'9+':favs.length; } else badge.style.display='none';
+  if (loggedIn){
+    document.getElementById('acctBtn').textContent = ((s.name||s.email||'?')+'').trim().charAt(0).toUpperCase();
+    document.getElementById('acctName').textContent = s.name || (lang==='ar'?'حسابي':'Account');
+    document.getElementById('acctEmail').textContent = s.email || '';
+    document.getElementById('acctDash').style.display = s.role === 'admin' ? 'flex' : 'none';
+  }
+  render();
+}
+
+/* ------------------------------------------------------------ list-property modal */
+function openListModal(){ document.getElementById('listModalOverlay').style.display='grid'; document.getElementById('listModalForm').style.display='block'; document.getElementById('listModalSent').style.display='none'; document.getElementById('listModalErr').style.display='none'; }
+function closeListModal(){ document.getElementById('listModalOverlay').style.display='none'; }
+document.getElementById('listBtn').addEventListener('click', openListModal);
+document.getElementById('listModalClose').addEventListener('click', closeListModal);
+document.getElementById('listModalOverlay').addEventListener('click', e=>{ if (e.target.id==='listModalOverlay') closeListModal(); });
+document.getElementById('listSentDone').addEventListener('click', closeListModal);
+document.getElementById('listModalFormEl').addEventListener('submit', e=>{
+  e.preventDefault();
+  const name = document.getElementById('lName').value.trim(), phone = document.getElementById('lPhone').value.trim();
+  if (!name || !phone){ document.getElementById('listModalErr').style.display='block'; document.getElementById('listModalErr').textContent = T[lang].lErr; return; }
+  const rec = { name, phone, city: document.getElementById('lCity').value.trim(), deal: document.getElementById('lType').value, price: document.getElementById('lPrice').value.trim(), notes: document.getElementById('lNotes').value.trim(), date: new Date().toISOString().slice(0,10) };
+  try { const arr = JSON.parse(localStorage.getItem('palmas_listings') || '[]'); arr.push(rec); localStorage.setItem('palmas_listings', JSON.stringify(arr)); } catch(e){}
+  document.getElementById('listModalForm').style.display='none'; document.getElementById('listModalSent').style.display='block';
+});
+
+/* ------------------------------------------------------------ account dropdown */
+document.getElementById('acctBtn').addEventListener('click', e=>{ e.stopPropagation(); menuOpen = !menuOpen; document.getElementById('acctMenu').style.display = menuOpen?'block':'none'; });
+document.getElementById('acctLogout').addEventListener('click', ()=>{ const P=window.Palmas; if (P) P.API.signOut(); menuOpen=false; document.getElementById('acctMenu').style.display='none'; syncAccount(); });
+document.addEventListener('click', e=>{
+  const wrap = document.getElementById('acctWrap');
+  if (menuOpen && wrap && !wrap.contains(e.target)){ menuOpen=false; document.getElementById('acctMenu').style.display='none'; }
+});
+
+/* ------------------------------------------------------------ lang / theme */
+document.getElementById('langBtn').addEventListener('click', ()=>{ lang = lang==='ar'?'en':'ar'; try{localStorage.setItem('palmas_lang',lang);}catch(e){} applyLang(); syncAccount(); render(true); });
+document.getElementById('themeBtn').addEventListener('click', ()=>{ theme = theme==='dark'?'light':'dark'; document.documentElement.setAttribute('data-theme',theme); try{localStorage.setItem('palmas_theme',theme);}catch(e){} applyThemeIcon(); });
+function applyThemeIcon(){
+  const b=document.getElementById('themeBtn');
+  b.innerHTML = theme==='dark'
+    ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>'
+    : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5.6 5.6 4.2 4.2M19.8 19.8l-1.4-1.4M5.6 18.4l-1.4 1.4M19.8 4.2l-1.4 1.4"/></svg>';
+}
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang==='ar'?'rtl':'ltr';
+  const s = T[lang], nv = NAV[lang];
+  document.getElementById('asideTitle').textContent = s.aside;
+  document.getElementById('langBtn').textContent = lang==='ar'?'EN':'ع';
+  document.getElementById('emptyTitle').textContent = s.emptyT;
+  document.getElementById('emptyBody').textContent = s.emptyB;
+  document.getElementById('mfSearch').placeholder = s.searchPh;
+  document.querySelectorAll('#navLinks .sh-link').forEach(a=>{ const k=a.dataset.k; if(nv[k]) a.textContent=nv[k]; });
+  document.getElementById('listBtnLabel').textContent = s.listBtn;
+  document.getElementById('wishIcon').title = s.wish;
+  document.getElementById('loginIcon').title = s.login;
+  document.getElementById('acctDashLabel').textContent = s.dash;
+  document.getElementById('acctWishLabel').textContent = s.wish;
+  document.getElementById('acctLogoutLabel').textContent = s.logout;
+  document.getElementById('sheetTitle').textContent = s.filters;
+  document.getElementById('sheetReset').textContent = s.reset;
+  document.getElementById('listModalTitle').textContent = s.listTitle;
+  document.getElementById('listModalSub').textContent = s.listSub;
+  document.getElementById('lName').placeholder = s.lName;
+  document.getElementById('lPhone').placeholder = s.lPhone;
+  document.getElementById('lCity').placeholder = s.lCity;
+  document.getElementById('lTypeSale').textContent = s.lSale;
+  document.getElementById('lTypeRent').textContent = s.lRent;
+  document.getElementById('lPrice').placeholder = s.lPrice;
+  document.getElementById('lNotes').placeholder = s.lNotes;
+  document.getElementById('listModalSubmit').textContent = s.lSubmit;
+  document.getElementById('listSentTitle').textContent = s.sentTitle;
+  document.getElementById('listSentSub').textContent = s.sentSub;
+  applyThemeIcon();
+}
+
+/* ------------------------------------------------------------ leaflet helpers */
+function pinIcon(color, active){
+  return L.divIcon({ className:'', iconSize:[30,42], iconAnchor:[15,42], popupAnchor:[0,-38],
+    html:'<span class="pin'+(active?' active':'')+'"><svg width="30" height="42" viewBox="0 0 30 42"><path d="M15 0C6.7 0 0 6.7 0 15c0 10.5 15 27 15 27s15-16.5 15-27C30 6.7 23.3 0 15 0z" fill="'+color+'"/><circle cx="15" cy="15" r="6" fill="#fff"/></svg></span>' });
+}
+function popupHtml(x){
+  const P = window.Palmas, city = P.cityBy(x.cityKey), s = T[lang];
+  return '<div class="pp"><span class="pp-badge" style="background:'+catColor(x)+'">'+catLabel(x,lang)+'</span>'
+    +'<div class="pp-name">'+x.name[lang]+'</div>'
+    +'<div class="pp-city"><span class="dot" style="background:'+catColor(x)+'"></span>'+(city?city[lang]:x.loc[lang])+'</div>'
+    +'<div class="pp-price">'+P.displayPrice(x,lang)+'</div>'
+    +'<a class="pp-btn" href="PropertyDetails.dc.html?id='+x.id+'">'+s.details+'</a></div>';
+}
+function hexA(hex,a){ const n=parseInt(hex.replace('#',''),16); return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+a+')'; }
+
+/* ------------------------------------------------------------ data pipeline (shared with PropertyList) */
+function currentResults(){
+  const P = window.Palmas;
+  const base = P.filteredBy(f);
+  const searched = P.searchIn(base, q, lang);
+  return P.sortList(searched, sort);
+}
+
+function buildMarkers(list){
+  markerLayer.clearLayers(); markers = {};
+  list.forEach(x=>{
+    if (x.lat == null || x.lng == null) return;
+    const m = L.marker([x.lat,x.lng], { icon:pinIcon(catColor(x), false), riseOnHover:true });
+    m.bindPopup(popupHtml(x), { closeButton:true, minWidth:220, maxWidth:260 });
+    m.on('click', ()=> setActive(x.id, false));
+    m.addTo(markerLayer);
+    markers[x.id] = m;
+  });
+}
+function buildList(list){
+  const wrap = document.getElementById('list'); wrap.innerHTML='';
+  const P = window.Palmas;
+  list.forEach(x=>{
+    const city = P.cityBy(x.cityKey), color = catColor(x);
+    const el = document.createElement('div');
+    el.className='card'; el.dataset.id=x.id;
+    el.innerHTML =
+      '<div class="ci" style="background:'+hexA(color,.16)+'">'
+      + '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></div>'
+      + '<div class="cbody"><div class="cname">'+x.name[lang]+'</div>'
+      + '<div class="cmeta"><span class="dot" style="background:'+color+'"></span>'+(city?city[lang]:x.loc[lang])+'</div>'
+      + '<div class="cbottom"><span class="cprice">'+P.displayPrice(x,lang)+'</span><span class="cbadge" style="background:'+color+'">'+catLabel(x,lang)+'</span></div></div>';
+    el.addEventListener('click', ()=> setActive(x.id, true));
+    wrap.appendChild(el);
+  });
+}
+function setActive(id, fly){
+  const P = window.Palmas, x = P.propBy(id); if (!x) return;
+  if (activeId && markers[activeId]) markers[activeId].setIcon(pinIcon(catColor(P.propBy(activeId)), false));
+  activeId = id;
+  if (markers[id]) markers[id].setIcon(pinIcon(catColor(x), true));
+  document.querySelectorAll('.card').forEach(c=> c.classList.toggle('active', c.dataset.id===id));
+  const card = document.querySelector('.card[data-id="'+id+'"]');
+  if (card){
+    const wrap = document.getElementById('list');
+    const top = card.offsetTop - wrap.clientHeight/2 + card.offsetHeight/2;
+    wrap.scrollTo({ top: Math.max(0, top), behavior:'smooth' });
+  }
+  if (fly && x.lat != null){ map.flyTo([x.lat,x.lng], Math.max(map.getZoom(),13), {duration:.6}); setTimeout(()=> markers[id] && markers[id].openPopup(), 350); }
+}
+function buildLegend(list){
+  const el = document.getElementById('legend'); el.innerHTML='';
+  const seen = {};
+  list.forEach(x=>{ const k=catOf(x); if (!seen[k]) seen[k]={color:catColor(x), label:catLabel(x,lang)}; });
+  Object.keys(seen).forEach(k=>{
+    el.insertAdjacentHTML('beforeend','<span class="chip"><span class="dot" style="background:'+seen[k].color+'"></span>'+seen[k].label+'</span>');
+  });
+}
+
+/* ------------------------------------------------------------ quick offer tabs */
+function buildTabs(){
+  const P = window.Palmas, wrap = document.getElementById('mfTabs'); wrap.innerHTML='';
+  P.OFFERS.forEach(k=>{
+    const b = document.createElement('button'); b.type='button'; b.className='mf-tab'+(f.offer===k?' on':'');
+    b.textContent = k==='all' ? (lang==='ar'?'الكل':'All') : P.LABELS[lang].offer[k];
+    b.addEventListener('click', ()=>{ f.offer=k; render(true); });
+    wrap.appendChild(b);
+  });
+}
+
+/* ------------------------------------------------------------ chips */
+function buildChips(){
+  const P = window.Palmas, L = P.LABELS[lang], lim = P.LIMITS, wrap = document.getElementById('mfChips');
+  const chips = [];
+  const add = (cond, label, undo) => { if (cond) chips.push({ label, undo }); };
+  add(f.country !== 'all', (P.countryBy(f.country)||{})[lang], ()=>{ f.country='all'; f.city='all'; });
+  add(f.city !== 'all', (P.cityBy(f.city)||{})[lang], ()=>{ f.city='all'; });
+  add(f.offer !== 'all', L.offer[f.offer], ()=>{ f.offer='all'; });
+  add(f.type !== 'all', L.type[f.type], ()=>{ f.type='all'; });
+  add(f.own !== 'all', L.own[f.own], ()=>{ f.own='all'; });
+  add(f.zone !== 'all', L.zone[f.zone], ()=>{ f.zone='all'; });
+  add(f.beds > 0, f.beds+'+ '+L.rooms, ()=>{ f.beds=0; });
+  add(f.baths > 0, f.baths+'+ '+L.bath, ()=>{ f.baths=0; });
+  const chipCur = (P.Currency.viewCurrency && P.Currency.viewCurrency()) || 'usd';
+  const chipMoney = usd => P.Currency.format(Math.round(P.Currency.fromUsd(usd, chipCur)), chipCur, lang);
+  add(isFinite(f.maxPrice), '≤ '+chipMoney(f.maxPrice), ()=>{ f.maxPrice=Infinity; });
+  add(f.minArea > 0, f.minArea+' '+L.sqm+'+', ()=>{ f.minArea=0; });
+  add(!!q.trim(), '"'+q.trim()+'"', ()=>{ q=''; document.getElementById('mfSearch').value=''; });
+  wrap.style.display = chips.length ? 'flex' : 'none';
+  wrap.innerHTML='';
+  chips.forEach(c=>{
+    const b = document.createElement('button'); b.type='button'; b.className='mf-chip';
+    b.innerHTML = c.label + ' <span>×</span>';
+    b.addEventListener('click', ()=>{ c.undo(); render(true); });
+    wrap.appendChild(b);
+  });
+  document.getElementById('mfDot').style.display = (chips.length ? 'block' : 'none');
+}
+
+/* ------------------------------------------------------------ sort */
+function buildSort(){
+  const P = window.Palmas, sel = document.getElementById('mfSort');
+  sel.innerHTML='';
+  P.SORTS.forEach(k=>{ const o=document.createElement('option'); o.value=k; o.textContent=P.LABELS[lang].sort[k]; if (k===sort) o.selected=true; sel.appendChild(o); });
+}
+document.getElementById('mfSort').addEventListener('change', e=>{ sort = e.target.value; render(); });
+document.getElementById('mfSearch').addEventListener('input', e=>{ q = e.target.value; render(); });
+
+/* ------------------------------------------------------------ filter sheet */
+function openSheet(){ sheetOpen = true; openDrop=''; document.getElementById('sheetOverlay').style.display='block'; buildSheetFields(); }
+function closeSheet(){ sheetOpen = false; document.getElementById('sheetOverlay').style.display='none'; }
+document.getElementById('mfOpenSheet').addEventListener('click', openSheet);
+document.getElementById('sheetBg').addEventListener('click', closeSheet);
+document.getElementById('sheetReset').addEventListener('click', ()=>{ const P=window.Palmas; f = P.defaultFilters(); buildSheetFields(); render(true); });
+document.getElementById('sheetApply').addEventListener('click', ()=>{ closeSheet(); render(true); });
+
+function buildSheetFields(){
+  const P = window.Palmas, L = P.LABELS[lang], lim = P.LIMITS, host = document.getElementById('sheetFields');
+  const drop = (key, label, opts, current, onPick) => {
+    const box = document.createElement('div');
+    const lab = document.createElement('div'); lab.style.cssText='font-weight:800;font-size:13.5px;color:var(--heading);margin-bottom:8px'; lab.textContent = label;
+    const valLabel = (opts.find(o=>o.k===current)||opts[0]).label;
+    const btn = document.createElement('button'); btn.type='button'; btn.className='sf-field-btn';
+    btn.innerHTML = '<span>'+valLabel+'</span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="transform:'+(openDrop===key?'rotate(180deg)':'none')+';transition:transform .22s ease"><path d="m6 9 6 6 6-6"></path></svg>';
+    btn.addEventListener('click', ()=>{ openDrop = openDrop===key ? '' : key; buildSheetFields(); });
+    box.appendChild(lab); box.appendChild(btn);
+    if (openDrop === key){
+      const dropWrap = document.createElement('div'); dropWrap.className='sf-drop';
+      opts.forEach(o=>{
+        const ob = document.createElement('button'); ob.type='button'; ob.className='sf-opt';
+        ob.innerHTML = '<span>'+o.label+'</span><span style="color:var(--orange);font-weight:900">'+(o.k===current?'✓':'')+'</span>';
+        ob.addEventListener('click', ()=>{ onPick(o.k); openDrop=''; buildSheetFields(); });
+        dropWrap.appendChild(ob);
+      });
+      box.appendChild(dropWrap);
+    }
+    host.appendChild(box);
+  };
+  host.innerHTML = '';
+  const label = (map,k) => k==='all' ? L.all : (map[k]||k);
+  const countryOpts = [{k:'all',label:L.all}].concat(P.COUNTRIES.map(c=>({k:c.k,label:c[lang]})));
+  const cityOpts = [{k:'all',label:L.all}].concat(P.citiesOf(f.country).map(c=>({k:c.k,label:c[lang]})));
+  const offerOpts = P.OFFERS.map(k=>({k,label:label(L.offer,k)}));
+  const typeOpts = P.TYPES.map(k=>({k,label:label(L.type,k)}));
+  const bedOpts = P.BEDS.map(n=>({k:n,label:n===0?L.all:(n+'+')}));
+  const ownOpts = P.OWNS.map(k=>({k,label:label(L.own,k)}));
+  const zoneOpts = P.ZONES.map(k=>({k,label:label(L.zone,k)}));
+
+  drop('country', L.fields.country, countryOpts, f.country, v=>{ f.country=v; f.city='all'; });
+  // the city list only means something once a country is picked
+  if (P.showCity(f)) drop('city', L.fields.city, cityOpts, f.city, v=>{ f.city=v; });
+  drop('offer', L.fields.offer, offerOpts, f.offer, v=>{ f.offer=v; });
+  drop('type', L.fields.type, typeOpts, f.type, v=>{ f.type=v; });
+  if (P.showBeds(f)){
+    drop('beds', L.fields.beds, bedOpts, f.beds, v=>{ f.beds=v; });
+    drop('baths', L.fields.baths, bedOpts, f.baths, v=>{ f.baths=v; });
+  }
+  if (P.showOwn(f)) drop('own', L.fields.own, ownOpts, f.own, v=>{ f.own=v; });
+  if (P.showZone(f)) drop('zone', L.fields.zone, zoneOpts, f.zone, v=>{ f.zone=v; });
+
+  const ar = lang === 'ar';
+  /* prices are typed in the customer's chosen currency ("auto" falls back to the
+     platform base, USD) and always stored in USD — converted only at this edge */
+  const typeCur = (P.Currency.viewCurrency && P.Currency.viewCurrency()) || 'usd';
+  const curName = (P.Currency.meta(typeCur) || {})[ar ? 'ar' : 'en'] || '';
+  const toView = usd => Math.round(P.Currency.fromUsd(usd, typeCur));
+  const toUsdVal = v => P.Currency.toUsd(Number(v) || 0, typeCur);
+
+  document.getElementById('maxPriceLbl').textContent = (ar ? 'السعر' : 'Price') + ' (' + curName + ')';
+  document.getElementById('minAreaLbl').textContent = L.fields.minArea;
+  document.getElementById('priceHint').textContent = ar
+    ? 'اترك الخانة فاضية إذا ما بدك تحدد.' : 'Leave a box empty for no limit.';
+
+  const priceLabel = ()=>{
+    const n = usd => P.Currency.format(toView(usd), typeCur, lang);
+    const hasMin = f.minPrice > 0, hasMax = isFinite(f.maxPrice);
+    if (hasMin && hasMax) return n(f.minPrice)+' — '+n(f.maxPrice);
+    if (hasMin) return (ar?'من ':'from ')+n(f.minPrice);
+    if (hasMax) return (ar?'حتى ':'up to ')+n(f.maxPrice);
+    return L.all;
+  };
+  const priceVal = document.getElementById('maxPriceVal');
+  priceVal.textContent = priceLabel();
+
+  const lo = document.getElementById('sheetMinPrice');
+  lo.placeholder = ar ? 'من' : 'From';
+  lo.value = f.minPrice > 0 ? toView(f.minPrice) : '';
+  lo.oninput = e=>{
+    const raw = e.target.value;
+    f.minPrice = raw === '' ? 0 : toUsdVal(Math.max(0, Math.floor(+raw || 0)));
+    priceVal.textContent = priceLabel();
+  };
+  lo.onchange = ()=> render();
+
+  const mp = document.getElementById('sheetMaxPrice');
+  mp.placeholder = ar ? 'إلى' : 'To';
+  mp.value = isFinite(f.maxPrice) ? toView(f.maxPrice) : '';
+  mp.oninput = e=>{
+    const raw = e.target.value;
+    f.maxPrice = raw === '' ? Infinity : toUsdVal(Math.max(0, Math.floor(+raw || 0)));
+    priceVal.textContent = priceLabel();
+  };
+  mp.onchange = ()=> render();
+  const ma = document.getElementById('sheetMinArea'); ma.min=lim.AREA_MIN; ma.max=lim.AREA_MAX; ma.step=lim.AREA_STEP; ma.value=f.minArea;
+  document.getElementById('minAreaVal').textContent = f.minArea>0 ? (f.minArea+' '+L.sqm+'+') : L.all;
+  ma.oninput = e=>{ f.minArea = +e.target.value; document.getElementById('minAreaVal').textContent = f.minArea>0 ? (f.minArea+' '+L.sqm+'+') : L.all; };
+  ma.onchange = ()=> render();
+
+  document.getElementById('sheetApply').textContent = T[lang].apply(currentResults().length);
+}
+
+/* ------------------------------------------------------------ master render */
+function render(fly){
+  if (!f) return;
+  const P = window.Palmas;
+  const results = currentResults();
+  buildTabs();
+  buildChips();
+  buildSort();
+  buildMarkers(results);
+  buildList(results);
+  buildLegend(results);
+  document.getElementById('count').textContent = T[lang].count(results.length);
+  document.getElementById('mapEmpty').classList.toggle('show', results.length===0);
+  document.getElementById('list').style.display = results.length ? '' : 'none';
+  if (sheetOpen) document.getElementById('sheetApply').textContent = T[lang].apply(results.length);
+  if (fly){
+    if (results.length){
+      map.flyToBounds(L.latLngBounds(results.filter(x=>x.lat!=null).map(x=>[x.lat,x.lng])), {padding:[60,60], duration:.6, maxZoom: f.city!=='all'?14:12});
+    } else if (f.country !== 'all' && P.countryBy(f.country)){
+      const v = P.countryBy(f.country); map.flyTo(v.center, v.zoom, {duration:.6});
+    } else {
+      map.flyToBounds(PS_BOUNDS, {padding:[30,30], duration:.6});
+    }
+  }
+  if (activeId && !results.some(x=>x.id===activeId)) activeId = null;
+}
+
+boot();
+</script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+.sc-in{background:var(--field-bg,#fff);border:1px solid var(--field-border,rgba(20,20,22,.14));border-radius:12px;padding:10px 12px;color:var(--field-fg,#141414);font-size:14px;outline:none;width:100%;font-family:'Cairo',sans-serif;transition:border-color .3s ease}
+.sc-in:focus{border-color:#f68743}
+textarea.sc-in{resize:vertical;min-height:70px;line-height:1.7}
+.sc-card{background:var(--card,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:18px;padding:22px 24px;box-shadow:var(--shadow,none)}
+.sc-h{font-weight:900;font-size:17px;color:var(--heading,#141414);margin:0 0 4px}
+.sc-sub{color:var(--dim,rgba(20,20,22,.5));font-size:13px;font-weight:600;line-height:1.8;margin:0 0 16px}
+.sc-lb{font-size:12px;font-weight:700;color:var(--dim,rgba(20,20,22,.5));margin-bottom:6px;display:block}
+.sc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+</style>
+<script src="palmas-core.js"></script>
+<script src="palmas-config.js"></script>
+<script src="palmas-backend.js"></script>
+</helmet>
+
+<div dir="{{ dir }}" style="font-family:'Cairo',sans-serif;color:var(--heading,#141414);display:flex;flex-direction:column;gap:18px">
+
+  <div class="sc-card">
+    <div class="sc-h">{{ t.numsTitle }}</div>
+    <div class="sc-sub">{{ t.numsSub }}</div>
+    <div class="sc-grid">
+      <sc-for list="{{ autoNums }}" as="n" hint-placeholder-count="3">
+        <div style="background:var(--inset,#f2f3f5);border-radius:14px;padding:12px 16px">
+          <div style="font-size:12px;font-weight:700;color:var(--dim,rgba(20,20,22,.5))">{{ n.label }}</div>
+          <div style="font-size:22px;font-weight:900;color:#d1662a">{{ n.value }}</div>
+          <div style="font-size:11px;font-weight:700;color:#1f9d5c">{{ t.auto }}</div>
+        </div>
+      </sc-for>
+      <div><label class="sc-lb">{{ t.clients }}</label><input class="sc-in" value="{{ clients }}" onChange="{{ onClients }}" placeholder="{{ t.clientsPh }}"></div>
+      <div><label class="sc-lb">{{ t.years }}</label><input class="sc-in" value="{{ years }}" onChange="{{ onYears }}" placeholder="{{ t.yearsPh }}"></div>
+    </div>
+  </div>
+
+  <div class="sc-card">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div><div class="sc-h">{{ t.testTitle }}</div><div class="sc-sub">{{ t.testSub }}</div></div>
+      <button onClick="{{ addTest }}" style="border:none;background:#f68743;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:13.5px;padding:9px 18px;border-radius:18px;cursor:pointer" style-hover="background:#d1662a">+ {{ t.addTest }}</button>
+    </div>
+    <sc-if value="{{ noTests }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:18px;border:1px dashed var(--hairline,rgba(20,20,22,.15));border-radius:14px;text-align:center;color:var(--dim,rgba(20,20,22,.5));font-size:13.5px;font-weight:700">{{ t.noTests }}</div>
+    </sc-if>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <sc-for list="{{ tests }}" as="x" hint-placeholder-count="2">
+        <div style="border:1px solid var(--hairline,rgba(20,20,22,.1));border-radius:14px;padding:14px;display:grid;grid-template-columns:1fr 1fr 110px auto;gap:10px;align-items:end">
+          <div><label class="sc-lb">{{ t.tName }}</label><input class="sc-in" value="{{ x.name }}" onChange="{{ x.onName }}"></div>
+          <div><label class="sc-lb">{{ t.tRole }}</label><input class="sc-in" value="{{ x.role }}" onChange="{{ x.onRole }}" placeholder="{{ t.tRolePh }}"></div>
+          <div><label class="sc-lb">{{ t.tStars }}</label><select class="sc-in" value="{{ x.stars }}" onChange="{{ x.onStars }}"><option value="5">★★★★★</option><option value="4">★★★★</option><option value="3">★★★</option></select></div>
+          <button onClick="{{ x.remove }}" style="border:1px solid rgba(224,36,94,.35);background:rgba(224,36,94,.08);color:#e0245e;font-family:'Cairo',sans-serif;font-weight:800;font-size:12.5px;padding:9px 14px;border-radius:12px;cursor:pointer" style-hover="background:#e0245e;color:#fff">{{ t.del }}</button>
+          <div style="grid-column:1 / -1"><label class="sc-lb">{{ t.tQuote }}</label><textarea class="sc-in" value="{{ x.quote }}" onChange="{{ x.onQuote }}"></textarea></div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div class="sc-card">
+    <div class="sc-h">{{ t.socialTitle }}</div>
+    <div class="sc-sub">{{ t.socialSub }}</div>
+    <div class="sc-grid">
+      <sc-for list="{{ socials }}" as="s" hint-placeholder-count="6">
+        <div><label class="sc-lb">{{ s.label }}</label><input class="sc-in" dir="ltr" value="{{ s.value }}" onChange="{{ s.onChange }}" placeholder="{{ s.ph }}"></div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div class="sc-card">
+    <div class="sc-h">{{ t.appsTitle }}</div>
+    <div class="sc-sub">{{ t.appsSub }}</div>
+    <div class="sc-grid">
+      <div><label class="sc-lb">App Store (iPhone)</label><input class="sc-in" dir="ltr" value="{{ ios }}" onChange="{{ onIos }}" placeholder="https://apps.apple.com/..."></div>
+      <div><label class="sc-lb">Google Play (Android)</label><input class="sc-in" dir="ltr" value="{{ android }}" onChange="{{ onAndroid }}" placeholder="https://play.google.com/store/apps/..."></div>
+    </div>
+  </div>
+
+  <div class="sc-card" style="background:rgba(246,135,67,.08);border-color:rgba(246,135,67,.3)">
+    <div class="sc-h">{{ t.imgTitle }}</div>
+    <div class="sc-sub" style="margin:0">{{ t.imgSub }}</div>
+  </div>
+
+  <div style="position:sticky;bottom:14px;align-self:flex-end;display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;background:var(--page-solid,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:30px;padding:7px;padding-inline-start:18px;box-shadow:0 12px 32px rgba(20,20,30,.16)">
+    <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+      <div style="background:rgba(224,36,94,.1);color:#c81d51;font-weight:700;font-size:13px;padding:10px 14px;border-radius:12px">{{ error }}</div>
+    </sc-if>
+    <sc-if value="{{ dirty }}" hint-placeholder-val="{{ false }}">
+      <div style="color:var(--dim,rgba(20,20,22,.55));font-weight:700;font-size:13px">{{ t.unsaved }}</div>
+    </sc-if>
+    <button onClick="{{ save }}" disabled="{{ saving }}" style="border:none;background:#f68743;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:15px;padding:13px 34px;border-radius:24px;cursor:pointer;box-shadow:0 10px 24px rgba(246,135,67,.3);opacity:{{ saveOpacity }}" style-hover="background:#d1662a">{{ saveLabel }}</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1100, &quot;height&quot;: 900}, &quot;lang&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;ar&quot;, &quot;en&quot;], &quot;default&quot;: &quot;ar&quot;, &quot;tsType&quot;: &quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { form: null, dirty: false, saving: false, error: '' };
+
+  componentDidMount() { this._boot(); }
+  componentWillUnmount() { clearTimeout(this._t); }
+  _boot() {
+    const P = window.Palmas;
+    if (!P || !P.Site) { this._t = setTimeout(() => this._boot(), 80); return; }
+    this.setState({ form: JSON.parse(JSON.stringify(P.Site.get())) });
+  }
+  _ar() { return (this.props.lang || 'ar') !== 'en'; }
+
+  _edit(fn) {
+    this.setState((s) => { const f = JSON.parse(JSON.stringify(s.form)); fn(f); return { form: f, dirty: true, error: '' }; });
+  }
+
+  /* رابط بلا بروتوكول (facebook.com/palmas) يصير رابطاً نسبياً يفتح صفحة خطأ */
+  _url(v) {
+    v = (v || '').trim();
+    if (!v) return '';
+    return /^https?:\/\//i.test(v) ? v : 'https://' + v.replace(/^\/+/, '');
+  }
+
+  _save() {
+    const P = window.Palmas;
+    const ar = this._ar();
+    const f = JSON.parse(JSON.stringify(this.state.form));
+    Object.keys(f.social).forEach((k) => { f.social[k] = this._url(f.social[k]); });
+    f.apps.ios = this._url(f.apps.ios);
+    f.apps.android = this._url(f.apps.android);
+    const bad = f.testimonials.find((x) => !String(x.name || '').trim() || !String(x.quote || '').trim());
+    if (bad) { this.setState({ error: ar ? 'كل رأي لازم يكون فيه اسم ونص.' : 'Every testimonial needs a name and a quote.' }); return; }
+    this.setState({ saving: true });
+    P.Site.save(f).then((saved) => {
+      this.setState({ saving: false, dirty: false, form: JSON.parse(JSON.stringify(saved)) });
+      P.toast(ar ? 'تم حفظ محتوى الموقع' : 'Site content saved');
+    }).catch((e) => {
+      const msg = (e && e.message) || '';
+      this.setState({ saving: false, error: /site_settings/.test(msg)
+        ? (ar ? 'جدول المحتوى غير موجود على السيرفر — شغّل schema-content.sql في Supabase.' : 'Content table missing — run schema-content.sql in Supabase.')
+        : ((ar ? 'تعذّر الحفظ: ' : 'Could not save: ') + msg) });
+    });
+  }
+
+  renderVals() {
+    const P = window.Palmas;
+    const ar = this._ar();
+    const t = ar ? {
+      numsTitle: 'أرقام الصفحة الرئيسية', numsSub: 'عدد العقارات والمدن والمشاريع يُحسب تلقائياً من بياناتك. الحقلان الآخران تكتبهما أنت — اتركهما فارغين لإخفائهما.',
+      auto: 'تلقائي', clients: 'عدد العملاء', clientsPh: 'مثال: 300+', years: 'سنوات الخبرة', yearsPh: 'مثال: 10+',
+      testTitle: 'آراء العملاء', testSub: 'تظهر في الرئيسية تحت "قصص نجاح حقيقية". إن لم تضف شيئاً يختفي القسم كاملاً — أضف فقط آراء عملاء حقيقيين.',
+      addTest: 'إضافة رأي', noTests: 'لا توجد آراء بعد — قسم الآراء مخفي حالياً من الرئيسية.',
+      tName: 'اسم العميل', tRole: 'وصف قصير', tRolePh: 'مثال: اشترى شقة في رام الله', tStars: 'التقييم', tQuote: 'نص الرأي', del: 'حذف',
+      socialTitle: 'حسابات التواصل الاجتماعي', socialSub: 'تظهر أيقوناتها في أسفل كل صفحة. الحساب الفارغ لا تظهر أيقونته.',
+      appsTitle: 'روابط التطبيق في المتاجر', appsSub: 'حتى تنشر التطبيق، تظهر الأزرار في الرئيسية بعبارة "قريباً" ولا تُفتح.',
+      imgTitle: 'تغيير الصور', imgSub: 'افتح أي صفحة في الموقع وأنت مسجّل دخول كأدمن، واضغط على أي صورة (أو اسحب صورة فوقها) لرفع صورة جديدة. الأماكن الفارغة تظهر لك كمربعات رمادية؛ الزوّار يرون مكانها صورة بهوية الموقع.',
+      save: 'حفظ التغييرات', saving: 'جارٍ الحفظ…', unsaved: 'تغييرات غير محفوظة',
+      listings: 'عقار معروض', cities: 'مدينة', projects: 'مشروع',
+      social: { facebook: 'فيسبوك', instagram: 'إنستغرام', tiktok: 'تيك توك', youtube: 'يوتيوب', x: 'X (تويتر)', linkedin: 'لينكدإن' },
+    } : {
+      numsTitle: 'Home page numbers', numsSub: 'Listings, cities and projects are counted automatically. Fill the other two yourself — leave empty to hide them.',
+      auto: 'Automatic', clients: 'Clients', clientsPh: 'e.g. 300+', years: 'Years of experience', yearsPh: 'e.g. 10+',
+      testTitle: 'Testimonials', testSub: 'Shown on the home page. With none added, the whole section is hidden — only add real clients.',
+      addTest: 'Add testimonial', noTests: 'No testimonials yet — the section is hidden on the home page.',
+      tName: 'Client name', tRole: 'Short description', tRolePh: 'e.g. Bought a flat in Ramallah', tStars: 'Rating', tQuote: 'Quote', del: 'Delete',
+      socialTitle: 'Social media accounts', socialSub: 'Icons appear in every page footer. Empty accounts are hidden.',
+      appsTitle: 'App store links', appsSub: 'Until the app is published, the home page buttons say "Coming soon" and are disabled.',
+      imgTitle: 'Changing photos', imgSub: 'Open any page while signed in as admin and click any photo (or drop an image on it) to upload. Empty spots show to you as grey boxes; visitors see a branded image instead.',
+      save: 'Save changes', saving: 'Saving…', unsaved: 'Unsaved changes',
+      listings: 'Listings', cities: 'Cities', projects: 'Projects',
+      social: { facebook: 'Facebook', instagram: 'Instagram', tiktok: 'TikTok', youtube: 'YouTube', x: 'X (Twitter)', linkedin: 'LinkedIn' },
+    };
+    const f = this.state.form || { stats: {}, testimonials: [], social: {}, apps: {} };
+    const all = P ? P.allProperties() : [];
+    const PH = { facebook: 'facebook.com/…', instagram: 'instagram.com/…', tiktok: 'tiktok.com/@…', youtube: 'youtube.com/@…', x: 'x.com/…', linkedin: 'linkedin.com/company/…' };
+    return {
+      dir: ar ? 'rtl' : 'ltr', t,
+      autoNums: [
+        { label: t.listings, value: String(all.length) },
+        { label: t.cities, value: String(new Set(all.map((x) => x.cityKey)).size) },
+        { label: t.projects, value: String(P ? P.allProjects().length : 0) },
+      ],
+      clients: f.stats.clients || '', years: f.stats.years || '',
+      onClients: (e) => this._edit((x) => { x.stats.clients = e.target.value; }),
+      onYears: (e) => this._edit((x) => { x.stats.years = e.target.value; }),
+      tests: f.testimonials.map((x, i) => ({
+        name: x.name || '', role: x.role || '', quote: x.quote || '', stars: String(x.stars || 5),
+        onName: (e) => this._edit((y) => { y.testimonials[i].name = e.target.value; }),
+        onRole: (e) => this._edit((y) => { y.testimonials[i].role = e.target.value; }),
+        onQuote: (e) => this._edit((y) => { y.testimonials[i].quote = e.target.value; }),
+        onStars: (e) => this._edit((y) => { y.testimonials[i].stars = Number(e.target.value); }),
+        remove: () => this._edit((y) => { y.testimonials.splice(i, 1); }),
+      })),
+      noTests: f.testimonials.length === 0,
+      addTest: () => this._edit((y) => { y.testimonials.push({ name: '', role: '', quote: '', stars: 5 }); }),
+      socials: (P ? P.Site.SOCIALS : []).map((k) => ({
+        label: t.social[k], value: (f.social || {})[k] || '', ph: PH[k],
+        onChange: (e) => this._edit((y) => { y.social[k] = e.target.value; }),
+      })),
+      ios: (f.apps || {}).ios || '', android: (f.apps || {}).android || '',
+      onIos: (e) => this._edit((y) => { y.apps.ios = e.target.value; }),
+      onAndroid: (e) => this._edit((y) => { y.apps.android = e.target.value; }),
+      dirty: this.state.dirty, hasError: !!this.state.error, error: this.state.error,
+      saving: this.state.saving, saveOpacity: this.state.saving ? '.6' : '1',
+      saveLabel: this.state.saving ? t.saving : t.save,
+      save: () => this._save(),
+    };
+  }
+}
+</script>
+</body>
+</html>

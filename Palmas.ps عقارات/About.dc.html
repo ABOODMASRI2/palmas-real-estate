@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="uploads/palmas-icon.png">
+<title>Palmas.ps</title>
+<script src="./support.js"></script>
+<style>@view-transition{navigation:auto}::view-transition-old(root),::view-transition-new(root){animation-duration:.34s;animation-timing-function:cubic-bezier(.4,0,.2,1)}</style>
+<script>try{var t=localStorage.getItem('palmas_theme');document.documentElement.setAttribute('data-theme',(t==='light'||t==='dark')?t:'light');var l=localStorage.getItem('palmas_lang');document.documentElement.lang=(l==='en')?'en':'ar';document.documentElement.dir=(l==='en')?'ltr':'rtl';}catch(e){}</script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+html{scroll-behavior:smooth}
+:root{--page-bg:#edeef0;--heading:#141414;--body:#4b4b4d;--body-dim:rgba(20,20,22,.5);--panel:#ffffff;--panel-2:#e7e9ec;--panel-border:rgba(20,20,22,.1);--nav-text:#2a2a2c;--header-bg:rgba(237,238,240,.85);--hairline:rgba(20,20,22,.1);--chip-bg:rgba(20,20,22,.045);--input-bg:#ffffff;--input-border:rgba(20,20,22,.16);--card:#ffffff;--card-fg:#181818;--card-sub:#6c6c70;--card-line:#e4e5e8;--card-stat:#eceef1;--accent-ink:#b53a0f;--footer-base:#101013}
+html[data-theme='dark']{--page-bg:#0d0d0f;--heading:#f7f7f5;--body:#d4d4d6;--body-dim:rgba(247,247,245,.55);--panel:rgba(255,255,255,.055);--panel-2:rgba(255,255,255,.03);--panel-border:rgba(255,255,255,.12);--nav-text:#ededeb;--header-bg:rgba(13,13,15,.72);--hairline:rgba(255,255,255,.1);--chip-bg:rgba(255,255,255,.05);--input-bg:rgba(0,0,0,.3);--input-border:rgba(255,255,255,.16);--card:#ffffff;--card-fg:#181818;--card-sub:#6c6c70;--card-line:#e4e5e8;--card-stat:#f4f4f6;--accent-ink:#ffcdb0;--footer-base:#000000}
+html,body{margin:0;padding:0;background:var(--page-bg);transition:background .5s ease}
+*{box-sizing:border-box}
+.megapanel{opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s linear .3s}
+header:has(.megalink:hover) .megapanel,.megapanel:hover{opacity:1;visibility:visible;transition:opacity .25s ease,visibility 0s}
+a{color:#f68743;text-decoration:none}
+a:hover{color:#ffab7a}
+::selection{background:#f68743;color:#121212}
+@keyframes fadeUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+</style>
+<script src="image-slot.js"></script>
+<script src="palmas-photos.js"></script>
+</helmet>
+<div dir="{{ dir }}" style="position:relative;font-family:'Cairo',sans-serif;background:var(--page-bg);color:var(--body);min-height:100vh;display:flex;flex-direction:column;transition:background .5s ease,color .5s ease">
+
+
+
+<dc-import name="SiteHeader" dir="{{ dir }}" hint-size="100%,68px"></dc-import>
+
+<section style="position:relative;z-index:1;padding:120px 52px 90px;text-align:center;overflow:hidden;background:radial-gradient(circle at 50% -10%,rgba(246,135,67,.18),transparent 60%)">
+  <div style="max-width:900px;margin:0 auto;animation:fadeUp .9s ease both">
+    <div style="color:#f68743;font-weight:800;font-size:15px;letter-spacing:2px;margin-bottom:12px">{{ t.kicker }}</div>
+    <h1 style="margin:0;font-size:52px;font-weight:800;color:var(--heading);line-height:1.3;text-wrap:balance">{{ t.title }}</h1>
+    <p style="margin:20px auto 0;max-width:680px;font-size:18px;line-height:2;color:var(--body-dim)">{{ t.lead }}</p>
+  </div>
+</section>
+
+<section style="position:relative;z-index:1;padding:20px 52px 70px">
+  <div style="max-width:min(1560px,94vw);margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:48px;align-items:center">
+    <div data-reveal="" style="height:420px;border-radius:22px;overflow:hidden">
+      <image-slot id="about-page-img" shape="rect" placeholder="{{ t.imgPh }}"></image-slot>
+    </div>
+    <div data-reveal="">
+      <h2 style="margin:0 0 18px;font-size:34px;font-weight:800;color:var(--heading)">{{ t.storyTitle }}</h2>
+      <p style="color:var(--body-dim);font-size:16px;line-height:2;margin:0 0 22px">{{ t.storyP }}</p>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <sc-for list="{{ checks }}" as="c" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:12px;color:var(--body);font-weight:600;font-size:15px">
+            <span style="width:24px;height:24px;min-width:24px;border-radius:50%;background:#f68743;color:#121212;display:grid;place-items:center;font-size:14px;font-weight:900">✓</span>
+            {{ c }}
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="position:relative;z-index:1;padding:20px 52px 70px">
+  <div style="max-width:min(1560px,94vw);margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:22px">
+    <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+      <div data-reveal="" style="background:var(--panel);border:1px solid var(--panel-border);border-radius:18px;padding:30px 26px;text-align:center;transition:transform .6s cubic-bezier(.25,.8,.35,1),box-shadow .6s ease" style-hover="transform:translateY(-8px);box-shadow:0 20px 44px rgba(0,0,0,.4)">
+        <div style="font-weight:900;font-size:38px;color:#f68743">{{ s.num }}</div>
+        <div style="color:var(--body-dim);font-size:14px;font-weight:600;margin-top:6px">{{ s.label }}</div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section style="position:relative;z-index:1;padding:20px 52px 90px">
+  <div style="max-width:min(1560px,94vw);margin:0 auto">
+    <div data-reveal="" style="text-align:center;margin-bottom:44px">
+      <div style="color:#f68743;font-weight:800;font-size:15px;letter-spacing:1px;margin-bottom:6px">{{ t.valuesKicker }}</div>
+      <h2 style="margin:0;font-size:34px;font-weight:800;color:var(--heading)">{{ t.valuesTitle }}</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px">
+      <sc-for list="{{ values }}" as="v" hint-placeholder-count="3">
+        <div data-reveal="" style="background:var(--panel);border:1px solid var(--panel-border);border-radius:18px;padding:30px 26px;transition:transform .6s cubic-bezier(.25,.8,.35,1),box-shadow .6s ease" style-hover="transform:translateY(-8px);box-shadow:0 20px 44px rgba(0,0,0,.4)">
+          <div style="width:56px;height:56px;border-radius:16px;background:rgba(246,135,67,.16);display:grid;place-items:center;margin-bottom:18px;color:#f68743;font-size:26px;font-weight:900">{{ v.iconEl }}</div>
+          <div style="font-weight:800;font-size:19px;color:var(--heading);margin-bottom:8px">{{ v.name }}</div>
+          <div style="color:var(--body-dim);font-size:14px;line-height:1.9">{{ v.desc }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div data-reveal="" style="text-align:center;margin-top:50px">
+      <a href="Contact.dc.html" style="display:inline-block;background:#f68743;color:#121212;font-weight:800;font-size:16px;padding:14px 36px;border-radius:28px;transition:background .4s ease,transform .5s cubic-bezier(.25,.8,.35,1),box-shadow .5s ease" style-hover="background:#ffab7a;transform:translateY(-4px);box-shadow:0 14px 32px rgba(246,135,67,.4)">{{ t.cta }}</a>
+    </div>
+  </div>
+</section>
+
+<div style="margin-top:auto"><dc-import name="SiteFooter" dir="{{ dir }}" hint-size="100%,300px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultLang&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;ar&quot;, &quot;en&quot;], &quot;default&quot;: &quot;ar&quot;, &quot;tsType&quot;: &quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { lang: null, theme: null };
+  bgVideoRef = React.createRef();
+  componentDidMount() {
+    try{const tv=localStorage.getItem('palmas_theme'); const th=(tv==='light'||tv==='dark')?tv:'light'; document.documentElement.setAttribute('data-theme',th); this.setState({theme:th});}catch(e){} try{const lv=localStorage.getItem('palmas_lang'); if(lv==='ar'||lv==='en'){this.setState({lang:lv}); document.documentElement.lang=lv; document.documentElement.dir=lv==='en'?'ltr':'rtl';}}catch(e){}
+    setTimeout(() => this._setupReveal(), 150);
+    let init = false;
+    const tick = () => {
+      const bg = this.bgVideoRef.current;
+      if (bg && bg.readyState >= 2 && bg.duration && !isNaN(bg.duration)) {
+        if (!init) { bg.muted = true; bg.pause(); init = true; }
+        const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        const frac = Math.min(1, Math.max(0, window.scrollY / max));
+        const t = frac * bg.duration * 0.999;
+        if (Math.abs(t - bg.currentTime) > 0.02 && !bg.seeking) bg.currentTime = t;
+        if (!bg.paused) bg.pause();
+      }
+      if (++this._frame % 10 === 0) this._revealCheck();
+      this._raf = requestAnimationFrame(tick);
+    };
+    this._raf = requestAnimationFrame(tick);
+  }
+  _frame = 0;
+  _revealCheck() {
+    if (!this._pending || !this._pending.size) return;
+    const vh = window.innerHeight;
+    this._pending.forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.top < vh * 0.94 && r.bottom > 0) {
+        el.style.opacity = '1'; el.style.transform = 'translateY(0)';
+        el.addEventListener('transitionend', () => { el.style.transform = ''; el.style.transition = el._baseTransition || ''; }, { once: true });
+        if (this._io) this._io.unobserve(el);
+        this._pending.delete(el);
+      }
+    });
+  }
+  componentWillUnmount() {
+    if (this._io) this._io.disconnect();
+    if (this._raf) cancelAnimationFrame(this._raf);
+  }
+  _setupReveal() {
+    const els = Array.from(document.querySelectorAll('[data-reveal]'));
+    this._pending = new Set();
+    const io = new IntersectionObserver((ents) => {
+      ents.forEach((en) => {
+        if (!en.isIntersecting) return;
+        const el = en.target;
+        el.style.opacity = '1'; el.style.transform = 'translateY(0)';
+        el.addEventListener('transitionend', () => { el.style.transform = ''; el.style.transition = el._baseTransition || ''; }, { once: true });
+        io.unobserve(el);
+        if (this._pending) this._pending.delete(el);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    els.forEach((el, i) => {
+      const r = el.getBoundingClientRect();
+      const onscreen = r.top < window.innerHeight && r.bottom > 0;
+      const d = (onscreen ? i : (i % 3)) * 0.09;
+      el._baseTransition = el.style.transition || '';
+      el.style.opacity = '0'; el.style.transform = 'translateY(32px)';
+      el.style.transition = 'opacity .9s ease ' + d + 's, transform .9s cubic-bezier(.25,.8,.35,1) ' + d + 's';
+      io.observe(el);
+      this._pending.add(el);
+    });
+    this._io = io;
+  }
+  _icon(name, color, size) {
+    const P = {
+      buysell: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/>',
+      marketing: '<path d="m3 11 15-6v14L3 13z"/><path d="M2 11a1 1 0 0 0 0 3"/><path d="M7 13.5V19a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-4"/>',
+      mgmt: '<circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.8 12.2 8.2-8.2"/><path d="m15.5 5.5 2.5 2.5"/><path d="m19 3 2 2"/>',
+      consult: '<path d="M3 3v18h18"/><path d="m7 13 3-3 3 2 5-6"/>',
+      legal: '<path d="M12 3v18"/><path d="M7 21h10"/><path d="M4.5 7 12 5l7.5 2"/><path d="M4.5 7 2 13h5z"/><path d="M19.5 7 17 13h5z"/>',
+      finance: '<path d="M3 8a2 2 0 0 1 2-2h12v3"/><path d="M3 8v9a2 2 0 0 0 2 2h13a1 1 0 0 0 1-1v-3"/><path d="M17 11h4v4h-4a2 2 0 0 1 0-4z"/>',
+      phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z"/>',
+      mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/>',
+      pin: '<path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+      clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+      eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+      award: '<circle cx="12" cy="9" r="6"/><path d="M8.5 13.5 7 21l5-2.5L17 21l-1.5-7.5"/>',
+      heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>',
+    };
+    return React.createElement('svg', { width: size || 26, height: size || 26, viewBox: '0 0 24 24', fill: 'none', stroke: color || '#f68743', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round', dangerouslySetInnerHTML: { __html: P[name] || '' } });
+  }
+  data() {
+    return {
+      ar: {
+        t: { tagline: 'عقارك .. مستقبلك', langBtn: 'EN', kicker: 'من نحن',
+          title: 'وكالة عقارية فلسطينية بخبرة تثق بها',
+          lead: 'بالماس وكالة عقارات تعمل في فلسطين منذ أكثر من عشر سنوات، نرافقك من أول جولة حتى تسليم المفتاح بخبرة محلية وشفافية كاملة.',
+          imgPh: 'صورة الفريق / المكتب', storyTitle: 'قصتنا',
+          storyP: 'بدأنا برؤية بسيطة: أن يكون شراء أو بيع العقار في فلسطين تجربة واضحة وآمنة. اليوم صرنا شريكاً موثوقاً لآلاف العائلات والمستثمرين، نعرف السوق المحلي بتفاصيله ونقدّم خيارات مدروسة تناسب كل احتياج وميزانية.',
+          valuesKicker: 'قيمنا', valuesTitle: 'ما الذي يميّزنا',
+          cta: 'تواصل معنا', rights: '© 2026 Palmas.ps — جميع الحقوق محفوظة', credit: 'صُمم وطُوّر بواسطة فريق Palmas.ps' },
+        navLinks: [
+          { label: 'الرئيسية', href: 'Palmas Home.dc.html' }, { label: 'العقارات', href: 'PropertyList.dc.html', cls: 'megalink', mega: { title: 'العقارات في فلسطين', arrow: '←', img: 'uploads/pexels-house-1836070.jpg', imgLabel: 'عقارات بالماس', types: [{ label: 'أراضٍ', href: 'PropertyList.dc.html?type=land' }, { label: 'عقارات للبيع', href: 'PropertyList.dc.html?cat=sale' }, { label: 'عقارات للإيجار', href: 'PropertyList.dc.html?cat=rent' }, { label: 'سكنات', href: 'PropertyList.dc.html?cat=residential' }] } },
+          { label: 'المشاريع', href: 'Projects.dc.html' }, { label: 'خدماتنا', href: 'Services.dc.html' },
+          { label: 'من نحن', href: 'About.dc.html' }, { label: 'تواصل معنا', href: 'Contact.dc.html' },
+        ],
+        checks: ['ترخيص رسمي وسجل موثوق', 'شفافية كاملة في الأسعار والعمولات', 'مرافقة قانونية حتى إتمام الصفقة'],
+        stats: [
+          { num: '+10', label: 'سنوات خبرة' }, { num: '+25', label: 'مشروع مكتمل' },
+          { num: '+750', label: 'عقار متاح' }, { num: '+2,500', label: 'عميل سعيد' },
+        ],
+        values: [
+          { icon: 'eye', name: 'الشفافية', desc: 'أسعار وعمولات واضحة من أول لقاء، بلا مفاجآت.' },
+          { icon: 'award', name: 'الخبرة المحلية', desc: 'معرفة عميقة بالسوق الفلسطيني وأحيائه وأسعاره.' },
+          { icon: 'heart', name: 'خدمة تهتم بك', desc: 'نرافقك خطوة بخطوة حتى بعد إتمام الصفقة.' },
+        ],
+      },
+      en: {
+        t: { tagline: 'YOUR HOME, YOUR FUTURE', langBtn: 'عربي', kicker: 'ABOUT US',
+          title: 'A Palestinian agency with experience you can trust',
+          lead: 'Palmas has operated across Palestine for over a decade, guiding you from the first viewing to key handover with local expertise and full transparency.',
+          imgPh: 'Team / office photo', storyTitle: 'Our story',
+          storyP: 'We started with a simple vision: to make buying or selling property in Palestine clear and safe. Today we are a trusted partner to thousands of families and investors, knowing the local market in detail and offering considered options for every need and budget.',
+          valuesKicker: 'OUR VALUES', valuesTitle: 'What sets us apart',
+          cta: 'Contact us', rights: '© 2026 Palmas.ps — All rights reserved', credit: 'Designed & developed by the Palmas.ps team' },
+        navLinks: [
+          { label: 'Home', href: 'Palmas Home.dc.html' }, { label: 'Properties', href: 'PropertyList.dc.html', cls: 'megalink', mega: { title: 'Properties in Palestine', arrow: '→', img: 'uploads/pexels-house-1836070.jpg', imgLabel: 'Palmas properties', types: [{ label: 'Lands', href: 'PropertyList.dc.html?type=land' }, { label: 'For sale', href: 'PropertyList.dc.html?cat=sale' }, { label: 'For rent', href: 'PropertyList.dc.html?cat=rent' }, { label: 'Residences', href: 'PropertyList.dc.html?cat=residential' }] } },
+          { label: 'Projects', href: 'Projects.dc.html' }, { label: 'Services', href: 'Services.dc.html' },
+          { label: 'About', href: 'About.dc.html' }, { label: 'Contact', href: 'Contact.dc.html' },
+        ],
+        checks: ['Officially licensed with a proven record', 'Full transparency on prices and commissions', 'Legal support until the deal closes'],
+        stats: [
+          { num: '10+', label: 'Years of experience' }, { num: '25+', label: 'Completed projects' },
+          { num: '750+', label: 'Available properties' }, { num: '2,500+', label: 'Happy clients' },
+        ],
+        values: [
+          { icon: 'eye', name: 'Transparency', desc: 'Clear prices and commissions from the first meeting — no surprises.' },
+          { icon: 'award', name: 'Local expertise', desc: 'Deep knowledge of the Palestinian market, its areas and pricing.' },
+          { icon: 'heart', name: 'Care-first service', desc: 'We walk with you step by step, even after the deal is done.' },
+        ],
+      },
+    };
+  }
+  renderVals() {
+    const lang = this.state.lang || this.props.defaultLang || 'ar';
+    const d = this.data()[lang];
+    const nav = d.navLinks.map(l => ({ ...l, color: l.href === 'About.dc.html' ? '#121212' : 'var(--nav-text)', bg: l.href === 'About.dc.html' ? '#f68743' : 'transparent' }));
+    const values = d.values.map(v => ({ ...v, iconEl: this._icon(v.icon, '#f68743', 26) }));
+    return { ...d, values, navLinks: nav, dir: lang === 'ar' ? 'rtl' : 'ltr',
+      bgVideoRef: this.bgVideoRef,
+      isDark:(this.state.theme||'light')==='dark', isLight:(this.state.theme||'light')==='light', themeTitle: lang==='ar'?((this.state.theme||'light')==='dark'?'الوضع الفاتح':'الوضع الداكن'):((this.state.theme||'light')==='dark'?'Light mode':'Dark mode'), toggleTheme: () => { const nt=(this.state.theme||'light')==='dark'?'light':'dark'; try{localStorage.setItem('palmas_theme',nt);}catch(e){} document.documentElement.setAttribute('data-theme',nt); this.setState({theme:nt}); }, toggleLang: () => this.setState({ lang: lang === 'ar' ? 'en' : 'ar' }) };
+  }
+}
+</script>
+</body>
+</html>

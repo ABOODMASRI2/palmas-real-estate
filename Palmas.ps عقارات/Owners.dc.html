@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+@keyframes owFade{from{opacity:0}to{opacity:1}}
+@keyframes owUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.ow-in{background:var(--field-bg,#fff);border:1px solid var(--field-border,rgba(20,20,22,.14));border-radius:12px;padding:10px 12px;color:var(--field-fg,#141414);font-size:14px;outline:none;width:100%;font-family:'Cairo',sans-serif;transition:border-color .3s ease}
+.ow-in:focus{border-color:#f68743}
+textarea.ow-in{resize:vertical;min-height:72px;line-height:1.7}
+.ow-row{display:grid;gap:10px;align-items:center;padding:13px 20px;border-top:1px solid var(--hairline,rgba(20,20,22,.08));font-size:13.5px;transition:background .25s ease}
+.ow-row:hover{background:var(--chip-bg,rgba(20,20,22,.045))}
+.ow-head{display:grid;gap:10px;padding:13px 20px;background:var(--inset,#f2f3f5);font-size:12.5px;font-weight:800;color:var(--dim,rgba(20,20,22,.5))}
+.ow-owners{grid-template-columns:1.7fr 1.2fr 1fr .8fr 250px}
+.ow-contracts{grid-template-columns:1.4fr 1.5fr .7fr 1fr 1.2fr .9fr 1fr 220px}
+.ow-requests{grid-template-columns:1.4fr 1.1fr .9fr .9fr 1fr 1.6fr 150px}
+@media (max-width:1100px){.ow-owners,.ow-contracts,.ow-requests{grid-template-columns:1fr 1fr}.ow-head{display:none}}
+</style>
+<script src="palmas-core.js"></script>
+<script src="palmas-config.js"></script>
+<script src="palmas-backend.js"></script>
+</helmet>
+
+<div dir="{{ dir }}" style="font-family:'Cairo',sans-serif;color:var(--heading,#141414)">
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:20px">
+    <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+      <div style="background:var(--card,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:18px;padding:18px 20px;box-shadow:var(--shadow,none);animation:owUp .4s ease both">
+        <div style="font-size:12.5px;font-weight:700;color:var(--dim,rgba(20,20,22,.5))">{{ k.label }}</div>
+        <div style="font-size:24px;font-weight:900;color:{{ k.color }};margin-top:6px;font-variant-numeric:tabular-nums;white-space:nowrap">{{ k.value }}</div>
+        <div style="font-size:11.5px;font-weight:600;color:var(--dim,rgba(20,20,22,.5));margin-top:2px">{{ k.sub }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px">
+    <div style="display:inline-flex;gap:4px;background:var(--card,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:16px;padding:4px">
+      <sc-for list="{{ views }}" as="v" hint-placeholder-count="3">
+        <button onClick="{{ v.go }}" style="border:none;background:{{ v.bg }};color:{{ v.color }};font-family:'Cairo',sans-serif;font-weight:800;font-size:13.5px;padding:8px 16px;border-radius:12px;cursor:pointer;transition:all .25s ease">{{ v.label }}<span style="margin-inline-start:7px;background:{{ v.countBg }};color:{{ v.countColor }};font-size:11px;padding:1px 8px;border-radius:9px">{{ v.count }}</span></button>
+      </sc-for>
+    </div>
+    <input class="ow-in" style="max-width:260px" placeholder="{{ t.search }}" value="{{ q }}" onChange="{{ onQ }}">
+    <div style="margin-inline-start:auto;display:flex;gap:8px">
+      <sc-if value="{{ isOwnersView }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ newOwner }}" style="display:inline-flex;align-items:center;gap:8px;background:#f68743;border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;padding:11px 22px;border-radius:22px;cursor:pointer;box-shadow:0 10px 24px rgba(246,135,67,.28);transition:all .3s ease" style-hover="background:#d1662a">+ {{ t.addOwner }}</button>
+      </sc-if>
+      <sc-if value="{{ isContractsView }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ newContract }}" style="display:inline-flex;align-items:center;gap:8px;background:#f68743;border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;padding:11px 22px;border-radius:22px;cursor:pointer;box-shadow:0 10px 24px rgba(246,135,67,.28);transition:all .3s ease" style-hover="background:#d1662a">+ {{ t.addContract }}</button>
+      </sc-if>
+    </div>
+  </div>
+
+  <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+    <div style="margin-bottom:14px;background:rgba(224,36,94,.1);border:1px solid rgba(224,36,94,.3);color:#c81d51;font-weight:700;font-size:13.5px;padding:12px 16px;border-radius:14px;line-height:1.8">{{ error }}</div>
+  </sc-if>
+
+  <div style="background:var(--card,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:18px;overflow:hidden;box-shadow:var(--shadow,none)">
+
+    <sc-if value="{{ isOwnersView }}" hint-placeholder-val="{{ true }}">
+      <div class="ow-head ow-owners"><div>{{ t.hOwner }}</div><div>{{ t.hContact }}</div><div>{{ t.hCity }}</div><div>{{ t.hContracts }}</div><div></div></div>
+      <sc-for list="{{ ownerRows }}" as="o" hint-placeholder-count="4">
+        <div class="ow-row ow-owners">
+          <div style="display:flex;align-items:center;gap:10px;min-width:0">
+            <span style="width:34px;height:34px;min-width:34px;border-radius:{{ o.avRadius }};background:{{ o.avBg }};display:grid;place-items:center;font-weight:900;font-size:14px;color:#fff">{{ o.initial }}</span>
+            <div style="min-width:0">
+              <div style="font-weight:800;color:var(--heading,#141414)">{{ o.name }}</div>
+              <div style="color:var(--dim,rgba(20,20,22,.5));font-size:12px;font-weight:700">{{ o.kindLbl }}</div>
+            </div>
+          </div>
+          <div style="direction:ltr;text-align:end;font-weight:700;color:var(--body,#4a4a4d)"><a href="{{ o.waHref }}" target="_blank" rel="noopener" style="color:inherit">{{ o.phone }}</a><div style="font-size:12px;color:var(--dim,rgba(20,20,22,.5))">{{ o.email }}</div></div>
+          <div style="color:var(--body,#4a4a4d);font-weight:700">{{ o.city }}</div>
+          <div><span style="background:rgba(246,135,67,.14);color:#c2410c;font-size:12px;font-weight:800;padding:3px 11px;border-radius:11px">{{ o.contractsLbl }}</span></div>
+          <div style="justify-self:end;display:inline-flex;gap:6px">
+            <button onClick="{{ o.addContract }}" style="border:1px solid rgba(31,157,92,.4);background:rgba(31,157,92,.1);color:#1a8550;font-family:'Cairo',sans-serif;font-weight:800;font-size:12px;padding:6px 12px;border-radius:13px;cursor:pointer" style-hover="background:#1f9d5c;color:#fff">+ {{ t.contract }}</button>
+            <button onClick="{{ o.edit }}" style="border:1px solid rgba(246,135,67,.4);background:rgba(246,135,67,.1);color:#c2410c;font-family:'Cairo',sans-serif;font-weight:800;font-size:12px;padding:6px 12px;border-radius:13px;cursor:pointer" style-hover="background:#f68743;color:#fff">{{ t.edit }}</button>
+            <button onClick="{{ o.del }}" style="border:1px solid rgba(224,36,94,.35);background:rgba(224,36,94,.08);color:#e0245e;font-family:'Cairo',sans-serif;font-weight:800;font-size:12px;padding:6px 12px;border-radius:13px;cursor:pointer" style-hover="background:#e0245e;color:#fff">{{ t.del }}</button>
+          </div>
+        </div>
+      </sc-for>
+    </sc-if>
+
+    <sc-if value="{{ isContractsView }}" hint-placeholder-val="{{ false }}">
+      <div class="ow-head ow-contracts"><div>{{ t.hOwner }}</div><div>{{ t.hProperty }}</div><div>{{ t.hDeal }}</div><div>{{ t.hPrice }}</div><div>{{ t.hCommission }}</div><div>{{ t.hEnds }}</div><div>{{ t.hStatus }}</div><div></div></div>
+      <sc-for list="{{ contractRows }}" as="c" hint-placeholder-count="4">
+        <div class="ow-row ow-contracts">
+          <div style="font-weight:800;color:var(--heading,#141414)">{{ c.owner }}<sc-if value="{{ c.exclusive }}" hint-placeholder-val="{{ false }}"><span style="margin-inline-start:6px;background:rgba(160,111,224,.16);color:#7c4bc4;font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:8px">{{ t.exclusiveBadge }}</span></sc-if></div>
+          <div style="color:var(--body,#4a4a4d);font-weight:700">{{ c.property }}</div>
+          <div style="color:var(--body,#4a4a4d);font-weight:700">{{ c.dealLbl }}</div>
+          <div style="color:#d1662a;font-weight:900;white-space:nowrap">{{ c.price }}</div>
+          <div style="font-weight:800;color:var(--heading,#141414);white-space:nowrap">{{ c.commission }}<div style="font-size:11.5px;color:var(--dim,rgba(20,20,22,.5));font-weight:700">{{ c.commissionRule }}</div></div>
+          <div style="color:var(--body,#4a4a4d);font-weight:700;direction:ltr;text-align:end">{{ c.ends }}</div>
+          <div><span style="background:{{ c.statusBg }};color:#fff;font-size:11.5px;font-weight:800;padding:3px 11px;border-radius:11px;white-space:nowrap">{{ c.statusLbl }}</span></div>
+          <div style="justify-self:end;display:inline-flex;gap:6px">
+            <sc-if value="{{ c.canClose }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ c.close }}" style="border:1px solid rgba(31,157,92,.4);background:rgba(31,157,92,.1);color:#1a8550;font-family:'Cairo',sans-serif;font-weight:800;font-size:12px;padding:6px 12px;border-radius:13px;cursor:pointer" style-hover="background:#1f9d5c;color:#fff">{{ t.closeDeal }}</button>
+            </sc-if>
+            <button onClick="{{ c.edit }}" style="border:1px solid rgba(246,135,67,.4);background:rgba(246,135,67,.1);color:#c2410c;font-family:'Cairo',sans-serif;font-weight:800;font-size:12px;padding:6px 12px;border-radius:13px;cursor:pointer" style-hover="background:#f68743;color:#fff">{{ t.edit }}</button>
+            <button onClick="{{ c.del }}" style="border:1px solid rgba(224,36,94,.35);background:rgba(224,36,94,.08);color:#e0245e;font-family:'Cairo',sans-serif;font-weight:800;font-size:12px;padding:6px 12px;border-radius:13px;cursor:pointer" style-hover="background:#e0245e;color:#fff">{{ t.del }}</button>
+          </div>
+        </div>
+      </sc-for>
+    </sc-if>
+
+    <sc-if value="{{ isRequestsView }}" hint-placeholder-val="{{ false }}">
+      <div class="ow-head ow-requests"><div>{{ t.hName }}</div><div>{{ t.hContact }}</div><div>{{ t.hCity }}</div><div>{{ t.hDeal }}</div><div>{{ t.hPrice }}</div><div>{{ t.hNotes }}</div><div></div></div>
+      <sc-for list="{{ requestRows }}" as="r" hint-placeholder-count="3">
+        <div class="ow-row ow-requests">
+          <div style="font-weight:800;color:var(--heading,#141414)">{{ r.name }}<div style="font-size:11.5px;color:var(--dim,rgba(20,20,22,.5));font-weight:700">{{ r.date }} · {{ r.typeLbl }}</div></div>
+          <div style="direction:ltr;text-align:end;font-weight:700;color:var(--body,#4a4a4d)"><a href="{{ r.waHref }}" target="_blank" rel="noopener" style="color:inherit">{{ r.phone }}</a></div>
+          <div style="color:var(--body,#4a4a4d);font-weight:700">{{ r.city }}</div>
+          <div style="color:var(--body,#4a4a4d);font-weight:700">{{ r.dealLbl }}</div>
+          <div style="color:#d1662a;font-weight:900;white-space:nowrap">{{ r.price }}</div>
+          <div style="color:var(--body,#4a4a4d);font-size:12.5px;line-height:1.7">{{ r.notes }}</div>
+          <div style="justify-self:end"><button onClick="{{ r.convert }}" style="border:none;background:#f68743;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:12.5px;padding:7px 14px;border-radius:13px;cursor:pointer" style-hover="background:#d1662a">{{ t.convert }}</button></div>
+        </div>
+      </sc-for>
+    </sc-if>
+
+    <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:34px 20px;text-align:center;color:var(--dim,rgba(20,20,22,.5));font-size:14px;font-weight:700;line-height:1.9">{{ emptyText }}</div>
+    </sc-if>
+    <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:28px 20px;color:var(--dim,rgba(20,20,22,.5));font-size:13.5px;font-weight:600">{{ t.loading }}</div>
+    </sc-if>
+  </div>
+
+  <sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
+    <div dir="{{ dir }}" onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:900;background:rgba(8,8,12,.55);backdrop-filter:blur(5px);display:grid;place-items:center;padding:20px;animation:owFade .2s ease both">
+      <div onClick="{{ stopEv }}" style="width:100%;max-width:640px;max-height:90vh;overflow-y:auto;background:var(--page-solid,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:24px;box-shadow:0 30px 90px rgba(0,0,0,.4);padding:26px 26px 22px;animation:owUp .3s ease both">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <div style="font-weight:900;font-size:20px;color:var(--heading,#141414)">{{ modalTitle }}</div>
+          <button onClick="{{ closeModal }}" style="width:34px;height:34px;border:1px solid var(--hairline,rgba(20,20,22,.1));background:transparent;border-radius:11px;color:var(--dim,#888);cursor:pointer;font-size:18px">×</button>
+        </div>
+        <sc-if value="{{ hasModalHint }}" hint-placeholder-val="{{ false }}">
+          <div style="color:var(--dim,rgba(20,20,22,.5));font-size:13px;font-weight:600;line-height:1.8;margin-bottom:8px">{{ modalHint }}</div>
+        </sc-if>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:14px">
+          <sc-for list="{{ fields }}" as="fd" hint-placeholder-count="6">
+            <div style="display:flex;flex-direction:column;gap:6px;min-width:0;grid-column:{{ fd.span }}">
+              <label style="font-size:12px;font-weight:700;color:var(--dim,rgba(20,20,22,.5))">{{ fd.label }}</label>
+              <sc-if value="{{ fd.isInput }}" hint-placeholder-val="{{ true }}">
+                <input class="ow-in" type="{{ fd.type }}" value="{{ fd.value }}" onChange="{{ fd.onChange }}" placeholder="{{ fd.ph }}" style="direction:{{ fd.dir }}">
+              </sc-if>
+              <sc-if value="{{ fd.isSelect }}" hint-placeholder-val="{{ false }}">
+                <select class="ow-in" value="{{ fd.value }}" onChange="{{ fd.onChange }}"><sc-for list="{{ fd.options }}" as="op" hint-placeholder-count="3"><option value="{{ op.id }}">{{ op.label }}</option></sc-for></select>
+              </sc-if>
+              <sc-if value="{{ fd.isText }}" hint-placeholder-val="{{ false }}">
+                <textarea class="ow-in" value="{{ fd.value }}" onChange="{{ fd.onChange }}" placeholder="{{ fd.ph }}"></textarea>
+              </sc-if>
+              <sc-if value="{{ fd.isCheck }}" hint-placeholder-val="{{ false }}">
+                <label style="display:flex;align-items:center;gap:9px;font-weight:700;font-size:14px;color:var(--body,#4a4a4d);cursor:pointer;padding:9px 0"><input type="checkbox" checked="{{ fd.checked }}" onChange="{{ fd.onChange }}" style="width:18px;height:18px;accent-color:#f68743">{{ fd.ph }}</label>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ hasPreview }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:16px;background:rgba(31,157,92,.1);color:#1a8550;font-weight:800;font-size:14px;padding:11px 16px;border-radius:13px">{{ preview }}</div>
+        </sc-if>
+        <sc-if value="{{ hasFormError }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:14px;color:#e0245e;font-weight:700;font-size:13px">{{ formError }}</div>
+        </sc-if>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px">
+          <button onClick="{{ closeModal }}" style="border:1px solid var(--hairline,rgba(20,20,22,.12));background:transparent;color:var(--body,#4a4a4d);font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;padding:11px 22px;border-radius:20px;cursor:pointer">{{ t.cancel }}</button>
+          <button onClick="{{ submit }}" disabled="{{ saving }}" style="border:none;background:#f68743;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;padding:11px 28px;border-radius:20px;cursor:pointer;opacity:{{ saveOpacity }}" style-hover="background:#d1662a">{{ saveLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1180, &quot;height&quot;: 720}, &quot;lang&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;ar&quot;, &quot;en&quot;], &quot;default&quot;: &quot;ar&quot;, &quot;tsType&quot;: &quot;string&quot;}, &quot;dark&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { view: 'owners', owners: [], contracts: [], listings: [], loading: true, error: '',
+            modal: null, form: {}, formError: '', saving: false, q: '' };
+
+  componentDidMount() {
+    this._boot();
+    this._onStorage = (e) => { if (!e || e.key === 'palmas_listings') this._readListings(); };
+    window.addEventListener('storage', this._onStorage);
+  }
+  componentWillUnmount() { if (this._onStorage) window.removeEventListener('storage', this._onStorage); }
+
+  _boot() {
+    if (!window.Palmas || !window.Palmas.Owners) { setTimeout(() => this._boot(), 80); return; }
+    this._readListings();
+    this._load();
+  }
+
+  _ar() { return (this.props.lang || 'ar') !== 'en'; }
+
+  _readListings() {
+    try { this.setState({ listings: JSON.parse(localStorage.getItem('palmas_listings') || '[]') }); } catch (e) {}
+  }
+
+  _load() {
+    const P = window.Palmas;
+    this.setState({ loading: true });
+    Promise.all([P.Owners.list(), P.Contracts.list()])
+      .then(([owners, contracts]) => this.setState({ owners, contracts, loading: false, error: '' }))
+      .catch((e) => this.setState({ loading: false, error: this._errText(e) }));
+  }
+
+  _errText(e) {
+    const msg = (e && e.message) || '';
+    const ar = this._ar();
+    if (/fetch|network|Failed/i.test(msg)) {
+      return ar ? 'السيرفر غير متصل — تأكّد أن مشروع Supabase شغّال (Restore project) ثم أعد تحميل الصفحة.'
+                : 'Server unreachable — make sure the Supabase project is running (Restore project), then reload.';
+    }
+    if (/owners|contracts/.test(msg) && /exist|schema cache/i.test(msg)) {
+      return ar ? 'جداول المالكين غير موجودة بعد على السيرفر — شغّل ملف schema-owners.sql في Supabase.'
+                : 'Owner tables are missing on the server — run schema-owners.sql in Supabase.';
+    }
+    return (ar ? 'تعذّر الحفظ: ' : 'Could not save: ') + msg;
+  }
+
+  _setForm(key, val) { this.setState((s) => ({ form: Object.assign({}, s.form, { [key]: val }), formError: '' })); }
+
+  _openOwner(o, fromListing) {
+    this.setState({ modal: 'owner', formError: '', fromListing: fromListing || null,
+      form: Object.assign({ kind: 'person', name: '', company: '', phone: '', phone2: '', email: '',
+                            idNumber: '', city: '', notes: '' }, o || {}) });
+  }
+
+  _openContract(c, defaults) {
+    const ownerId = (c && c.ownerId) || (defaults && defaults.ownerId) || (this.state.owners[0] && this.state.owners[0].id) || '';
+    this.setState({ modal: 'contract', formError: '',
+      form: Object.assign({ ownerId, propId: '', deal: 'sale', exclusive: false, askingPrice: '', minPrice: '',
+        currency: 'usd', commissionType: 'percent', commissionValue: 2,
+        startDate: new Date().toISOString().slice(0, 10), endDate: '', status: 'active', notes: '' }, defaults || {}, c || {}) });
+  }
+
+  _openClose(c) {
+    this.setState({ modal: 'close', formError: '',
+      form: Object.assign({}, c, { status: c.deal === 'rent' ? 'rented' : 'sold',
+        closedPrice: c.closedPrice || c.askingPrice || '', closedOn: c.closedOn || new Date().toISOString().slice(0, 10) }) });
+  }
+
+  _submit() {
+    const P = window.Palmas;
+    const f = this.state.form;
+    const ar = this._ar();
+    const m = this.state.modal;
+    if (m === 'owner' && !String(f.name || '').trim()) { this.setState({ formError: ar ? 'الاسم مطلوب' : 'Name is required' }); return; }
+    if (m === 'owner' && !String(f.phone || '').trim()) { this.setState({ formError: ar ? 'رقم الهاتف مطلوب' : 'Phone is required' }); return; }
+    if (m === 'contract' && !f.ownerId) { this.setState({ formError: ar ? 'اختر المالك أولاً' : 'Choose an owner first' }); return; }
+    if (m === 'close' && !(Number(f.closedPrice) > 0)) { this.setState({ formError: ar ? 'أدخل سعر الإغلاق الفعلي' : 'Enter the actual closing price' }); return; }
+
+    this.setState({ saving: true });
+    const job = m === 'owner' ? P.Owners.save(f) : P.Contracts.save(f);
+    job.then((saved) => {
+      const fromListing = this.state.fromListing;
+      this.setState({ saving: false, modal: null, fromListing: null });
+      P.toast(ar ? 'تم الحفظ' : 'Saved');
+      this._load();
+      /* طلب عرض تحوّل لمالك: العقد هو الخطوة التالية مباشرة، بالقيم التي أرسلها المالك */
+      if (m === 'owner' && fromListing) {
+        setTimeout(() => this._openContract(null, {
+          ownerId: saved.id, deal: fromListing.deal === 'rent' ? 'rent' : 'sale',
+          askingPrice: String(fromListing.price || '').replace(/[^\d.]/g, ''), currency: fromListing.currency || 'usd'
+        }), 250);
+      }
+    }).catch((e) => this.setState({ saving: false, formError: this._errText(e) }));
+  }
+
+  _delete(kind, rec) {
+    const ar = this._ar();
+    const P = window.Palmas;
+    const msg = kind === 'owner'
+      ? (ar ? 'حذف المالك "' + rec.name + '" وكل عقوده؟' : 'Delete owner "' + rec.name + '" and all their contracts?')
+      : (ar ? 'حذف هذا العقد؟' : 'Delete this contract?');
+    if (!window.confirm(msg)) return;
+    (kind === 'owner' ? P.Owners.remove(rec.id) : P.Contracts.remove(rec.id))
+      .then(() => { P.toast(ar ? 'تم الحذف' : 'Deleted'); this._load(); })
+      .catch((e) => this.setState({ error: this._errText(e) }));
+  }
+
+  renderVals() {
+    const P = window.Palmas;
+    const ar = this._ar();
+    const lang = ar ? 'ar' : 'en';
+    const dir = ar ? 'rtl' : 'ltr';
+    const t = ar ? {
+      search: 'بحث بالاسم أو الهاتف…', addOwner: 'مالك جديد', addContract: 'عقد جديد', contract: 'عقد',
+      edit: 'تعديل', del: 'حذف', closeDeal: 'إغلاق الصفقة', convert: 'تحويل لمالك', cancel: 'إلغاء', save: 'حفظ', saving: 'جارٍ الحفظ…',
+      hOwner: 'المالك', hContact: 'التواصل', hCity: 'المدينة', hContracts: 'العقود', hProperty: 'العقار', hDeal: 'الصفقة',
+      hPrice: 'السعر', hCommission: 'العمولة', hEnds: 'ينتهي', hStatus: 'الحالة', hName: 'الاسم', hNotes: 'ملاحظات',
+      loading: 'جارٍ التحميل…', exclusiveBadge: 'حصري',
+      vOwners: 'المالكون', vContracts: 'العقود', vRequests: 'طلبات عرض عقار',
+      emptyOwners: 'لا يوجد مالكون بعد. أضف أول مالك، أو حوّل طلب عرض عقار وصلك من الموقع.',
+      emptyContracts: 'لا توجد عقود بعد. العقد يربط المالك بالعقار ويحدّد عمولتك.',
+      emptyRequests: 'لا توجد طلبات عرض عقار جديدة. تصل هنا عندما يملأ مالك نموذج "اعرض عقارك" في الموقع أو التطبيق.',
+      kOwners: 'المالكون', kOwnersSub: 'شخص أو شركة', kActive: 'عقود نشطة', kActiveSub: 'عقارات تحت التفويض',
+      kExpiring: 'تنتهي خلال أسبوعين', kExpiringSub: 'تحتاج تجديد', kExpected: 'عمولات متوقعة', kExpectedSub: 'من العقود النشطة',
+      kEarned: 'عمولات محققة', kEarnedSub: 'صفقات مغلقة',
+      person: 'فرد', company: 'شركة', sale: 'بيع', rent: 'إيجار', noProp: '— لم يُربط بعقار —',
+      st: { active: 'نشط', expiring: 'ينتهي قريباً', expired: 'منتهي', sold: 'تم البيع', rented: 'تم التأجير', cancelled: 'ملغى' },
+      mOwner: 'بيانات المالك', mOwnerEdit: 'تعديل المالك', mContract: 'عقد وساطة جديد', mContractEdit: 'تعديل العقد', mClose: 'إغلاق الصفقة',
+      mCloseHint: 'سجّل السعر الذي تمّت به الصفقة فعلاً — العمولة تُحسب منه.',
+      mFromListing: 'البيانات معبّأة من طلب العرض. راجعها واحفظ، وبعدها مباشرة يفتح العقد.',
+      fKind: 'النوع', fName: 'الاسم الكامل', fCompany: 'اسم الشركة', fPhone: 'الهاتف / واتساب', fPhone2: 'هاتف إضافي',
+      fEmail: 'البريد الإلكتروني', fIdNumber: 'رقم الهوية / التسجيل', fCity: 'المدينة', fNotes: 'ملاحظات',
+      fOwner: 'المالك', fProp: 'العقار المعروض', fDeal: 'نوع الصفقة', fAsking: 'السعر المطلوب', fMin: 'أقل سعر يقبله (سري)',
+      fCurrency: 'العملة', fComType: 'نوع العمولة', fComVal: 'قيمة العمولة', fStart: 'بداية التفويض', fEnd: 'نهاية التفويض',
+      fStatus: 'الحالة', fExclusive: 'عقد حصري', fExclusiveLbl: 'تفويض حصري — المالك لا يعرض عند مكتب آخر',
+      fClosedPrice: 'سعر الإغلاق الفعلي', fClosedOn: 'تاريخ الإغلاق', percent: 'نسبة من السعر %', fixed: 'مبلغ ثابت',
+      expected: 'العمولة: ',
+    } : {
+      search: 'Search name or phone…', addOwner: 'New owner', addContract: 'New contract', contract: 'Contract',
+      edit: 'Edit', del: 'Delete', closeDeal: 'Close deal', convert: 'Make owner', cancel: 'Cancel', save: 'Save', saving: 'Saving…',
+      hOwner: 'Owner', hContact: 'Contact', hCity: 'City', hContracts: 'Contracts', hProperty: 'Property', hDeal: 'Deal',
+      hPrice: 'Price', hCommission: 'Commission', hEnds: 'Ends', hStatus: 'Status', hName: 'Name', hNotes: 'Notes',
+      loading: 'Loading…', exclusiveBadge: 'Exclusive',
+      vOwners: 'Owners', vContracts: 'Contracts', vRequests: 'Listing requests',
+      emptyOwners: 'No owners yet. Add your first owner, or convert a listing request that came in from the site.',
+      emptyContracts: 'No contracts yet. A contract links an owner to a property and sets your commission.',
+      emptyRequests: 'No new listing requests. They arrive here when an owner fills "List your property" on the site or app.',
+      kOwners: 'Owners', kOwnersSub: 'People or companies', kActive: 'Active contracts', kActiveSub: 'Properties under mandate',
+      kExpiring: 'Ending in 2 weeks', kExpiringSub: 'Need renewal', kExpected: 'Expected commission', kExpectedSub: 'From active contracts',
+      kEarned: 'Earned commission', kEarnedSub: 'Closed deals',
+      person: 'Individual', company: 'Company', sale: 'Sale', rent: 'Rent', noProp: '— not linked yet —',
+      st: { active: 'Active', expiring: 'Ending soon', expired: 'Expired', sold: 'Sold', rented: 'Rented', cancelled: 'Cancelled' },
+      mOwner: 'Owner details', mOwnerEdit: 'Edit owner', mContract: 'New brokerage contract', mContractEdit: 'Edit contract', mClose: 'Close deal',
+      mCloseHint: 'Record the price the deal actually closed at — commission is calculated from it.',
+      mFromListing: 'Filled in from the listing request. Review and save — the contract opens right after.',
+      fKind: 'Type', fName: 'Full name', fCompany: 'Company name', fPhone: 'Phone / WhatsApp', fPhone2: 'Second phone',
+      fEmail: 'Email', fIdNumber: 'ID / registration no.', fCity: 'City', fNotes: 'Notes',
+      fOwner: 'Owner', fProp: 'Listed property', fDeal: 'Deal type', fAsking: 'Asking price', fMin: 'Lowest acceptable (private)',
+      fCurrency: 'Currency', fComType: 'Commission type', fComVal: 'Commission value', fStart: 'Mandate start', fEnd: 'Mandate end',
+      fStatus: 'Status', fExclusive: 'Exclusive', fExclusiveLbl: 'Exclusive mandate — not listed with another agency',
+      fClosedPrice: 'Actual closing price', fClosedOn: 'Closing date', percent: 'Percent of price %', fixed: 'Fixed amount',
+      expected: 'Commission: ',
+    };
+
+    const st = this.state;
+    const ready = !!(P && P.Owners);
+    const fmt = (n, cur) => ready ? P.Currency.format(n, cur || 'usd', lang) : String(n);
+    const usd = (n, cur) => ready ? P.Currency.toUsd(n, cur || 'usd') : (Number(n) || 0);
+    const q = (st.q || '').trim().toLowerCase();
+    const match = (...xs) => !q || xs.some((x) => String(x || '').toLowerCase().indexOf(q) !== -1);
+    const statusColor = { active: '#1f9d5c', expiring: '#e0a800', expired: '#8a8a8f', sold: '#4aa8d8', rented: '#a06fe0', cancelled: '#e0245e' };
+    const wa = (p) => 'https://wa.me/' + String(p || '').replace(/[^\d]/g, '');
+
+    const ownersById = {};
+    st.owners.forEach((o) => { ownersById[o.id] = o; });
+    const props = ready ? P.allProperties() : [];
+    const propName = (id) => { const p = props.find((x) => x.id === id); return p ? (p.name[lang] || p.name.ar) : t.noProp; };
+
+    /* ----------------------------------------------------------- KPIs */
+    const eff = (c) => ready ? P.Contracts.effectiveStatus(c) : c.status;
+    const com = (c) => ready ? P.Contracts.commission(c) : 0;
+    const live = st.contracts.filter((c) => ['active', 'expiring'].indexOf(eff(c)) !== -1);
+    const closed = st.contracts.filter((c) => c.status === 'sold' || c.status === 'rented');
+    const expectedUsd = live.reduce((s, c) => s + usd(com(c), c.currency), 0);
+    const earnedUsd = closed.reduce((s, c) => s + usd(com(c), c.currency), 0);
+    const kpis = [
+      { label: t.kOwners, value: String(st.owners.length), sub: t.kOwnersSub, color: 'var(--heading,#141414)' },
+      { label: t.kActive, value: String(live.length), sub: t.kActiveSub, color: '#1f9d5c' },
+      { label: t.kExpiring, value: String(st.contracts.filter((c) => eff(c) === 'expiring').length), sub: t.kExpiringSub, color: '#e0a800' },
+      { label: t.kExpected, value: fmt(Math.round(expectedUsd), 'usd'), sub: t.kExpectedSub, color: '#d1662a' },
+      { label: t.kEarned, value: fmt(Math.round(earnedUsd), 'usd'), sub: t.kEarnedSub, color: '#4aa8d8' },
+    ];
+
+    /* ------------------------------------------------------------ rows */
+    const countByOwner = {};
+    st.contracts.forEach((c) => { countByOwner[c.ownerId] = (countByOwner[c.ownerId] || 0) + 1; });
+
+    const ownerRows = st.owners.filter((o) => match(o.name, o.company, o.phone, o.city, o.email)).map((o) => ({
+      name: o.kind === 'company' && o.company ? o.company : o.name,
+      kindLbl: o.kind === 'company' ? (t.company + (o.company ? ' · ' + o.name : '')) : t.person,
+      initial: ((o.kind === 'company' && o.company) || o.name || '?').trim().charAt(0),
+      avBg: o.kind === 'company' ? '#4aa8d8' : '#f68743', avRadius: o.kind === 'company' ? '10px' : '50%',
+      phone: o.phone, email: o.email, city: o.city || '—', waHref: wa(o.phone),
+      contractsLbl: String(countByOwner[o.id] || 0),
+      addContract: () => this._openContract(null, { ownerId: o.id }),
+      edit: () => this._openOwner(o),
+      del: () => this._delete('owner', o),
+    }));
+
+    const contractRows = st.contracts.filter((c) => {
+      const o = ownersById[c.ownerId] || {};
+      return match(o.name, o.company, o.phone, propName(c.propId));
+    }).map((c) => {
+      const o = ownersById[c.ownerId] || {};
+      const s = eff(c);
+      return {
+        owner: (o.kind === 'company' && o.company) || o.name || '—',
+        exclusive: !!c.exclusive,
+        property: propName(c.propId),
+        dealLbl: c.deal === 'rent' ? t.rent : t.sale,
+        price: fmt(c.closedPrice || c.askingPrice, c.currency),
+        commission: fmt(com(c), c.currency),
+        commissionRule: c.commissionType === 'fixed' ? t.fixed : (c.commissionValue + '%'),
+        ends: c.endDate || '—',
+        statusLbl: t.st[s] || s, statusBg: statusColor[s] || '#8a8a8f',
+        canClose: s === 'active' || s === 'expiring',
+        close: () => this._openClose(c),
+        edit: () => this._openContract(c),
+        del: () => this._delete('contract', c),
+      };
+    });
+
+    const converted = {};
+    st.owners.forEach((o) => { if (o.listingId) converted[o.listingId] = true; });
+    const typeLbl = (k) => (ready && P.LABELS[lang].type[k]) || k;
+    const openRequests = st.listings.filter((l) => !converted[l.id]);
+    const requestRows = openRequests.filter((l) => match(l.name, l.phone, l.city, l.notes)).map((l) => ({
+      name: l.name, phone: l.phone, waHref: wa(l.phone), city: l.city || '—', date: l.date || '',
+      typeLbl: typeLbl(l.propType), dealLbl: l.deal === 'rent' ? t.rent : t.sale,
+      price: l.price ? fmt(Number(String(l.price).replace(/[^\d.]/g, '')) || 0, l.currency) : '—',
+      notes: l.notes || '',
+      convert: () => this._openOwner({ name: l.name, phone: l.phone, city: l.city, listingId: l.id,
+        notes: [typeLbl(l.propType), l.deal === 'rent' ? t.rent : t.sale, l.notes].filter(Boolean).join(' · ') }, l),
+    }));
+
+    const views = [
+      { id: 'owners', label: t.vOwners, count: st.owners.length },
+      { id: 'contracts', label: t.vContracts, count: st.contracts.length },
+      { id: 'requests', label: t.vRequests, count: openRequests.length },
+    ].map((v) => {
+      const on = st.view === v.id;
+      return Object.assign(v, {
+        bg: on ? '#f68743' : 'transparent', color: on ? '#fff' : 'var(--body,#4a4a4d)',
+        countBg: on ? 'rgba(255,255,255,.25)' : 'rgba(246,135,67,.14)', countColor: on ? '#fff' : '#c2410c',
+        go: () => this.setState({ view: v.id }),
+      });
+    });
+
+    const rows = st.view === 'owners' ? ownerRows : st.view === 'contracts' ? contractRows : requestRows;
+    const emptyText = st.view === 'owners' ? t.emptyOwners : st.view === 'contracts' ? t.emptyContracts : t.emptyRequests;
+
+    /* ------------------------------------------------------------ form */
+    const f = st.form || {};
+    const field = (key, label, kind, extra) => Object.assign({
+      label, value: f[key] == null ? '' : f[key], type: 'text', ph: '', dir: 'inherit', span: 'auto',
+      isInput: kind === 'input', isSelect: kind === 'select', isText: kind === 'text', isCheck: kind === 'check',
+      checked: !!f[key], options: [],
+      onChange: (e) => this._setForm(key, kind === 'check' ? e.target.checked : e.target.value),
+    }, extra || {});
+    const opts = (pairs) => pairs.map(([id, label]) => ({ id, label }));
+    const curOpts = ready ? P.CURRENCIES.map((c) => ({ id: c.id, label: ar ? c.ar : c.en })) : opts([['usd', 'USD']]);
+
+    let fields = [];
+    let modalTitle = '';
+    let modalHint = '';
+    let preview = '';
+    if (st.modal === 'owner') {
+      modalTitle = f.id ? t.mOwnerEdit : t.mOwner;
+      modalHint = st.fromListing ? t.mFromListing : '';
+      fields = [
+        field('kind', t.fKind, 'select', { options: opts([['person', t.person], ['company', t.company]]) }),
+        field('name', t.fName, 'input'),
+      ];
+      if (f.kind === 'company') fields.push(field('company', t.fCompany, 'input'));
+      fields.push(
+        field('phone', t.fPhone, 'input', { type: 'tel', dir: 'ltr' }),
+        field('phone2', t.fPhone2, 'input', { type: 'tel', dir: 'ltr' }),
+        field('email', t.fEmail, 'input', { type: 'email', dir: 'ltr' }),
+        field('idNumber', t.fIdNumber, 'input', { dir: 'ltr' }),
+        field('city', t.fCity, 'input'),
+        field('notes', t.fNotes, 'text', { span: '1 / -1' })
+      );
+    } else if (st.modal === 'contract') {
+      modalTitle = f.id ? t.mContractEdit : t.mContract;
+      const ownerOpts = st.owners.map((o) => ({ id: o.id, label: (o.kind === 'company' && o.company) ? o.company + ' — ' + o.name : o.name }));
+      const propOpts = [{ id: '', label: t.noProp }].concat(props.map((p) => ({ id: p.id, label: (p.name[lang] || p.name.ar) + ' · ' + p.id })));
+      fields = [
+        field('ownerId', t.fOwner, 'select', { options: ownerOpts }),
+        field('propId', t.fProp, 'select', { options: propOpts }),
+        field('deal', t.fDeal, 'select', { options: opts([['sale', t.sale], ['rent', t.rent]]) }),
+        field('currency', t.fCurrency, 'select', { options: curOpts }),
+        field('askingPrice', t.fAsking, 'input', { type: 'number', dir: 'ltr' }),
+        field('minPrice', t.fMin, 'input', { type: 'number', dir: 'ltr' }),
+        field('commissionType', t.fComType, 'select', { options: opts([['percent', t.percent], ['fixed', t.fixed]]) }),
+        field('commissionValue', t.fComVal, 'input', { type: 'number', dir: 'ltr' }),
+        field('startDate', t.fStart, 'input', { type: 'date', dir: 'ltr' }),
+        field('endDate', t.fEnd, 'input', { type: 'date', dir: 'ltr' }),
+        field('status', t.fStatus, 'select', { options: P.Contracts.STATUSES.map((s) => ({ id: s, label: t.st[s] })) }),
+        field('exclusive', t.fExclusive, 'check', { ph: t.fExclusiveLbl }),
+        field('notes', t.fNotes, 'text', { span: '1 / -1' }),
+      ];
+      if (ready && Number(f.askingPrice) > 0) preview = t.expected + fmt(com(f), f.currency);
+    } else if (st.modal === 'close') {
+      modalTitle = t.mClose;
+      modalHint = t.mCloseHint;
+      fields = [
+        field('status', t.fStatus, 'select', { options: opts([['sold', t.st.sold], ['rented', t.st.rented]]) }),
+        field('closedOn', t.fClosedOn, 'input', { type: 'date', dir: 'ltr' }),
+        field('closedPrice', t.fClosedPrice, 'input', { type: 'number', dir: 'ltr' }),
+      ];
+      if (ready && Number(f.closedPrice) > 0) preview = t.expected + fmt(com(f), f.currency);
+    }
+
+    return {
+      dir, t, kpis, views, q: st.q,
+      onQ: (e) => this.setState({ q: e.target.value }),
+      isOwnersView: st.view === 'owners', isContractsView: st.view === 'contracts', isRequestsView: st.view === 'requests',
+      ownerRows, contractRows, requestRows,
+      loading: st.loading, isEmpty: !st.loading && !st.error && rows.length === 0, emptyText,
+      hasError: !!st.error, error: st.error,
+      newOwner: () => this._openOwner(null),
+      newContract: () => this._openContract(null),
+      modalOpen: !!st.modal, modalTitle, modalHint, hasModalHint: !!modalHint, fields,
+      preview, hasPreview: !!preview,
+      formError: st.formError, hasFormError: !!st.formError,
+      saving: st.saving, saveOpacity: st.saving ? '.6' : '1', saveLabel: st.saving ? t.saving : t.save,
+      submit: () => this._submit(),
+      closeModal: () => this.setState({ modal: null, fromListing: null }),
+      stopEv: (e) => e.stopPropagation(),
+    };
+  }
+}
+</script>
+</body>
+</html>

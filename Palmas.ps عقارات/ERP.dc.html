@@ -1,0 +1,760 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="uploads/palmas-icon.png">
+<title>Palmas.ps</title>
+<script src="./support.js"></script>
+<style>@view-transition{navigation:auto}::view-transition-old(root),::view-transition-new(root){animation-duration:.34s;animation-timing-function:cubic-bezier(.4,0,.2,1)}</style>
+<script>try{var t=localStorage.getItem('palmas_theme');document.documentElement.setAttribute('data-theme',(t==='light'||t==='dark')?t:'light');var l=localStorage.getItem('palmas_lang');document.documentElement.lang=(l==='en')?'en':'ar';document.documentElement.dir=(l==='en')?'ltr':'rtl';}catch(e){}</script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* same design tokens as Admin.dc.html / CRM.dc.html — one visual system across the whole dashboard */
+:root{--page-bg:radial-gradient(circle at 85% 4%,#f4f5f7 0%,#edeef0 55%,#e6e8ea 100%);--page-solid:#edeef0;--heading:#141414;--body:#4a4a4d;--dim:rgba(20,20,22,.5);--card:#ffffff;--card-border:rgba(20,20,22,.08);--inset:#f2f3f5;--inset-border:rgba(20,20,22,.07);--hairline:rgba(20,20,22,.08);--field-bg:#ffffff;--field-border:rgba(20,20,22,.14);--field-fg:#141414;--sidebar-bg:rgba(255,255,255,.72);--chip-bg:rgba(20,20,22,.045);--shadow:0 12px 34px rgba(20,20,35,.07)}
+html[data-theme='dark']{--page-bg:radial-gradient(circle at 85% 8%,#18191c 0%,#0d0d0f 60%);--page-solid:#0d0d0f;--heading:#f7f7f5;--body:#c9cbc8;--dim:rgba(247,247,245,.5);--card:rgba(255,255,255,.05);--card-border:rgba(255,255,255,.12);--inset:rgba(0,0,0,.28);--inset-border:rgba(255,255,255,.08);--hairline:rgba(255,255,255,.1);--field-bg:rgba(0,0,0,.3);--field-border:rgba(255,255,255,.16);--field-fg:#f7f7f5;--sidebar-bg:rgba(0,0,0,.28);--chip-bg:rgba(255,255,255,.06);--shadow:0 14px 40px rgba(0,0,0,.4)}
+html,body{margin:0;padding:0;background:var(--page-solid);transition:background .5s ease}
+*{box-sizing:border-box}
+a{color:#f68743;text-decoration:none}
+a:hover{color:#d1662a}
+::selection{background:#f68743;color:#fff}
+input,select{font-family:'Cairo',sans-serif}
+input::placeholder{color:var(--dim)}
+select option{background:#fff;color:#141414}
+html[data-theme='dark'] select option{background:#161719;color:#f7f7f5}
+.adm-scroll::-webkit-scrollbar{width:8px}
+.adm-scroll::-webkit-scrollbar-thumb{background:var(--hairline);border-radius:8px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes growBar{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.pf-cell{display:flex;flex-direction:column;gap:6px;min-width:0}
+.pf-lb{font-size:12px;font-weight:700;color:var(--dim)}
+.pf-in{background:var(--field-bg);border:1px solid var(--field-border);border-radius:12px;padding:11px 13px;color:var(--field-fg);font-size:14px;outline:none;width:100%;font-family:'Cairo',sans-serif;transition:border-color .3s ease}
+.pf-in:focus{border-color:#f68743}
+</style>
+<script src="palmas-core.js"></script>
+<script src="palmas-config.js"></script>
+<script src="palmas-backend.js"></script>
+</helmet>
+<div dir="{{ dir }}" style="font-family:'Cairo',sans-serif;min-height:100vh;color:var(--heading);background:var(--page-bg);transition:background .5s ease,color .5s ease">
+
+<sc-if value="{{ denied }}" hint-placeholder-val="{{ false }}">
+  <div style="min-height:100vh;display:grid;place-items:center;padding:24px">
+    <div style="max-width:430px;text-align:center;background:var(--card);backdrop-filter:blur(18px);border:1px solid var(--card-border);border-radius:26px;padding:46px 38px;box-shadow:var(--shadow);animation:fadeUp .5s ease both">
+      <div style="width:70px;height:70px;margin:0 auto 20px;border-radius:50%;background:rgba(246,135,67,.14);display:grid;place-items:center">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </div>
+      <div style="font-weight:800;font-size:22px;color:var(--heading);margin-bottom:10px">{{ t.deniedTitle }}</div>
+      <div style="color:var(--dim);font-size:14.5px;line-height:1.9;margin-bottom:24px">{{ t.deniedDesc }}</div>
+      <a href="Auth.dc.html" style="display:inline-block;background:#f68743;color:#fff;font-weight:800;font-size:14.5px;padding:13px 34px;border-radius:26px;box-shadow:0 10px 26px rgba(246,135,67,.3);transition:all .35s ease" style-hover="background:#d1662a;transform:translateY(-2px)">{{ t.deniedCta }}</a>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ authed }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;min-height:100vh;align-items:stretch">
+
+  <aside class="adm-scroll" style="width:256px;flex-shrink:0;display:flex;flex-direction:column;gap:4px;padding:22px 16px;border-inline-end:1px solid var(--hairline);background:var(--sidebar-bg);backdrop-filter:blur(18px);position:sticky;top:0;height:100vh;overflow-y:auto">
+    <a href="Palmas Home.dc.html" style="display:flex;align-items:center;gap:11px;padding:2px 8px;margin-bottom:24px">
+      <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(140deg,#f68743,#d1662a);display:grid;place-items:center;font-weight:900;font-size:21px;color:#fff;box-shadow:0 8px 20px rgba(246,135,67,.32)">P</div>
+      <div style="line-height:1.15">
+        <div style="font-weight:800;font-size:17px"><span style="color:var(--heading)">PALMAS</span><span style="color:#f68743">.ps</span></div>
+        <div style="font-size:11px;color:#f68743;letter-spacing:2px;font-weight:700">{{ t.panelSub }}</div>
+      </div>
+    </a>
+    <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+      <button onClick="{{ n.go }}" style="display:flex;align-items:center;gap:12px;width:100%;border:none;text-align:start;padding:12px 14px;border-radius:13px;background:{{ n.bg }};color:{{ n.color }};font-family:'Cairo',sans-serif;font-weight:800;font-size:14.5px;cursor:pointer;box-shadow:{{ n.shadow }};transition:all .3s ease" style-hover="background:rgba(246,135,67,.14)">
+      <span style="display:grid;place-items:center">{{ n.iconEl }}</span>{{ n.label }}</button>
+    </sc-for>
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--hairline);padding-top:12px">
+      <a href="Admin.dc.html" style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:13px;color:var(--body);font-weight:700;font-size:14px;transition:all .3s ease" style-hover="background:var(--chip-bg);color:var(--heading)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>
+        {{ t.backAdmin }}
+      </a>
+      <a href="Palmas Home.dc.html" style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:13px;color:var(--body);font-weight:700;font-size:14px;transition:all .3s ease" style-hover="background:var(--chip-bg);color:var(--heading)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path></svg>
+        {{ t.backSite }}
+      </a>
+      <button onClick="{{ logout }}" style="display:flex;align-items:center;gap:12px;width:100%;border:none;text-align:start;padding:11px 14px;border-radius:13px;background:none;color:var(--body);font-family:'Cairo',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .3s ease" style-hover="background:rgba(224,36,94,.12);color:#e0245e">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        {{ t.logout }}
+      </button>
+    </div>
+  </aside>
+
+  <main style="flex:1;min-width:0;padding:26px clamp(18px,3.5vw,44px) 60px">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin-bottom:26px">
+      <div>
+        <h1 style="margin:0;font-size:clamp(23px,3vw,28px);font-weight:800;color:var(--heading)">{{ tabTitle }}</h1>
+        <div style="color:var(--dim);font-size:13.5px;font-weight:600;margin-top:3px">{{ tabSub }}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <sc-if value="{{ canExport }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ exportCsv }}" title="{{ exportLabel }}" style="display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(246,135,67,.4);background:rgba(246,135,67,.1);color:#d1662a;font-family:'Cairo',sans-serif;font-weight:800;font-size:13.5px;padding:9px 18px;border-radius:22px;cursor:pointer;transition:all .3s ease" style-hover="background:#f68743;color:#fff">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            {{ exportLabel }}
+          </button>
+        </sc-if>
+        <button onClick="{{ toggleLang }}" title="Language" style="height:42px;padding:0 15px;border-radius:21px;border:1px solid var(--hairline);background:var(--card);color:#f68743;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:all .3s ease" style-hover="border-color:#f68743">{{ langLabel }}</button>
+        <button onClick="{{ toggleTheme }}" title="{{ themeTitle }}" style="width:42px;height:42px;border-radius:50%;border:1px solid var(--hairline);background:var(--card);display:grid;place-items:center;cursor:pointer;transition:all .3s ease" style-hover="border-color:#f68743">
+          <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--heading)" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"></path></svg></sc-if>
+          <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--heading)" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></sc-if>
+        </button>
+        <div style="position:relative">
+          <button onClick="{{ toggleAcctMenu }}" style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--hairline);border-radius:24px;padding:6px 16px 6px 8px;cursor:pointer;font-family:'Cairo',sans-serif" style-hover="border-color:#f68743">
+            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(140deg,#f68743,#d1662a);display:grid;place-items:center;font-weight:900;font-size:15px;color:#fff">{{ adminInitial }}</div>
+            <div style="line-height:1.2;text-align:start">
+              <div style="font-weight:800;font-size:13.5px;color:var(--heading)">{{ adminName }}</div>
+              <div style="font-size:11px;color:#f68743;font-weight:700">{{ t.roleAdmin }}</div>
+            </div>
+          </button>
+          <sc-if value="{{ acctMenuOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;top:calc(100% + 10px);inset-inline-end:0;min-width:200px;background:var(--card);border:1px solid var(--hairline);border-radius:16px;box-shadow:var(--shadow);padding:8px;z-index:200">
+              <a href="Account.dc.html" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;color:var(--body);font-size:14px;font-weight:700"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>{{ t.acctSettings }}</a>
+              <button onClick="{{ logout }}" style="display:flex;align-items:center;gap:10px;width:100%;border:none;text-align:start;padding:10px 12px;border-radius:11px;background:none;color:#e0245e;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;cursor:pointer" style-hover="background:rgba(224,36,94,.1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>{{ t.logout }}</button>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+
+    <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(214px,1fr));gap:16px;margin-bottom:20px">
+        <sc-for list="{{ finKpis }}" as="k" hint-placeholder-count="4">
+          <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow);animation:fadeUp .5s ease both">
+            <div style="color:var(--dim);font-size:13px;font-weight:700">{{ k.label }}</div>
+            <div style="font-size:27px;font-weight:900;color:{{ k.valColor }};margin-top:8px;direction:ltr;text-align:end">{{ k.val }}</div>
+            <div style="font-size:12px;font-weight:700;color:var(--dim);margin-top:3px">{{ k.sub }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;padding:22px;box-shadow:var(--shadow);margin-bottom:20px;animation:fadeUp .5s ease both">
+        <div style="font-weight:800;font-size:16px;color:var(--heading);margin-bottom:16px">{{ t.pfTitle }}</div>
+        <sc-if value="{{ profitSplitEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:20px 4px;color:var(--dim);font-weight:700;font-size:13px">{{ t.pfEmpty }}</div>
+        </sc-if>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <sc-for list="{{ profitSplit }}" as="ps" hint-placeholder-count="3">
+            <div>
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:7px;flex-wrap:wrap">
+                <span style="width:10px;height:10px;border-radius:3px;background:{{ ps.color }};flex-shrink:0"></span>
+                <span style="font-size:13.5px;font-weight:700;color:var(--heading)">{{ ps.label }}</span>
+                <span style="font-size:11.5px;color:var(--dim);font-weight:600">({{ ps.n }})</span>
+                <span style="margin-inline-start:auto;font-weight:900;font-size:14.5px;color:{{ ps.color }};direction:ltr">{{ ps.val }}</span>
+              </div>
+              <div style="height:9px;border-radius:5px;background:var(--inset);border:1px solid var(--inset-border);overflow:hidden">
+                <div style="height:100%;width:{{ ps.pct }};border-radius:5px;background:{{ ps.color }};transition:width .6s ease"></div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px">
+        <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;padding:22px;box-shadow:var(--shadow);min-width:0">
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px;flex-wrap:wrap">
+            <div style="font-weight:800;font-size:16px;color:var(--heading)">{{ t.cashflowTitle }}</div>
+            <div style="display:flex;gap:14px;margin-inline-start:auto;font-size:12px;font-weight:700;color:var(--dim)">
+              <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#f68743"></span>{{ t.legendIn }}</span>
+              <span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:3px;background:#e0245e"></span>{{ t.legendOut }}</span>
+            </div>
+          </div>
+          <sc-if value="{{ cashflowEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:30px;text-align:center;color:var(--dim);font-weight:700;font-size:13.5px">{{ t.cashflowEmpty }}</div>
+          </sc-if>
+          <div style="display:flex;align-items:flex-end;gap:12px;height:190px">
+            <sc-for list="{{ cashflow }}" as="m" hint-placeholder-count="7">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end">
+                <div style="display:flex;align-items:flex-end;gap:4px;width:100%;justify-content:center;height:100%">
+                  <div title="{{ t.legendIn }}" style="width:16px;height:{{ m.hIn }};border-radius:5px 5px 2px 2px;background:linear-gradient(180deg,#f89e64,#d1662a);transform-origin:bottom;animation:growBar .8s cubic-bezier(.25,.8,.35,1) both"></div>
+                  <div title="{{ t.legendOut }}" style="width:16px;height:{{ m.hOut }};border-radius:5px 5px 2px 2px;background:rgba(224,36,94,.55);transform-origin:bottom;animation:growBar .8s cubic-bezier(.25,.8,.35,1) both"></div>
+                </div>
+                <div style="font-size:11.5px;font-weight:700;color:var(--dim);white-space:nowrap">{{ m.m }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;padding:22px;box-shadow:var(--shadow);min-width:0">
+          <div style="font-weight:800;font-size:16px;color:var(--heading);margin-bottom:14px">{{ t.recentTitle }}</div>
+          <sc-if value="{{ txnsEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:20px 4px;color:var(--dim);font-weight:700;font-size:13px">{{ t.recentEmpty }}</div>
+          </sc-if>
+          <div style="display:flex;flex-direction:column">
+            <sc-for list="{{ txns }}" as="tx" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 2px;border-bottom:1px solid var(--hairline)">
+                <span style="width:30px;height:30px;min-width:30px;border-radius:9px;background:{{ tx.bg }};display:grid;place-items:center;color:{{ tx.c }};font-weight:900;font-size:15px">{{ tx.sign }}</span>
+                <div style="min-width:0">
+                  <div style="font-size:13px;font-weight:700;color:var(--heading);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ tx.txt }}</div>
+                  <div style="font-size:11.5px;color:var(--dim);font-weight:600">{{ tx.date }}</div>
+                </div>
+                <div style="margin-inline-start:auto;font-weight:900;font-size:13.5px;color:{{ tx.c }};white-space:nowrap;direction:ltr">{{ tx.amt }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isDeals }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(246,135,67,.08);border:1px solid rgba(246,135,67,.28);border-radius:14px;padding:12px 16px;margin-bottom:18px;font-size:13px;font-weight:700;color:var(--accent-ink,#b53a0f)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        {{ t.dealsHint }}
+        <a href="Admin.dc.html" style="margin-inline-start:auto;white-space:nowrap;font-weight:800">{{ t.openCrm }} ←</a>
+      </div>
+      <div class="adm-scroll" style="overflow-x:auto;padding-bottom:8px">
+        <div style="display:flex;gap:13px;min-width:min-content">
+          <sc-for list="{{ columns }}" as="c" hint-placeholder-count="7">
+            <div onDragOver="{{ c.onDragOver }}" onDrop="{{ c.onDrop }}" style="width:230px;flex-shrink:0;background:var(--inset);border:1px solid var(--inset-border);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px;min-height:140px">
+              <div style="display:flex;align-items:center;gap:8px;padding:2px 4px">
+                <span style="width:10px;height:10px;border-radius:3px;background:{{ c.color }}"></span>
+                <span style="font-weight:800;font-size:13px;color:var(--heading)">{{ c.label }}</span>
+                <span style="margin-inline-start:auto;background:var(--card);border:1px solid var(--card-border);color:var(--dim);font-size:11px;font-weight:800;padding:1px 9px;border-radius:9px">{{ c.count }}</span>
+              </div>
+              <div style="font-size:11px;font-weight:700;color:{{ c.color }};padding:0 4px 4px">{{ c.valueLabel }}</div>
+              <sc-for list="{{ c.cards }}" as="d" hint-placeholder-count="2">
+                <div class="crm-erp-card" draggable="true" onDragStart="{{ d.onDragStart }}" style="background:var(--card);border:1px solid var(--card-border);border-radius:13px;padding:12px 13px;cursor:grab;box-shadow:0 2px 8px rgba(20,20,30,.05)">
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+                    <span style="width:7px;height:7px;border-radius:50%;background:{{ d.sourceColor }}"></span>
+                    <span style="font-size:10.5px;font-weight:700;color:var(--dim)">{{ d.sourceLabel }}</span>
+                  </div>
+                  <div style="font-weight:800;font-size:13.5px;color:var(--heading);margin-bottom:2px">{{ d.name }}</div>
+                  <div style="font-size:11.5px;color:var(--dim);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.sub }}</div>
+                  <sc-if value="{{ d.hasProp }}" hint-placeholder-val="{{ false }}"><a href="{{ d.propLink }}" target="_blank" style="display:block;font-size:11px;font-weight:700;margin-top:3px">🏠 {{ d.propName }}</a></sc-if>
+                  <div style="display:flex;align-items:center;gap:8px;margin-top:9px;padding-top:9px;border-top:1px solid var(--hairline)">
+                    <span style="color:#d1662a;font-weight:900;font-size:12.5px">{{ d.value }}</span>
+                    <sc-if value="{{ d.hasAgent }}" hint-placeholder-val="{{ false }}">
+                      <span title="{{ d.agentName }}" style="margin-inline-start:auto;width:24px;height:24px;border-radius:50%;background:{{ d.agentColor }};display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px">{{ d.agentInitial }}</span>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isProps }}" hint-placeholder-val="{{ false }}">
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)">
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr .8fr 1.2fr 120px;gap:10px;padding:14px 20px;background:var(--inset);font-size:12px;font-weight:800;color:var(--dim)">
+          <div>{{ t.pProp }}</div><div>{{ t.pCity }}</div><div>{{ t.pCat }}</div><div>{{ t.pPrice }}</div><div>{{ t.pDeals }}</div><div>{{ t.pRevenue }}</div><div></div>
+        </div>
+        <sc-for list="{{ propRows }}" as="p" hint-placeholder-count="8">
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr .8fr 1.2fr 120px;gap:10px;align-items:center;padding:12px 20px;border-top:1px solid var(--hairline);font-size:13px;transition:background .25s ease" style-hover="background:var(--chip-bg)">
+            <div style="font-weight:800;color:var(--heading)">{{ p.name }}</div>
+            <div style="color:var(--body);font-weight:600">{{ p.city }}</div>
+            <div><span style="background:{{ p.catBg }};color:#121212;font-size:11px;font-weight:800;padding:3px 10px;border-radius:10px;white-space:nowrap">{{ p.catLabel }}</span></div>
+            <div style="color:var(--body);font-weight:700;direction:ltr;text-align:end">{{ p.priceLbl }}</div>
+            <div style="color:var(--dim);font-weight:700;text-align:center">{{ p.dealsCount }}</div>
+            <div style="color:#d1662a;font-weight:900;direction:ltr;text-align:end">{{ p.revenueLbl }}</div>
+            <div style="justify-self:end"><a href="{{ p.href }}" target="_blank" style="border:1px solid var(--field-border);color:var(--body);font-weight:800;font-size:11.5px;padding:6px 13px;border-radius:12px;white-space:nowrap;transition:all .3s ease" style-hover="border-color:#f68743;color:#f68743">{{ t.pView }}</a></div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:14px;color:var(--dim);font-size:12.5px;font-weight:600">{{ t.pTotalLabel }}: <b style="color:var(--heading)">{{ propsCount }}</b> · {{ t.pRevTotalLabel }}: <b style="color:#f68743">{{ propsRevTotal }}</b></div>
+    </sc-if>
+
+    <sc-if value="{{ isInv }}" hint-placeholder-val="{{ false }}">
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow);margin-bottom:18px">
+        <div style="font-weight:800;font-size:15px;color:var(--heading);margin-bottom:14px">{{ t.addInvTitle }}</div>
+        <form onSubmit="{{ addInv }}" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;align-items:end">
+          <div class="pf-cell"><label class="pf-lb">{{ t.fClient }}</label><input ref="{{ iClientRef }}" class="pf-in"></div>
+          <div class="pf-cell"><label class="pf-lb">{{ t.fItem }}</label><input ref="{{ iItemRef }}" class="pf-in"></div>
+          <div class="pf-cell"><label class="pf-lb">{{ t.fAmount }}</label><input ref="{{ iAmtRef }}" type="number" class="pf-in"></div>
+          <div class="pf-cell"><label class="pf-lb">{{ t.fDue }}</label><input ref="{{ iDueRef }}" type="date" class="pf-in" style="color-scheme:{{ colorScheme }}"></div>
+          <div class="pf-cell"><label class="pf-lb">{{ t.fProp }}</label><select ref="{{ iPropRef }}" onChange="{{ onInvPropPick }}" class="pf-in"><sc-for list="{{ propOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select></div>
+          <div class="pf-cell"><label class="pf-lb">{{ t.fType }}</label><select ref="{{ iTypeRef }}" class="pf-in"><option value="sale">{{ t.dtSale }}</option><option value="rent">{{ t.dtRent }}</option><option value="other">{{ t.dtOther }}</option></select></div>
+          <button type="submit" style="height:44px;background:#f68743;border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;padding:0 26px;border-radius:14px;cursor:pointer;transition:all .35s ease" style-hover="background:#d1662a">{{ t.issueBtn }}</button>
+        </form>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)">
+        <div style="display:grid;grid-template-columns:1.1fr 1.3fr 2fr 1fr 1.1fr .9fr 150px;gap:10px;padding:14px 20px;background:var(--inset);font-size:12px;font-weight:800;color:var(--dim)">
+          <div>{{ t.hNo }}</div><div>{{ t.hClient }}</div><div>{{ t.hItem }}</div><div>{{ t.hAmount }}</div><div>{{ t.hDue }}</div><div>{{ t.hStatus }}</div><div></div>
+        </div>
+        <sc-if value="{{ invEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:40px;text-align:center;color:var(--dim);font-weight:700;font-size:14px">{{ t.invEmpty }}</div>
+        </sc-if>
+        <sc-for list="{{ invoices }}" as="v" hint-placeholder-count="4">
+          <div style="display:grid;grid-template-columns:1.1fr 1.3fr 2fr 1fr 1.1fr .9fr 150px;gap:10px;align-items:center;padding:13px 20px;border-top:1px solid var(--hairline);font-size:13.5px;transition:background .25s ease" style-hover="background:var(--chip-bg)">
+            <div style="font-weight:800;color:var(--heading);direction:ltr;text-align:end">{{ v.no }}</div>
+            <div style="font-weight:700;color:var(--body)">{{ v.client }}</div>
+            <div style="color:var(--dim);font-weight:600;font-size:12.5px">
+              {{ v.item }}<sc-if value="{{ v.auto }}" hint-placeholder-val="{{ false }}"><span style="margin-inline-start:6px;background:rgba(58,160,214,.16);color:#2b86b8;font-size:10px;font-weight:800;padding:2px 7px;border-radius:8px">{{ t.autoBadge }}</span></sc-if>
+              <sc-if value="{{ v.hasProp }}" hint-placeholder-val="{{ false }}"><a href="{{ v.propLink }}" target="_blank" style="display:block;margin-top:2px;font-size:11px;font-weight:700">🏠 {{ v.propName }}</a></sc-if>
+            </div>
+            <div style="color:#d1662a;font-weight:900;direction:ltr;text-align:end">{{ v.amt }}</div>
+            <div style="color:var(--dim);font-weight:600;direction:ltr;text-align:end">{{ v.due }}</div>
+            <div><span style="background:{{ v.stBg }};color:{{ v.stC }};font-size:11.5px;font-weight:800;padding:3px 12px;border-radius:11px;white-space:nowrap">{{ v.stLbl }}</span></div>
+            <div style="justify-self:end;display:flex;gap:6px">
+              <sc-if value="{{ v.canPay }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ v.pay }}" style="border:1px solid rgba(246,135,67,.5);background:rgba(246,135,67,.1);color:#d1662a;font-family:'Cairo',sans-serif;font-weight:800;font-size:12px;padding:6px 14px;border-radius:14px;cursor:pointer;transition:all .3s ease" style-hover="background:#f68743;color:#fff">{{ t.collect }}</button>
+              </sc-if>
+              <button onClick="{{ v.del }}" title="{{ t.del }}" style="border:1px solid rgba(224,36,94,.35);background:rgba(224,36,94,.08);color:#e0245e;font-family:'Cairo',sans-serif;font-weight:800;font-size:12px;padding:6px 12px;border-radius:13px;cursor:pointer;transition:all .3s ease" style-hover="background:#e0245e;color:#fff">{{ t.del }}</button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;font-size:13px;font-weight:700;color:var(--dim)">
+        <span>{{ t.total }}: <b style="color:var(--heading)">{{ invTotal }}</b></span>
+        <span>{{ t.collected }}: <b style="color:#f68743">{{ invPaid }}</b></span>
+        <span>{{ t.due }}: <b style="color:#e0a800">{{ invDue }}</b></span>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isExp }}" hint-placeholder-val="{{ false }}">
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow);margin-bottom:18px">
+        <div style="font-weight:800;font-size:15px;color:var(--heading);margin-bottom:14px">{{ t.addExpTitle }}</div>
+        <form onSubmit="{{ addExp }}" style="display:grid;grid-template-columns:2fr 1.2fr 1fr auto;gap:12px;align-items:end">
+          <div class="pf-cell"><label class="pf-lb">{{ t.fDesc }}</label><input ref="{{ eDescRef }}" class="pf-in"></div>
+          <div class="pf-cell"><label class="pf-lb">{{ t.fCat }}</label>
+            <select ref="{{ eCatRef }}" class="pf-in"><sc-for list="{{ expCatOpts }}" as="o" hint-placeholder-count="5"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select>
+          </div>
+          <div class="pf-cell"><label class="pf-lb">{{ t.fAmount }}</label><input ref="{{ eAmtRef }}" type="number" class="pf-in"></div>
+          <button type="submit" style="height:44px;background:#f68743;border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;padding:0 28px;border-radius:14px;cursor:pointer;transition:all .35s ease" style-hover="background:#d1662a">{{ t.addBtn }}</button>
+        </form>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)">
+        <div style="display:grid;grid-template-columns:2.2fr 1.2fr 1fr 1.1fr 90px;gap:10px;padding:14px 20px;background:var(--inset);font-size:12px;font-weight:800;color:var(--dim)">
+          <div>{{ t.hDesc }}</div><div>{{ t.hCat }}</div><div>{{ t.hAmount }}</div><div>{{ t.hDate }}</div><div></div>
+        </div>
+        <sc-for list="{{ expenses }}" as="x" hint-placeholder-count="5">
+          <div style="display:grid;grid-template-columns:2.2fr 1.2fr 1fr 1.1fr 90px;gap:10px;align-items:center;padding:12px 20px;border-top:1px solid var(--hairline);font-size:13.5px;transition:background .25s ease" style-hover="background:var(--chip-bg)">
+            <div style="font-weight:700;color:var(--heading)">{{ x.desc }}</div>
+            <div><span style="background:rgba(74,168,216,.14);color:#4aa8d8;font-size:11.5px;font-weight:800;padding:3px 11px;border-radius:11px">{{ x.cat }}</span></div>
+            <div style="color:#e0245e;font-weight:900;direction:ltr;text-align:end">{{ x.amt }}</div>
+            <div style="color:var(--dim);font-weight:600;direction:ltr;text-align:end">{{ x.date }}</div>
+            <div style="justify-self:end">
+              <sc-if value="{{ x.custom }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ x.del }}" title="{{ t.del }}" style="border:1px solid rgba(224,36,94,.35);background:rgba(224,36,94,.08);color:#e0245e;font-family:'Cairo',sans-serif;font-weight:800;font-size:12px;padding:5px 13px;border-radius:13px;cursor:pointer;transition:all .3s ease" style-hover="background:#e0245e;color:#fff">{{ t.del }}</button>
+              </sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:14px;color:var(--dim);font-size:12.5px;font-weight:600">{{ t.expTotalLabel }}: <b style="color:#e0245e">{{ expTotal }}</b></div>
+    </sc-if>
+
+    <sc-if value="{{ isHr }}" hint-placeholder-val="{{ false }}">
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow);margin-bottom:18px">
+        <div style="font-weight:800;font-size:15px;color:var(--heading);margin-bottom:14px">{{ t.addStaffTitle }}</div>
+        <form onSubmit="{{ addStaff }}" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;align-items:end">
+          <div class="pf-cell"><label class="pf-lb">{{ t.fName }}</label><input ref="{{ sNameRef }}" class="pf-in"></div>
+          <div class="pf-cell"><label class="pf-lb">{{ t.fRole }}</label><input ref="{{ sRoleRef }}" class="pf-in"></div>
+          <div class="pf-cell"><label class="pf-lb">{{ t.fPhone }}</label><input ref="{{ sPhoneRef }}" class="pf-in"></div>
+          <div class="pf-cell"><label class="pf-lb">{{ t.fSalary }}</label><input ref="{{ sSalRef }}" type="number" class="pf-in"></div>
+          <div class="pf-cell"><label class="pf-lb">{{ t.fStatus }}</label>
+            <select ref="{{ sStatusRef }}" class="pf-in"><option value="full">{{ t.statusFull }}</option><option value="part">{{ t.statusPart }}</option></select>
+          </div>
+          <button type="submit" style="height:44px;background:#f68743;border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;padding:0 28px;border-radius:14px;cursor:pointer;transition:all .35s ease" style-hover="background:#d1662a">{{ t.addBtn }}</button>
+        </form>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)">
+        <div style="display:grid;grid-template-columns:1.7fr 1.4fr 1.2fr 1fr .9fr 80px;gap:10px;padding:14px 20px;background:var(--inset);font-size:12px;font-weight:800;color:var(--dim)">
+          <div>{{ t.hEmployee }}</div><div>{{ t.hRole }}</div><div>{{ t.hPhone }}</div><div>{{ t.hSalary }}</div><div>{{ t.hStatus }}</div><div></div>
+        </div>
+        <sc-for list="{{ staff }}" as="s" hint-placeholder-count="6">
+          <div style="display:grid;grid-template-columns:1.7fr 1.4fr 1.2fr 1fr .9fr 80px;gap:10px;align-items:center;padding:12px 20px;border-top:1px solid var(--hairline);font-size:13.5px;transition:background .25s ease" style-hover="background:var(--chip-bg)">
+            <div style="display:flex;align-items:center;gap:10px;font-weight:800;color:var(--heading)">
+              <span style="width:32px;height:32px;min-width:32px;border-radius:50%;background:{{ s.avBg }};display:grid;place-items:center;font-weight:900;font-size:14px;color:#fff">{{ s.initial }}</span>
+              {{ s.name }}<sc-if value="{{ s.isAgent }}" hint-placeholder-val="{{ false }}"><span style="margin-inline-start:2px;background:rgba(31,157,92,.14);color:#1f9d5c;font-size:10px;font-weight:800;padding:2px 8px;border-radius:8px">{{ t.agentBadge }}</span></sc-if>
+            </div>
+            <div style="color:var(--body);font-weight:600">{{ s.role }}</div>
+            <div style="color:var(--dim);font-weight:600;direction:ltr;text-align:end">{{ s.phone }}</div>
+            <div style="color:#d1662a;font-weight:900;direction:ltr;text-align:end">{{ s.salary }}</div>
+            <div><span style="background:{{ s.stBg }};color:{{ s.stC }};font-size:11.5px;font-weight:800;padding:3px 11px;border-radius:11px">{{ s.status }}</span></div>
+            <div style="justify-self:end">
+              <sc-if value="{{ s.custom }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ s.del }}" title="{{ t.del }}" style="border:1px solid rgba(224,36,94,.35);background:rgba(224,36,94,.08);color:#e0245e;font-family:'Cairo',sans-serif;font-weight:800;font-size:12px;padding:5px 13px;border-radius:13px;cursor:pointer;transition:all .3s ease" style-hover="background:#e0245e;color:#fff">{{ t.del }}</button>
+              </sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:14px;color:var(--dim);font-size:12.5px;font-weight:600">{{ t.salaryTotalLabel }}: <b style="color:var(--heading)">{{ salaryTotal }}</b> · {{ staffCount }}</div>
+    </sc-if>
+  </main>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { tab: 'overview', session: null, ready: false, theme: null, lang: null,
+    paid: {}, exps: [], invAdded: [], dismissed: [],
+    users: [], bookings: [], messages: [], chats: [], manual: [], favMap: {}, projFavMap: {}, listings: [], overlay: {}, acctMenuOpen: false };
+  eDescRef = React.createRef(); eCatRef = React.createRef(); eAmtRef = React.createRef();
+  iClientRef = React.createRef(); iItemRef = React.createRef(); iAmtRef = React.createRef(); iDueRef = React.createRef(); iPropRef = React.createRef(); iTypeRef = React.createRef();
+  sNameRef = React.createRef(); sRoleRef = React.createRef(); sPhoneRef = React.createRef(); sSalRef = React.createRef(); sStatusRef = React.createRef();
+  componentDidMount() {
+    try { const tv = localStorage.getItem('palmas_theme'); const th = (tv === 'light' || tv === 'dark') ? tv : 'light'; document.documentElement.setAttribute('data-theme', th); this.setState({ theme: th }); } catch (e) {}
+    try { const lv = localStorage.getItem('palmas_lang'); const lg = (lv === 'ar' || lv === 'en') ? lv : 'ar'; document.documentElement.lang = lg; document.documentElement.dir = lg === 'en' ? 'ltr' : 'rtl'; this.setState({ lang: lg }); } catch (e) {}
+    this._boot();
+    this._onStorage = (e) => { if (e.key && e.key.indexOf('palmas_') === 0) this._reload(); };
+    window.addEventListener('storage', this._onStorage);
+  }
+  componentWillUnmount() { if (this._onStorage) window.removeEventListener('storage', this._onStorage); if (this._offAuth) this._offAuth(); }
+  /* waits for palmas-core.js (window.Palmas) — session (incl. "remember me"), the shared CRM
+     lead engine, and the shared staff directory all come from there, not page-local copies. */
+  _boot() {
+    const P = window.Palmas;
+    if (!P) { setTimeout(() => this._boot(), 60); return; }
+    this._reload();
+    this.setState({ ready: true });
+    if (!this._offAuth) this._offAuth = P.API.onAuthChange(() => this.setState({ session: P.API.session() }));
+  }
+  _g(k, d) { try { return JSON.parse(localStorage.getItem(k) || d); } catch (e) { return JSON.parse(d); } }
+  _reload() {
+    const P = window.Palmas;
+    this.setState({
+      session: P ? P.API.session() : this._g('palmas_session', 'null'),
+      paid: this._g('palmas_erp_paid', '{}'), exps: this._g('palmas_erp_exp', '[]'),
+      invAdded: this._g('palmas_erp_invadd', '[]'), dismissed: this._g('palmas_erp_dismissed', '[]'),
+      users: this._g('palmas_users', '[]'), bookings: this._g('palmas_bookings', '[]'),
+      messages: this._g('palmas_crm_messages', '[]'), chats: this._g('palmas_crm_chats', '[]'),
+      manual: this._g('palmas_crm_manual', '[]'), favMap: P ? P.API.allFavorites() : this._g('palmas_favs', '{}'),
+      projFavMap: P ? P.API.allProjectFavorites() : this._g('palmas_wishlist_projects', '{}'),
+      listings: this._g('palmas_listings', '[]'),
+      overlay: this._g('palmas_crm_leads', '{}'),
+    });
+  }
+  _save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  _fmt(n) { return '$' + Math.round(+n || 0).toLocaleString('en-US'); }
+  _downloadCsv(name, rows) {
+    const esc = (c) => { const s = String(c == null ? '' : c); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    const csv = rows.map(r => r.map(esc).join(',')).join('\r\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name + '-' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  _leads() { const P = window.Palmas; const lang = this.state.lang || 'ar'; if (!P) return [];
+    return P.CRM.buildLeads(lang, { users: this.state.users, bookings: this.state.bookings, messages: this.state.messages,
+      chats: this.state.chats, manual: this.state.manual, favMap: this.state.favMap, projFavMap: this.state.projFavMap, listings: this.state.listings, session: this.state.session, overlay: this.state.overlay }); }
+  _mutate(key, fn) {
+    const P = window.Palmas; if (!P) return;
+    const ov = P.CRM.mutate(key, fn);
+    this.setState({ overlay: ov });
+  }
+  _setStage(key, stage) { this._mutate(key, c => { c.stage = stage; c.log = (c.log || []).concat({ type: 'stage', to: stage, ts: Date.now() }); return c; }); }
+  renderVals() {
+    const st = this.state;
+    const lang = st.lang || 'ar';
+    const ar = lang !== 'en';
+    const dark = (st.theme || 'light') === 'dark';
+    const authed = !st.ready || (st.session && st.session.role === 'admin');
+    const denied = st.ready && !(st.session && st.session.role === 'admin');
+    const P = window.Palmas;
+    const tab = st.tab;
+    const iconMuted = dark ? '#f89e64' : '#c2410c';
+
+    const T = ar ? {
+      panelSub: 'نظام ERP', backAdmin: 'لوحة التحكم', backSite: 'العودة للموقع', logout: 'تسجيل الخروج', roleAdmin: 'مدير', acctSettings: 'إعدادات الحساب',
+      deniedTitle: 'نظام ERP مخصص للإدارة', deniedDesc: 'سجّل الدخول بحساب المدير للوصول إلى النظام.', deniedCta: 'تسجيل الدخول',
+      navLabels: { overview: 'نظرة عامة', props: 'العقارات', deals: 'الصفقات', inv: 'الفواتير', exp: 'المصاريف', hr: 'الموظفون' },
+      tabs: { overview: { title: 'النظرة المالية', sub: 'إيرادات وأرباح ومصاريف الشركة — أرقام حقيقية من الفواتير والمصاريف المسجّلة' },
+        props: { title: 'العقارات', sub: 'نفس كتالوج عقارات الموقع — بعائد كل عقار من الصفقات المرتبطة فيه' },
+        deals: { title: 'الصفقات', sub: 'نفس مسار العملاء بـCRM — بس بمنظور مالي (القيمة والمرحلة)' },
+        inv: { title: 'الفواتير', sub: 'عمولات تلقائية من الصفقات الناجحة + فواتير يدوية' },
+        exp: { title: 'المصاريف', sub: 'مصاريف التشغيل والتسويق والرواتب' },
+        hr: { title: 'الموظفون', sub: 'دليل موظفين واحد مشترك مع لوحة CRM (وكلاء المبيعات)' } },
+      pProp: 'العقار', pCity: 'المدينة', pCat: 'التصنيف', pPrice: 'السعر', pDeals: 'صفقات مرتبطة', pRevenue: 'إيراد محصّل', pView: 'عرض',
+      pTotalLabel: 'إجمالي العقارات', pRevTotalLabel: 'إجمالي الإيرادات من العقارات', fProp: 'العقار المرتبط', propNone: 'بدون تحديد',
+      kRevenue: 'الإيرادات المحصّلة', kExpenses: 'إجمالي المصاريف', kProfit: 'صافي الربح', kPending: 'عمولات مستحقة',
+      cashflowTitle: 'التدفق النقدي — آخر 7 أشهر', legendIn: 'تحصيل', legendOut: 'مصاريف', cashflowEmpty: 'لسا ما في حركات مالية مسجّلة — بتظهر هون أول ما تحصّل فاتورة أو تسجّل مصروف.',
+      recentTitle: 'آخر الحركات المالية', recentEmpty: 'لا توجد حركات بعد.',
+      pfTitle: 'الإيرادات المحصّلة — بيع مقابل إيجار', pfSale: 'عمولات بيع', pfRent: 'عمولات إيجار', pfOther: 'غير مرتبطة بعقار', pfEmpty: 'لسا ما في إيرادات محصّلة — بتنقسم هون تلقائياً حسب نوع العقار (بيع/إيجار) أول ما تحصّل فاتورة مربوطة بعقار.',
+      dealsHint: 'هاي نفس صفقات CRM بالضبط — نقل أي بطاقة هون بينعكس فوراً بلوحة CRM، وبالعكس.', openCrm: 'فتح CRM الكامل',
+      addInvTitle: 'إصدار فاتورة يدوية', fClient: 'العميل *', fItem: 'البيان', fAmount: 'المبلغ ($) *', fDue: 'الاستحقاق', issueBtn: 'إصدار الفاتورة',
+      fType: 'نوع العملية', dtSale: 'بيع', dtRent: 'إيجار', dtOther: 'أخرى',
+      hNo: 'الفاتورة', hClient: 'العميل', hItem: 'البيان', hAmount: 'المبلغ', hDue: 'الاستحقاق', hStatus: 'الحالة',
+      invEmpty: 'لا توجد فواتير بعد — بتضاف تلقائياً لما توصل صفقة CRM لمرحلة "ناجح"، أو أضف وحدة يدوياً.',
+      autoBadge: 'عمولة تلقائية', collect: 'تحصيل', del: 'حذف', total: 'الإجمالي', collected: 'المحصّل', due: 'المستحق',
+      stPaid: 'مدفوعة', stPending: 'مستحقة', stLate: 'متأخرة',
+      addExpTitle: 'إضافة مصروف', fDesc: 'وصف المصروف *', fCat: 'الفئة', addBtn: 'إضافة',
+      hDesc: 'الوصف', hCat: 'الفئة', hAmount: 'المبلغ', hDate: 'التاريخ', expTotalLabel: 'إجمالي المصاريف',
+      expCats: { marketing: 'تسويق', payroll: 'رواتب', office: 'مكتب وتشغيل', transport: 'مواصلات', other: 'أخرى' },
+      addStaffTitle: 'إضافة موظف جديد', fName: 'الاسم *', fRole: 'المسمى الوظيفي *', fPhone: 'الهاتف', fSalary: 'الراتب ($)', fStatus: 'الحالة',
+      statusFull: 'دوام كامل', statusPart: 'دوام جزئي', agentBadge: 'وكيل مبيعات',
+      hEmployee: 'الموظف', hRole: 'المسمى الوظيفي', hPhone: 'الهاتف', hSalary: 'الراتب',
+      salaryTotalLabel: 'إجمالي الرواتب الشهرية', staffCountFn: (n) => n + ' موظفين',
+      expFile: 'palmas-expenses', invFile: 'palmas-invoices', dealsFile: 'palmas-pipeline', hrFile: 'palmas-payroll', finFile: 'palmas-cashflow', propsFile: 'palmas-properties-revenue',
+      expHead: ['الوصف', 'الفئة', 'المبلغ', 'التاريخ'], invHead: ['الفاتورة', 'العميل', 'البيان', 'المبلغ', 'الاستحقاق', 'الحالة'],
+      dealsHead: ['المرحلة', 'العميل', 'المصدر', 'القيمة', 'الوكيل'], hrHead: ['الاسم', 'الوظيفة', 'الهاتف', 'الراتب', 'الحالة'],
+      finHead: ['البيان', 'التاريخ', 'المبلغ'], propsHead: ['العقار', 'المدينة', 'التصنيف', 'السعر', 'صفقات مرتبطة', 'إيراد محصّل'],
+      expLbl: 'تصدير المصاريف', invLbl: 'تصدير الفواتير', dealsLbl: 'تصدير الصفقات', hrLbl: 'تصدير الرواتب', finLbl: 'تصدير الحركات', propsLbl: 'تصدير العقارات',
+      adminFallback: 'مدير الموقع',
+    } : {
+      panelSub: 'ERP SYSTEM', backAdmin: 'Dashboard', backSite: 'Back to site', logout: 'Log out', roleAdmin: 'Admin', acctSettings: 'Account settings',
+      deniedTitle: 'This ERP is for site administrators', deniedDesc: 'Sign in with the admin account to access the system.', deniedCta: 'Sign in',
+      navLabels: { overview: 'Overview', props: 'Properties', deals: 'Deals', inv: 'Invoices', exp: 'Expenses', hr: 'Staff' },
+      tabs: { overview: { title: 'Financial overview', sub: 'Revenue, profit & expenses — real numbers from recorded invoices and expenses' },
+        props: { title: 'Properties', sub: 'The exact same site property catalog — with each property\'s revenue from linked deals' },
+        deals: { title: 'Deals', sub: 'The exact same CRM pipeline — viewed by value and stage' },
+        inv: { title: 'Invoices', sub: 'Auto commissions from won deals + manual invoices' },
+        exp: { title: 'Expenses', sub: 'Operating, marketing and payroll expenses' },
+        hr: { title: 'Staff', sub: 'One employee directory shared with the CRM (sales agents)' } },
+      kRevenue: 'Revenue collected', kExpenses: 'Total expenses', kProfit: 'Net profit', kPending: 'Pending commissions',
+      cashflowTitle: 'Cash flow — last 7 months', legendIn: 'Collected', legendOut: 'Expenses', cashflowEmpty: 'No financial activity yet — it will show up here once you collect an invoice or log an expense.',
+      recentTitle: 'Recent transactions', recentEmpty: 'No transactions yet.',
+      pfTitle: 'Revenue collected — sale vs. rent', pfSale: 'Sale commissions', pfRent: 'Rental commissions', pfOther: 'Not linked to a property', pfEmpty: 'No revenue collected yet — this splits automatically by property type (sale/rent) once you collect an invoice linked to a property.',
+      dealsHint: 'This is the exact same CRM pipeline — moving a card here reflects instantly in the CRM, and vice versa.', openCrm: 'Open full CRM',
+      pProp: 'Property', pCity: 'City', pCat: 'Category', pPrice: 'Price', pDeals: 'Linked deals', pRevenue: 'Revenue collected', pView: 'View',
+      pTotalLabel: 'Total properties', pRevTotalLabel: 'Total property revenue', fProp: 'Related property', propNone: 'None',
+      addInvTitle: 'Issue a manual invoice', fClient: 'Client *', fItem: 'Description', fAmount: 'Amount ($) *', fDue: 'Due date', issueBtn: 'Issue invoice',
+      fType: 'Deal type', dtSale: 'Sale', dtRent: 'Rent', dtOther: 'Other',
+      hNo: 'Invoice', hClient: 'Client', hItem: 'Description', hAmount: 'Amount', hDue: 'Due', hStatus: 'Status',
+      invEmpty: 'No invoices yet — they are added automatically when a CRM deal reaches "Won", or add one manually.',
+      autoBadge: 'Auto commission', collect: 'Collect', del: 'Delete', total: 'Total', collected: 'Collected', due: 'Due',
+      stPaid: 'Paid', stPending: 'Pending', stLate: 'Late',
+      addExpTitle: 'Add expense', fDesc: 'Expense description *', fCat: 'Category', addBtn: 'Add',
+      hDesc: 'Description', hCat: 'Category', hAmount: 'Amount', hDate: 'Date', expTotalLabel: 'Total expenses',
+      expCats: { marketing: 'Marketing', payroll: 'Payroll', office: 'Office & ops', transport: 'Transport', other: 'Other' },
+      addStaffTitle: 'Add a new employee', fName: 'Name *', fRole: 'Job title *', fPhone: 'Phone', fSalary: 'Salary ($)', fStatus: 'Status',
+      statusFull: 'Full-time', statusPart: 'Part-time', agentBadge: 'Sales agent',
+      hEmployee: 'Employee', hRole: 'Job title', hPhone: 'Phone', hSalary: 'Salary',
+      salaryTotalLabel: 'Total monthly payroll', staffCountFn: (n) => n + ' employees',
+      expFile: 'palmas-expenses', invFile: 'palmas-invoices', dealsFile: 'palmas-pipeline', hrFile: 'palmas-payroll', finFile: 'palmas-cashflow', propsFile: 'palmas-properties-revenue',
+      expHead: ['Description', 'Category', 'Amount', 'Date'], invHead: ['Invoice', 'Client', 'Item', 'Amount', 'Due', 'Status'],
+      dealsHead: ['Stage', 'Client', 'Source', 'Value', 'Agent'], hrHead: ['Name', 'Role', 'Phone', 'Salary', 'Status'],
+      finHead: ['Description', 'Date', 'Amount'], propsHead: ['Property', 'City', 'Category', 'Price', 'Linked deals', 'Revenue collected'],
+      expLbl: 'Export expenses', invLbl: 'Export invoices', dealsLbl: 'Export deals', hrLbl: 'Export payroll', finLbl: 'Export transactions', propsLbl: 'Export properties',
+      adminFallback: 'Site Admin',
+    };
+    const t = T;
+
+    /* ---------------- staff (shared directory) ---------------- */
+    const avCols = ['#f68743', '#4aa8d8', '#a06fe0', '#e0a800', '#1f9d5c', '#e06f9c'];
+    const allStaffRaw = P ? P.allStaff() : [];
+    let salarySum = 0;
+    const staff = allStaffRaw.map((s, i) => {
+      salarySum += +s.salary || 0;
+      const ok = s.status !== 'part';
+      return { id: s.id, name: s.name[lang] || s.name.ar, role: s.role[lang] || s.role.ar, phone: s.phone, salary: this._fmt(s.salary), custom: !!s.custom, isAgent: !!s.agent,
+        status: ok ? t.statusFull : t.statusPart, initial: ((s.name[lang] || s.name.ar || '?')).charAt(0), avBg: s.color || avCols[i % avCols.length],
+        stBg: ok ? 'rgba(246,135,67,.15)' : 'rgba(74,168,216,.14)', stC: ok ? '#d1662a' : '#4aa8d8',
+        del: () => { if (P) P.StaffAdmin.remove(s.id); this.setState({ ready: true }); } };
+    });
+    const agentsList = P ? P.StaffAdmin.agents() : [];
+
+    /* ---------------- CRM leads (shared with CRM.dc.html) ---------------- */
+    const leads = this._leads();
+    const stages = P ? P.CRM.stages(lang) : [];
+
+    /* ---------------- invoices: auto commissions from won deals + manual ---------------- */
+    const COMMISSION_RATE = 0.025;
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const wonLeads = leads.filter(l => l.stage === 'won' && l.value > 0 && st.dismissed.indexOf(l.key) === -1);
+    const autoInv = wonLeads.map(l => {
+      const no = 'COM-' + l.key.replace(/[^a-zA-Z0-9]/g, '').slice(-8).toUpperCase();
+      return { no, client: l.name, item: (ar ? 'عمولة صفقة (2.5%) — ' : 'Deal commission (2.5%) — ') + (l.propName || l.name),
+        amount: Math.round(l.value * COMMISSION_RATE), due: '', auto: true, leadKey: l.key, propId: l.propId || '' };
+    });
+    const manualInv = (st.invAdded || []).map(x => ({ ...x, auto: false }));
+    const allInv = autoInv.concat(manualInv);
+    let totAll = 0, totPaid = 0;
+    const stMeta = { paid: { l: t.stPaid, bg: 'rgba(246,135,67,.15)', c: '#d1662a' }, pending: { l: t.stPending, bg: 'rgba(224,168,0,.16)', c: '#b8860b' }, late: { l: t.stLate, bg: 'rgba(224,36,94,.14)', c: '#e0245e' } };
+    const invoices = allInv.map(v => {
+      const paidVal = st.paid[v.no];
+      const status = paidVal ? 'paid' : (v.due && v.due < todayStr ? 'late' : 'pending');
+      totAll += v.amount; if (status === 'paid') totPaid += v.amount;
+      const m = stMeta[status];
+      const vProp = v.propId && P ? P.propBy(v.propId) : null;
+      return { ...v, amt: this._fmt(v.amount), due: v.due || '—', stLbl: m.l, stBg: m.bg, stC: m.c, canPay: status !== 'paid',
+        hasProp: !!vProp, propLink: 'PropertyDetails.dc.html?id=' + v.propId, propName: vProp ? vProp.name[lang] : '',
+        pay: () => this.setState(s => { const paid = { ...s.paid, [v.no]: todayStr }; this._save('palmas_erp_paid', paid); return { paid }; }),
+        del: () => {
+          if (v.auto) { this.setState(s => { const dismissed = s.dismissed.concat(v.leadKey); this._save('palmas_erp_dismissed', dismissed); return { dismissed }; }); return; }
+          this.setState(s => { const invAdded = s.invAdded.filter(x => x.no !== v.no); this._save('palmas_erp_invadd', invAdded); return { invAdded }; });
+        } };
+    });
+
+    /* ---------------- expenses ---------------- */
+    /* كانت هنا ثلاثة مصاريف وهمية (2,980) تُضاف دائماً لمصاريفك الحقيقية وتُنقص الربح */
+    const allExps = (st.exps || []).map(x => ({ ...x, custom: true }));
+    let expSum = 0;
+    const expenses = allExps.map(x => { expSum += +x.amount; return { ...x, amt: this._fmt(x.amount), cat: t.expCats[x.cat] || x.cat, custom: !!x.custom,
+      del: () => this.setState(s => { const exps = s.exps.filter(e => e.id !== x.id); this._save('palmas_erp_exp', exps); return { exps }; }) }; });
+    const expCatOpts = Object.keys(t.expCats).map(k => ({ id: k, label: t.expCats[k] }));
+
+    /* ---------------- real finance KPIs + cashflow + recent transactions ---------------- */
+    const revenue = totPaid;
+    const profit = revenue - expSum;
+    const pending = totAll - totPaid;
+    const finKpis = [
+      { label: t.kRevenue, val: this._fmt(revenue), sub: invoices.filter(v => v.stLbl === t.stPaid).length + '', valColor: '#f68743' },
+      { label: t.kExpenses, val: this._fmt(expSum), sub: expenses.length + '', valColor: '#e0245e' },
+      { label: t.kProfit, val: this._fmt(profit), sub: '', valColor: 'var(--heading)' },
+      { label: t.kPending, val: this._fmt(pending), sub: invoices.filter(v => v.canPay).length + '', valColor: '#e0a800' },
+    ];
+    /* revenue split by deal type: rent-linked properties vs sale-linked (sale/residential/land) vs unlinked */
+    const revBySplit = { sale: 0, rent: 0, other: 0 }, cntBySplit = { sale: 0, rent: 0, other: 0 };
+    invoices.forEach(v => {
+      if (!st.paid[v.no]) return;
+      const vp = v.propId && P ? P.propBy(v.propId) : null;
+      /* manual invoices carry an explicit dealType picked at issue time (fastest signal);
+         auto commission invoices (from won CRM deals) fall back to the linked property's offer. */
+      const cat = v.dealType || (!vp ? 'other' : (vp.offer === 'rent' ? 'rent' : 'sale'));
+      revBySplit[cat] += v.amount; cntBySplit[cat] += 1;
+    });
+    const splitMax = Math.max(1, revBySplit.sale, revBySplit.rent, revBySplit.other);
+    const profitSplit = [
+      { id: 'sale', label: t.pfSale, val: this._fmt(revBySplit.sale), pct: Math.round(revBySplit.sale / splitMax * 100) + '%', n: cntBySplit.sale, color: '#f68743' },
+      { id: 'rent', label: t.pfRent, val: this._fmt(revBySplit.rent), pct: Math.round(revBySplit.rent / splitMax * 100) + '%', n: cntBySplit.rent, color: '#5fb0e6' },
+      { id: 'other', label: t.pfOther, val: this._fmt(revBySplit.other), pct: Math.round(revBySplit.other / splitMax * 100) + '%', n: cntBySplit.other, color: '#a97fe0' },
+    ];
+    const profitSplitEmpty = revBySplit.sale === 0 && revBySplit.rent === 0 && revBySplit.other === 0;
+    const monthNamesAr = ['ك٢', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران', 'تموز', 'آب', 'أيلول', 'ت١', 'ت٢', 'ك١'];
+    const monthNamesEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const now = new Date();
+    const monthDefs = [];
+    for (let i = 6; i >= 0; i--) { const d = new Date(now.getFullYear(), now.getMonth() - i, 1); monthDefs.push({ key: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'), label: (ar ? monthNamesAr : monthNamesEn)[d.getMonth()] }); }
+    const inByMonth = {}, outByMonth = {};
+    invoices.forEach(v => { const pd = st.paid[v.no]; if (!pd) return; const mk = (typeof pd === 'string' && pd.length >= 7) ? pd.slice(0, 7) : todayStr.slice(0, 7); inByMonth[mk] = (inByMonth[mk] || 0) + v.amount; });
+    expenses.forEach(x => { const mk = (x.date || '').slice(0, 7); if (!mk) return; outByMonth[mk] = (outByMonth[mk] || 0) + (+x.amount || 0); });
+    const cfMax = Math.max(1, ...monthDefs.map(m => Math.max(inByMonth[m.key] || 0, outByMonth[m.key] || 0)));
+    const cashflow = monthDefs.map(m => ({ m: m.label, hIn: Math.round((inByMonth[m.key] || 0) / cfMax * 150) + 'px', hOut: Math.round((outByMonth[m.key] || 0) / cfMax * 150) + 'px' }));
+    const cashflowEmpty = Object.keys(inByMonth).length === 0 && Object.keys(outByMonth).length === 0;
+    const txnsIn = invoices.filter(v => st.paid[v.no]).map(v => ({ txt: (ar ? 'تحصيل ' : 'Collected ') + v.no + ' — ' + v.client, date: (typeof st.paid[v.no] === 'string' ? st.paid[v.no] : todayStr), amt: '+' + this._fmt(v.amount), in: true }));
+    const txnsOut = expenses.map(x => ({ txt: x.desc, date: x.date, amt: '-' + this._fmt(x.amount), in: false }));
+    const txns = txnsIn.concat(txnsOut).sort((a, b) => (b.date || '').localeCompare(a.date || '')).slice(0, 8)
+      .map(x => ({ ...x, sign: x.in ? '↓' : '↑', c: x.in ? '#f68743' : '#e0245e', bg: x.in ? 'rgba(246,135,67,.14)' : 'rgba(224,36,94,.12)' }));
+
+    /* ---------------- deals kanban (= CRM pipeline, shared) ---------------- */
+    this._dragKey = this._dragKey || null;
+    const columns = stages.map(s => {
+      const cards = leads.filter(l => l.stage === s.id).map(l => {
+        const m = P ? P.CRM.sourceMeta(lang, l.source) : { label: l.source, color: '#f68743' };
+        const ag = agentsList.find(a => a.id === l.agent);
+        const lProp = l.propId && P ? P.propBy(l.propId) : null;
+        return { key: l.key, name: l.name, sub: l.propName || m.label, sourceLabel: m.label, sourceColor: m.color,
+          value: l.value ? this._fmt(l.value) : '—', hasAgent: !!ag, agentInitial: ag ? (ag.name[lang] || ag.name.ar || '?').charAt(0) : '', agentColor: ag ? ag.color : '#ccc', agentName: ag ? (ag.name[lang] || ag.name.ar) : '',
+          hasProp: !!lProp, propLink: 'PropertyDetails.dc.html?id=' + l.propId, propName: lProp ? lProp.name[lang] : '',
+          onDragStart: () => { this._dragKey = l.key; } };
+      });
+      const colVal = leads.filter(l => l.stage === s.id).reduce((a, l) => a + (l.value || 0), 0);
+      return { id: s.id, label: s.label, color: s.color, count: String(cards.length), valueLabel: this._fmt(colVal), cards,
+        onDragOver: (e) => e.preventDefault(), onDrop: () => { const k = this._dragKey; if (k) this._setStage(k, s.id); this._dragKey = null; } };
+    });
+
+    /* ---------------- properties: real site catalog + revenue rollup from linked deals ---------------- */
+    const CAT_COLOR = { sale: '#f68743', rent: '#5fb0e6', residential: '#e0a92e', land: '#a97fe0' };
+    const allPropsRaw = P ? P.allProperties() : [];
+    const revenueByProp = {}, dealsByProp = {};
+    leads.forEach(l => { if (l.propId) dealsByProp[l.propId] = (dealsByProp[l.propId] || 0) + 1; });
+    invoices.forEach(v => { if (v.propId && st.paid[v.no]) revenueByProp[v.propId] = (revenueByProp[v.propId] || 0) + v.amount; });
+    let propsRevSum = 0;
+    const propRows = allPropsRaw.map(x => {
+      const isLand = x.type === 'land';
+      const catLabel = P ? (isLand ? P.LABELS[lang].offer.landOffer : P.LABELS[lang].offer[x.offer]) : x.offer;
+      const rev = revenueByProp[x.id] || 0; propsRevSum += rev;
+      const city = P ? P.cityBy(x.cityKey) : null;
+      return { id: x.id, name: x.name[lang], city: city ? city[lang] : '—', catLabel, catBg: CAT_COLOR[isLand ? 'land' : x.offer] || '#f68743',
+        priceLbl: P ? P.price(x, lang) : ('$' + x.price), dealsCount: dealsByProp[x.id] || 0, revenueLbl: this._fmt(rev),
+        href: 'PropertyDetails.dc.html?id=' + x.id, _rev: rev };
+    }).sort((a, b) => b._rev - a._rev);
+    const propOpts = [{ id: '', label: t.propNone }].concat(allPropsRaw.map(x => ({ id: x.id, label: x.name[lang] })));
+
+    const navMeta = [ { id: 'overview', icon: 'grid' }, { id: 'props', icon: 'home' }, { id: 'deals', icon: 'crm' }, { id: 'inv', icon: 'invoice' }, { id: 'exp', icon: 'wallet' }, { id: 'hr', icon: 'users' } ];
+    const navItems = navMeta.map(n => ({ id: n.id, label: t.navLabels[n.id],
+      iconEl: this._icon(n.icon, n.id === tab ? '#fff' : '#f68743', 18),
+      bg: n.id === tab ? '#f68743' : 'transparent', color: n.id === tab ? '#fff' : 'var(--body)',
+      shadow: n.id === tab ? '0 8px 20px rgba(246,135,67,.3)' : 'none',
+      go: () => this.setState({ tab: n.id }) }));
+
+    const exportMeta = {
+      overview: { label: t.finLbl, file: t.finFile, head: t.finHead, rows: txns.map(x => [x.txt, x.date, x.amt]) },
+      deals: { label: t.dealsLbl, file: t.dealsFile, head: t.dealsHead, rows: leads.map(l => [(stages.find(s => s.id === l.stage) || {}).label || l.stage, l.name, (P ? P.CRM.sourceMeta(lang, l.source).label : l.source), l.value, (agentsList.find(a => a.id === l.agent) || {}).name ? (agentsList.find(a => a.id === l.agent).name[lang] || '') : '']) },
+      inv: { label: t.invLbl, file: t.invFile, head: t.invHead, rows: invoices.map(v => [v.no, v.client, v.item, v.amount, v.due, v.stLbl]) },
+      exp: { label: t.expLbl, file: t.expFile, head: t.expHead, rows: expenses.map(x => [x.desc, x.cat, x.amount, x.date || '']) },
+      hr: { label: t.hrLbl, file: t.hrFile, head: t.hrHead, rows: staff.map(s => [s.name, s.role, s.phone, s.salary, s.status]) },
+      props: { label: t.propsLbl, file: t.propsFile, head: t.propsHead, rows: propRows.map(p => [p.name, p.city, p.catLabel, p.priceLbl, p.dealsCount, p.revenueLbl]) },
+    };
+    const em = exportMeta[tab];
+    const adminName = (st.session && st.session.name) || t.adminFallback;
+    const colorScheme = dark ? 'dark' : 'light';
+
+    return {
+      t, dir: ar ? 'rtl' : 'ltr', authed, denied, navItems,
+      adminName, adminInitial: (adminName || '?').toString().trim().charAt(0),
+      isDark: dark, isLight: !dark, colorScheme,
+      langLabel: ar ? 'EN' : 'ع',
+      themeTitle: ar ? (dark ? 'الوضع الفاتح' : 'الوضع الداكن') : (dark ? 'Light mode' : 'Dark mode'),
+      canExport: !!em && (em.rows || []).length > 0,
+      exportLabel: em ? em.label : '',
+      exportCsv: () => { if (em) this._downloadCsv(em.file, [em.head].concat(em.rows)); },
+      tabTitle: t.tabs[tab].title, tabSub: t.tabs[tab].sub,
+      isOverview: tab === 'overview', isProps: tab === 'props', isDeals: tab === 'deals', isInv: tab === 'inv', isExp: tab === 'exp', isHr: tab === 'hr',
+      finKpis, cashflow, cashflowEmpty, txns, txnsEmpty: txns.length === 0,
+      profitSplit, profitSplitEmpty,
+      columns,
+      propRows, propsCount: propRows.length, propsRevTotal: this._fmt(propsRevSum), propOpts,
+      invoices, invEmpty: invoices.length === 0, invTotal: this._fmt(totAll), invPaid: this._fmt(totPaid), invDue: this._fmt(totAll - totPaid),
+      expenses, expTotal: this._fmt(expSum), expCatOpts,
+      staff, salaryTotal: this._fmt(salarySum), staffCount: t.staffCountFn(staff.length),
+      eDescRef: this.eDescRef, eCatRef: this.eCatRef, eAmtRef: this.eAmtRef,
+      iClientRef: this.iClientRef, iItemRef: this.iItemRef, iAmtRef: this.iAmtRef, iDueRef: this.iDueRef, iPropRef: this.iPropRef, iTypeRef: this.iTypeRef,
+      onInvPropPick: (e) => {
+        const pid = e.target.value; const vp = pid && P ? P.propBy(pid) : null;
+        if (vp && this.iTypeRef.current) this.iTypeRef.current.value = vp.offer === 'rent' ? 'rent' : 'sale';
+      },
+      sNameRef: this.sNameRef, sRoleRef: this.sRoleRef, sPhoneRef: this.sPhoneRef, sSalRef: this.sSalRef, sStatusRef: this.sStatusRef,
+      addInv: (e) => {
+        e.preventDefault();
+        const g = r => r.current ? r.current.value.trim() : '';
+        const client = g(this.iClientRef), amt = g(this.iAmtRef);
+        if (!client || !amt) return;
+        const no = 'INV-' + (2000 + st.invAdded.length + 1);
+        const nv = { no, client, item: g(this.iItemRef) || '—', amount: +amt, due: g(this.iDueRef) || '', propId: (this.iPropRef.current && this.iPropRef.current.value) || '', dealType: (this.iTypeRef.current && this.iTypeRef.current.value) || 'sale' };
+        this.setState(s => { const invAdded = s.invAdded.concat(nv); this._save('palmas_erp_invadd', invAdded); return { invAdded }; });
+        [this.iClientRef, this.iItemRef, this.iAmtRef, this.iDueRef].forEach(r => { if (r.current) r.current.value = ''; });
+        if (this.iPropRef.current) this.iPropRef.current.value = '';
+        if (this.iTypeRef.current) this.iTypeRef.current.value = 'sale';
+      },
+      addStaff: (e) => {
+        e.preventDefault();
+        if (!P) return;
+        const g = r => r.current ? r.current.value.trim() : '';
+        const name = g(this.sNameRef), role = g(this.sRoleRef);
+        if (!name || !role) return;
+        const statusSel = (this.sStatusRef.current && this.sStatusRef.current.value) || 'full';
+        P.StaffAdmin.add({ name: { ar: name, en: name }, role: { ar: role, en: role }, phone: g(this.sPhoneRef) || '—',
+          salary: +g(this.sSalRef) || 0, status: statusSel, agent: false });
+        [this.sNameRef, this.sRoleRef, this.sPhoneRef, this.sSalRef].forEach(r => { if (r.current) r.current.value = ''; });
+        this.setState({ ready: true });
+      },
+      addExp: (e) => {
+        e.preventDefault();
+        const desc = this.eDescRef.current ? this.eDescRef.current.value.trim() : '', amt = this.eAmtRef.current ? this.eAmtRef.current.value : '';
+        if (!desc || !amt) return;
+        const nx = { id: 'e' + Date.now(), desc, cat: (this.eCatRef.current && this.eCatRef.current.value) || 'other', amount: +amt, date: todayStr };
+        this.setState(s => { const exps = s.exps.concat(nx); this._save('palmas_erp_exp', exps); return { exps }; });
+        this.eDescRef.current.value = ''; this.eAmtRef.current.value = '';
+      },
+      toggleTheme: () => { const nt = dark ? 'light' : 'dark'; try { localStorage.setItem('palmas_theme', nt); } catch (e) {} document.documentElement.setAttribute('data-theme', nt); this.setState({ theme: nt }); },
+      toggleLang: () => { const nl = ar ? 'en' : 'ar'; try { localStorage.setItem('palmas_lang', nl); } catch (e) {} document.documentElement.lang = nl; document.documentElement.dir = nl === 'en' ? 'ltr' : 'rtl'; this.setState({ lang: nl }); },
+      logout: () => { const PP = window.Palmas; if (PP) PP.API.signOut(); else { try { localStorage.removeItem('palmas_session'); } catch (e) {} } location.href = 'Palmas Home.dc.html'; },
+      acctMenuOpen: st.acctMenuOpen, toggleAcctMenu: () => this.setState(s => ({ acctMenuOpen: !s.acctMenuOpen })),
+    };
+  }
+  _icon(n, c, s) {
+    const P = (d) => React.createElement('svg', { width: s, height: s, viewBox: '0 0 24 24', fill: 'none', stroke: c, strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round', key: n },
+      ...d.map((dd, i) => React.createElement(dd.tag || 'path', { key: i, ...dd })));
+    const icons = {
+      grid: [{ tag: 'rect', x: 3, y: 3, width: 7, height: 9, rx: 1.5 }, { tag: 'rect', x: 14, y: 3, width: 7, height: 5, rx: 1.5 }, { tag: 'rect', x: 14, y: 12, width: 7, height: 9, rx: 1.5 }, { tag: 'rect', x: 3, y: 16, width: 7, height: 5, rx: 1.5 }],
+      home: [{ d: 'M3 10.5 12 3l9 7.5' }, { d: 'M5 9.5V21h14V9.5' }, { d: 'M9 21v-6h6v6' }],
+      users: [{ d: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2' }, { tag: 'circle', cx: 9, cy: 7, r: 4 }, { d: 'M23 21v-2a4 4 0 0 0-3-3.87' }, { d: 'M16 3.13a4 4 0 0 1 0 7.75' }],
+      crm: [{ tag: 'rect', x: 3, y: 4, width: 5, height: 16, rx: 1.5 }, { tag: 'rect', x: 10, y: 4, width: 5, height: 11, rx: 1.5 }, { tag: 'rect', x: 17, y: 4, width: 4, height: 7, rx: 1.5 }],
+      invoice: [{ d: 'M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z' }, { d: 'M14 3v6h6' }, { tag: 'line', x1: 9, y1: 13, x2: 15, y2: 13 }, { tag: 'line', x1: 9, y1: 17, x2: 13, y2: 17 }],
+      wallet: [{ d: 'M20 12V8H6a2 2 0 0 1 0-4h12v4' }, { d: 'M4 6v12a2 2 0 0 0 2 2h14v-4' }, { tag: 'circle', cx: 18, cy: 14, r: 1.5 }],
+    };
+    return P(icons[n] || icons.grid);
+  }
+}
+</script>
+</body>
+</html>

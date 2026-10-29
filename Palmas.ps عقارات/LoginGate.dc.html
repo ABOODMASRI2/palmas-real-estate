@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+@keyframes lgFade{from{opacity:0}to{opacity:1}}
+@keyframes lgUp{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+<sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+<div dir="{{ dir }}" onClick="{{ close }}" style="position:fixed;inset:0;z-index:2147483200;background:rgba(8,8,12,.6);backdrop-filter:blur(6px);display:grid;place-items:center;padding:22px;font-family:'Cairo',sans-serif;animation:lgFade .25s ease both">
+  <div onClick="{{ stopEv }}" style="width:100%;max-width:420px;background:{{ cardBg }};border:1px solid {{ border }};border-radius:26px;box-shadow:0 30px 90px rgba(0,0,0,.45);padding:40px 34px 34px;text-align:center;animation:lgUp .34s cubic-bezier(.25,.8,.35,1) both;position:relative">
+    <button onClick="{{ close }}" title="{{ t.close }}" style="position:absolute;top:16px;inset-inline-end:16px;width:34px;height:34px;border:1px solid {{ border }};background:transparent;border-radius:11px;color:{{ sub }};cursor:pointer;display:grid;place-items:center;transition:all .3s ease" style-hover="color:#e0245e;border-color:rgba(224,36,94,.4)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+    <div style="width:70px;height:70px;margin:0 auto 20px;border-radius:50%;background:rgba(246,135,67,.14);display:grid;place-items:center">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+    </div>
+    <div style="font-weight:900;font-size:22px;color:{{ heading }};margin-bottom:10px">{{ t.title }}</div>
+    <div style="color:{{ sub }};font-size:14.5px;line-height:1.9;margin-bottom:26px">{{ t.desc }}</div>
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <button onClick="{{ goLogin }}" style="background:#f68743;border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:15px;padding:14px;border-radius:24px;cursor:pointer;box-shadow:0 10px 26px rgba(246,135,67,.3);transition:all .35s ease" style-hover="background:#d1662a;transform:translateY(-2px)">{{ t.login }}</button>
+      <button onClick="{{ goSignup }}" style="background:transparent;border:1px solid {{ border }};color:{{ heading }};font-family:'Cairo',sans-serif;font-weight:800;font-size:15px;padding:13px;border-radius:24px;cursor:pointer;transition:all .3s ease" style-hover="border-color:#f68743;color:#f68743">{{ t.signup }}</button>
+    </div>
+    <button onClick="{{ close }}" style="margin-top:16px;background:none;border:none;color:{{ sub }};font-family:'Cairo',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:color .3s ease" style-hover="color:#f68743">{{ t.dismiss }}</button>
+  </div>
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 460, &quot;height&quot;: 420}}">
+class Component extends DCLogic {
+  state = { open: false, theme: 'light', lang: 'ar' };
+  componentDidMount() {
+    this._read();
+    this._onReq = () => {
+      this._read();
+      try { if (!localStorage.getItem('palmas_return')) localStorage.setItem('palmas_return', (location.href.split('/').pop()) || 'Palmas Home.dc.html'); } catch (e) {}
+      try { document.body.style.overflow = 'hidden'; } catch (e) {}
+      this.setState({ open: true });
+    };
+    this._onStorage = (e) => { if (e.key === 'palmas_theme' || e.key === 'palmas_lang') this._read(); };
+    window.addEventListener('palmas:require-login', this._onReq);
+    window.addEventListener('storage', this._onStorage);
+  }
+  componentWillUnmount() {
+    if (this._onReq) window.removeEventListener('palmas:require-login', this._onReq);
+    if (this._onStorage) window.removeEventListener('storage', this._onStorage);
+    try { document.body.style.overflow = ''; } catch (e) {}
+  }
+  _read() {
+    try { const t = localStorage.getItem('palmas_theme'); this.setState({ theme: (t === 'dark') ? 'dark' : 'light' }); } catch (e) {}
+    try { const l = localStorage.getItem('palmas_lang'); this.setState({ lang: (l === 'en') ? 'en' : 'ar' }); } catch (e) {}
+  }
+  _close() { this.setState({ open: false }); try { document.body.style.overflow = ''; } catch (e) {} }
+  renderVals() {
+    const lang = this.state.lang || 'ar';
+    const dark = this.state.theme === 'dark';
+    const ar = lang !== 'en';
+    const t = ar ? {
+      title: 'سجّل الدخول للمتابعة',
+      desc: 'لإضافة العقارات إلى قائمة رغباتك أو حجز معاينة، سجّل دخولك أو أنشئ حساباً جديداً — مجاناً وبثوانٍ.',
+      login: 'تسجيل الدخول', signup: 'إنشاء حساب جديد', dismiss: 'المتابعة في التصفح', close: 'إغلاق',
+    } : {
+      title: 'Sign in to continue',
+      desc: 'To save properties to your wishlist or book a viewing, sign in or create a free account — it takes seconds.',
+      login: 'Sign in', signup: 'Create an account', dismiss: 'Keep browsing', close: 'Close',
+    };
+    return {
+      open: this.state.open, dir: ar ? 'rtl' : 'ltr', t,
+      cardBg: dark ? '#1b1b1e' : '#ffffff',
+      heading: dark ? '#f7f7f5' : '#141414',
+      sub: dark ? 'rgba(247,247,245,.6)' : '#6c6c70',
+      border: dark ? 'rgba(255,255,255,.14)' : 'rgba(20,20,22,.1)',
+      close: () => this._close(), stopEv: (e) => e.stopPropagation(),
+      goLogin: () => { location.href = 'Auth.dc.html'; },
+      goSignup: () => { location.href = 'Auth.dc.html?mode=signup'; },
+    };
+  }
+}
+</script>
+</body>
+</html>

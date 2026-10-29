@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+.sh-nav-dark{display:block}
+.sh-nav-light{display:none}
+html[data-theme='dark'] .sh-nav-dark{display:none}
+html[data-theme='dark'] .sh-nav-light{display:block}
+.sh-link{color:var(--body,#4b4b4d);font-size:15px;font-weight:600;transition:color .3s ease;text-decoration:none;white-space:nowrap}
+.sh-link:hover{color:var(--accent,#f68743)}
+.sh-icon{width:42px;height:42px;border-radius:50%;border:1px solid var(--line,var(--hairline,rgba(20,20,22,.1)));background:transparent;display:grid;place-items:center;cursor:pointer;transition:transform .3s ease,border-color .3s ease;text-decoration:none;font-family:'Cairo',sans-serif}
+.sh-icon:hover{transform:translateY(-2px);border-color:var(--accent,#f68743)}
+.sh-cta{transition:transform .35s cubic-bezier(.25,.8,.35,1),box-shadow .35s ease;text-decoration:none}
+.sh-cta:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(246,135,67,.38)}
+.sh-menu-item{text-decoration:none;transition:background .25s ease}
+.sh-menu-item:hover{background:rgba(246,135,67,.12)}
+@keyframes shMenu{from{opacity:0;transform:translateY(-8px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes shFade{from{opacity:0}to{opacity:1}}
+@keyframes shPop{from{opacity:0;transform:translateY(22px) scale(.96)}to{opacity:1;transform:none}}
+.sh-cta{border:none;cursor:pointer}
+/* الجوال: الروابط في درج القائمة، واللغة والعملة داخله، وزر "اعرض عقارك" أيقونة فقط */
+.sh-burger{display:none}
+@media (max-width:1100px){.sh-nav{display:none!important}.sh-burger{display:grid!important}}
+@media (max-width:600px){.sh-hide-sm{display:none!important}.sh-cta-txt{display:none!important}.sh-cta-btn{padding:0!important;width:42px;height:42px;justify-content:center}.sh-row{gap:8px!important}.sh-logo img{height:28px!important}}
+@media (max-width:360px){.sh-icon{width:38px!important;height:38px!important}.sh-cta-btn{width:38px!important;height:38px!important}}
+@keyframes shDrawer{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+/* بعض الصفحات لا تعرّف لون الهيدر للوضع الداكن، فيبقى فاتحاً ونصّه الفاتح باهتاً فوقه */
+html[data-theme='dark'] .sh-bar{background:rgba(13,13,15,.72)!important;border-bottom-color:rgba(255,255,255,.1)!important}
+</style>
+<script src="palmas-core.js"></script>
+<script src="palmas-config.js"></script>
+<script src="palmas-backend.js"></script>
+</helmet>
+<header class="sh-bar" dir="{{ dir }}" style="position:sticky;top:0;z-index:100;background:var(--glass,var(--header-bg,rgba(237,238,240,.82)));backdrop-filter:blur(16px);border-bottom:1px solid var(--line,var(--hairline,rgba(20,20,22,.1)));view-transition-name:site-header">
+  <div style="max-width:min(1680px,94vw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px clamp(16px,4vw,40px)">
+    <a href="Palmas Home.dc.html" class="sh-logo" style="display:flex;align-items:center;flex-shrink:0">
+      <img class="sh-nav-dark" src="uploads/palmas-logo-dark.png" alt="PALMAS.ps" decoding="sync" style="height:34px;width:auto">
+      <img class="sh-nav-light" src="uploads/palmas-logo.png" alt="PALMAS.ps" decoding="sync" style="height:34px;width:auto">
+    </a>
+    <nav class="sh-nav" style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:center">
+      <sc-for list="{{ links }}" as="l" hint-placeholder-count="6">
+        <a class="sh-link" href="{{ l.href }}">{{ l.label }}</a>
+      </sc-for>
+    </nav>
+    <div class="sh-row" style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <sc-if value="{{ loggedIn }}" hint-placeholder-val="{{ false }}">
+        <a href="Wishlist.dc.html" class="sh-icon" title="{{ wishMenuLabel }}" style="position:relative;color:var(--ink,var(--heading,#141414))">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path></svg>
+          <sc-if value="{{ hasWish }}" hint-placeholder-val="{{ false }}">
+            <span style="position:absolute;top:-4px;inset-inline-end:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#e0245e;color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;line-height:1">{{ wishCount }}</span>
+          </sc-if>
+        </a>
+      </sc-if>
+      <button onClick="{{ toggleLang }}" class="sh-icon sh-hide-sm" title="Language" style="width:auto;padding:0 15px;border-radius:21px;font-weight:800;font-size:13px;color:var(--accent,#f68743)">{{ langLabel }}</button>
+      <div ref="{{ curMenuRef }}" class="sh-hide-sm" style="position:relative">
+        <button onClick="{{ toggleCurMenu }}" class="sh-icon" title="{{ currencyTitle }}" style="width:auto;padding:0 12px 0 15px;border-radius:21px;display:flex;align-items:center;gap:6px">
+          <span style="font-weight:800;font-size:12.5px;color:var(--ink,var(--heading,#141414));white-space:nowrap">{{ currencyValueLabel }}</span>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--dim,rgba(20,20,22,.5))" stroke-width="2.6"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <sc-if value="{{ curMenuOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;top:calc(100% + 10px);inset-inline-end:0;min-width:130px;background:{{ menuBg }};border:1px solid {{ menuBorder }};border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.28);padding:6px;z-index:200;animation:shMenu .3s cubic-bezier(.25,.8,.35,1) both">
+            <sc-for list="{{ currencyOpts }}" as="o" hint-placeholder-count="4">
+              <button onClick="{{ o.pick }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;border:none;text-align:start;padding:9px 12px;border-radius:10px;background:{{ o.bg }};color:{{ o.color }};font-family:'Cairo',sans-serif;font-weight:700;font-size:13.5px;cursor:pointer" style-hover="background:rgba(246,135,67,.14)">
+                {{ o.label }}
+                <sc-if value="{{ o.active }}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg></sc-if>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+      <button onClick="{{ toggleTheme }}" class="sh-icon" title="{{ themeTitle }}">
+        <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink,var(--heading,#141414))" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"></path></svg></sc-if>
+        <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink,var(--heading,#141414))" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></sc-if>
+      </button>
+      <sc-if value="{{ loggedOut }}" hint-placeholder-val="{{ true }}">
+        <a href="Auth.dc.html" class="sh-icon" title="{{ loginTitle }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink,var(--heading,#141414))" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></a>
+      </sc-if>
+      <sc-if value="{{ loggedIn }}" hint-placeholder-val="{{ false }}">
+        <div ref="{{ menuRef }}" style="position:relative">
+          <button onClick="{{ toggleMenu }}" class="sh-icon" title="{{ acctName }}" style="background:linear-gradient(140deg,#f68743,#d1662a);border-color:transparent;color:#121212;font-weight:900;font-size:16px">{{ initial }}</button>
+          <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;top:calc(100% + 12px);inset-inline-end:0;min-width:218px;background:{{ menuBg }};border:1px solid {{ menuBorder }};border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.28);padding:8px;z-index:200;animation:shMenu .3s cubic-bezier(.25,.8,.35,1) both">
+              <div style="padding:10px 12px 12px;border-bottom:1px solid {{ menuBorder }};margin-bottom:6px">
+                <div style="font-weight:800;font-size:14.5px;color:{{ menuText }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ acctName }}</div>
+                <div style="font-size:12px;color:{{ menuSub }};direction:ltr;text-align:start;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">{{ acctEmail }}</div>
+              </div>
+              <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+                <a href="Admin.dc.html" class="sh-menu-item" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;color:{{ menuText }};font-size:14px;font-weight:700"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>{{ dashLabel }}</a>
+              </sc-if>
+              <a href="Account.dc.html" class="sh-menu-item" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;color:{{ menuText }};font-size:14px;font-weight:700"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>{{ settingsLabel }}</a>
+              <a href="Wishlist.dc.html" class="sh-menu-item" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;color:{{ menuText }};font-size:14px;font-weight:700"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path></svg>{{ wishMenuLabel }}</a>
+              <button onClick="{{ logout }}" class="sh-menu-item" style="display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border:none;border-radius:11px;background:none;color:#e0245e;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-align:start"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>{{ logoutLabel }}</button>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+      <button onClick="{{ openList }}" class="sh-cta sh-cta-btn" title="{{ listLabel }}" style="display:inline-flex;align-items:center;gap:8px;background:var(--accent,#f68743);color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;padding:11px 20px;border-radius:24px;box-shadow:0 10px 26px rgba(246,135,67,.28)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path></svg>
+        <span class="sh-cta-txt">{{ listLabel }}</span>
+      </button>
+      <button onClick="{{ toggleDrawer }}" class="sh-icon sh-burger" title="{{ menuLabel }}" aria-label="{{ menuLabel }}" aria-expanded="{{ drawerExpanded }}" style="color:var(--ink,var(--heading,#141414))">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="{{ burgerPath }}"></path></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<sc-if value="{{ drawerOpen }}" hint-placeholder-val="{{ false }}">
+  <div dir="{{ dir }}" onClick="{{ closeDrawer }}" style="position:fixed;inset:0;z-index:95;background:rgba(8,9,11,.45);animation:shFade .25s ease both"></div>
+  <div dir="{{ dir }}" style="position:fixed;top:66px;inset-inline:12px;z-index:99;background:{{ menuBg }};border:1px solid {{ menuBorder }};border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,.28);padding:10px;font-family:'Cairo',sans-serif;max-height:calc(100vh - 90px);overflow-y:auto;animation:shDrawer .3s cubic-bezier(.25,.8,.35,1) both">
+    <sc-for list="{{ links }}" as="l" hint-placeholder-count="7">
+      <a href="{{ l.href }}" class="sh-menu-item" style="display:block;padding:13px 14px;border-radius:12px;color:{{ menuText }};font-size:15.5px;font-weight:700">{{ l.label }}</a>
+    </sc-for>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px solid {{ menuBorder }};margin-top:6px;padding:12px 4px 4px">
+      <button onClick="{{ toggleLang }}" style="border:1px solid {{ menuBorder }};background:transparent;color:#f68743;font-family:'Cairo',sans-serif;font-weight:800;font-size:13.5px;padding:8px 16px;border-radius:18px;cursor:pointer">{{ langName }}</button>
+      <sc-for list="{{ currencyOpts }}" as="o" hint-placeholder-count="4">
+        <button onClick="{{ o.pick }}" style="border:1px solid {{ menuBorder }};background:{{ o.bg }};color:{{ o.color }};font-family:'Cairo',sans-serif;font-weight:700;font-size:12.5px;padding:8px 12px;border-radius:18px;cursor:pointer">{{ o.label }}</button>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ listOpen }}" hint-placeholder-val="{{ false }}">
+  <div dir="{{ dir }}" onClick="{{ closeList }}" style="position:fixed;inset:0;z-index:1900;display:grid;place-items:center;padding:20px;background:rgba(8,9,11,.62);backdrop-filter:blur(6px);animation:shFade .3s ease both;font-family:'Cairo',sans-serif">
+    <div onClick="{{ stopList }}" style="position:relative;width:100%;max-width:480px;max-height:92vh;overflow:auto;background:{{ modalBg }};border:1px solid {{ modalBorder }};border-radius:24px;padding:32px 30px 26px;box-shadow:0 40px 90px rgba(0,0,0,.5);animation:shPop .5s cubic-bezier(.25,.8,.35,1) both">
+      <button onClick="{{ closeList }}" title="{{ closeLbl }}" style="position:absolute;top:16px;inset-inline-end:16px;width:34px;height:34px;border:none;border-radius:50%;background:{{ fieldBg }};color:{{ mDim }};cursor:pointer;display:grid;place-items:center;transition:background .3s ease" style-hover="background:rgba(246,135,67,.2)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+      </button>
+      <sc-if value="{{ listForm }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+          <span style="width:46px;height:46px;min-width:46px;border-radius:13px;background:rgba(246,135,67,.14);display:grid;place-items:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path></svg></span>
+          <h2 style="margin:0;font-size:20px;font-weight:800;color:{{ mHeading }};line-height:1.35">{{ listTitle }}</h2>
+        </div>
+        <p style="margin:0 0 20px;font-size:13.5px;line-height:1.8;color:{{ mDim }}">{{ listSub }}</p>
+        <form onSubmit="{{ submitList }}" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <input ref="{{ lNameRef }}" placeholder="{{ f.name }}" style="grid-column:1/-1;background:{{ fieldBg }};border:1.5px solid {{ fieldBorder }};border-radius:12px;padding:13px 15px;color:{{ fieldFg }};font-size:14.5px;outline:none;transition:border-color .3s ease" style-focus="border-color:#f68743">
+          <input ref="{{ lPhoneRef }}" placeholder="{{ f.phone }}" style="direction:ltr;text-align:start;background:{{ fieldBg }};border:1.5px solid {{ fieldBorder }};border-radius:12px;padding:13px 15px;color:{{ fieldFg }};font-size:14.5px;outline:none;transition:border-color .3s ease" style-focus="border-color:#f68743">
+          <input ref="{{ lCityRef }}" placeholder="{{ f.city }}" style="background:{{ fieldBg }};border:1.5px solid {{ fieldBorder }};border-radius:12px;padding:13px 15px;color:{{ fieldFg }};font-size:14.5px;outline:none;transition:border-color .3s ease" style-focus="border-color:#f68743">
+          <select ref="{{ lTypeRef }}" style="background:{{ fieldBg }};border:1.5px solid {{ fieldBorder }};border-radius:12px;padding:13px 12px;color:{{ fieldFg }};font-size:14.5px;outline:none;cursor:pointer">
+            <option value="sale">{{ f.sale }}</option><option value="rent">{{ f.rent }}</option>
+          </select>
+          <select ref="{{ lPropTypeRef }}" style="background:{{ fieldBg }};border:1.5px solid {{ fieldBorder }};border-radius:12px;padding:13px 12px;color:{{ fieldFg }};font-size:14.5px;outline:none;cursor:pointer">
+            <sc-for list="{{ listTypeOpts }}" as="o" hint-placeholder-count="6"><option value="{{ o.id }}">{{ o.label }}</option></sc-for>
+          </select>
+          <div style="grid-column:1/-1;display:grid;grid-template-columns:2fr 1fr;gap:8px">
+            <input ref="{{ lPriceRef }}" placeholder="{{ f.price }}" style="background:{{ fieldBg }};border:1.5px solid {{ fieldBorder }};border-radius:12px;padding:13px 15px;color:{{ fieldFg }};font-size:14.5px;outline:none;transition:border-color .3s ease" style-focus="border-color:#f68743">
+            <select ref="{{ lCurrencyRef }}" style="background:{{ fieldBg }};border:1.5px solid {{ fieldBorder }};border-radius:12px;padding:13px 8px;color:{{ fieldFg }};font-size:13.5px;outline:none;cursor:pointer">
+              <sc-for list="{{ listCurrencyOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.id }}">{{ o.label }}</option></sc-for>
+            </select>
+          </div>
+          <textarea ref="{{ lNotesRef }}" placeholder="{{ f.notes }}" rows="3" style="grid-column:1/-1;background:{{ fieldBg }};border:1.5px solid {{ fieldBorder }};border-radius:12px;padding:13px 15px;color:{{ fieldFg }};font-size:14.5px;outline:none;resize:vertical;font-family:'Cairo',sans-serif;transition:border-color .3s ease" style-focus="border-color:#f68743"></textarea>
+          <sc-if value="{{ listErr }}" hint-placeholder-val="{{ false }}">
+            <div style="grid-column:1/-1;color:#e0245e;font-size:12.5px;font-weight:700;margin-top:-4px">{{ errMsg }}</div>
+          </sc-if>
+          <button type="submit" style="grid-column:1/-1;margin-top:4px;background:linear-gradient(135deg,#f68743,#d1662a);border:none;border-radius:14px;padding:14px;font-family:'Cairo',sans-serif;font-weight:800;font-size:15.5px;color:#fff;cursor:pointer;box-shadow:0 10px 24px rgba(246,135,67,.3);transition:transform .4s cubic-bezier(.25,.8,.35,1),box-shadow .4s ease" style-hover="transform:translateY(-2px);box-shadow:0 16px 32px rgba(246,135,67,.42)">{{ submitLbl }}</button>
+        </form>
+      </sc-if>
+      <sc-if value="{{ listSent }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center;padding:18px 6px 10px">
+          <div style="width:74px;height:74px;margin:0 auto 18px;border-radius:50%;background:rgba(31,157,92,.14);display:grid;place-items:center"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#1f9d5c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>
+          <h2 style="margin:0 0 10px;font-size:21px;font-weight:800;color:{{ mHeading }}">{{ sentTitle }}</h2>
+          <p style="margin:0 0 22px;font-size:14px;line-height:1.8;color:{{ mDim }}">{{ sentSub }}</p>
+          <button onClick="{{ closeList }}" style="background:{{ fieldBg }};border:1.5px solid {{ fieldBorder }};border-radius:13px;padding:12px 32px;font-family:'Cairo',sans-serif;font-weight:800;font-size:14.5px;color:{{ mHeading }};cursor:pointer;transition:all .35s ease" style-hover="border-color:#f68743;color:#f68743">{{ doneLbl }}</button>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1320, &quot;height&quot;: 76}, &quot;dir&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;rtl&quot;, &quot;ltr&quot;], &quot;default&quot;: &quot;rtl&quot;, &quot;tsType&quot;: &quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { theme: null, lang: null, session: null, menuOpen: false, curMenuOpen: false, drawerOpen: false, listOpen: false, listSent: false, listErr: false, wishCount: 0, currency: null };
+  menuRef = React.createRef();
+  curMenuRef = React.createRef();
+  lNameRef = React.createRef(); lPhoneRef = React.createRef(); lCityRef = React.createRef(); lTypeRef = React.createRef(); lPriceRef = React.createRef(); lNotesRef = React.createRef();
+  lPropTypeRef = React.createRef(); lCurrencyRef = React.createRef();
+  _syncAccount() {
+    const P = window.Palmas;
+    if (!P) { this._boot = setTimeout(() => this._syncAccount(), 60); return; }
+    const s = P.API.session();
+    this.setState({ session: (s && s.loggedIn) ? s : null, wishCount: P.API.favorites().length, currency: P.Currency.viewCurrency() || 'auto' });
+    if (!this._offAuth) this._offAuth = P.API.onAuthChange(() => this._syncAccount());
+  }
+  componentDidMount() {
+    try { const t = localStorage.getItem('palmas_theme'); const th = (t === 'light' || t === 'dark') ? t : 'light'; document.documentElement.setAttribute('data-theme', th); this.setState({ theme: th }); } catch(e) { this.setState({ theme: 'light' }); }
+    try { const l = localStorage.getItem('palmas_lang'); const lg = (l === 'ar' || l === 'en') ? l : 'ar'; this.setState({ lang: lg }); } catch(e) { this.setState({ lang: 'ar' }); }
+    this._syncAccount();
+    this._onDocClick = (e) => {
+      if (this.state.menuOpen && this.menuRef.current && !this.menuRef.current.contains(e.target)) this.setState({ menuOpen: false });
+      if (this.state.curMenuOpen && this.curMenuRef.current && !this.curMenuRef.current.contains(e.target)) this.setState({ curMenuOpen: false });
+    };
+    document.addEventListener('mousedown', this._onDocClick);
+  }
+  componentWillUnmount() {
+    if (this._onDocClick) document.removeEventListener('mousedown', this._onDocClick);
+  }
+  renderVals() {
+    const lang = this.state.lang || (this.props.dir === 'ltr' ? 'en' : 'ar');
+    const ar = lang !== 'en';
+    const theme = this.state.theme || 'light';
+    const sess = this.state.session; const loggedIn = !!sess; const isAdmin = !!sess && sess.role === 'admin';
+    const initial = ((sess && (sess.name || sess.email)) || '?').toString().trim().charAt(0).toUpperCase();
+    const links = ar ? [
+      { label: 'الرئيسية', href: 'Palmas Home.dc.html' },
+      { label: 'العقارات', href: 'PropertyList.dc.html' },
+      { label: 'الخريطة', href: 'Map.html' },
+      { label: 'المشاريع', href: 'Projects.dc.html' },
+      { label: 'خدماتنا', href: 'Services.dc.html' },
+      { label: 'من نحن', href: 'About.dc.html' },
+      { label: 'تواصل معنا', href: 'Contact.dc.html' },
+    ] : [
+      { label: 'Home', href: 'Palmas Home.dc.html' },
+      { label: 'Properties', href: 'PropertyList.dc.html' },
+      { label: 'Map', href: 'Map.html' },
+      { label: 'Projects', href: 'Projects.dc.html' },
+      { label: 'Services', href: 'Services.dc.html' },
+      { label: 'About', href: 'About.dc.html' },
+      { label: 'Contact', href: 'Contact.dc.html' },
+    ];
+    return {
+      dir: this.props.dir || (ar ? 'rtl' : 'ltr'),
+      links,
+      drawerOpen: this.state.drawerOpen, drawerExpanded: this.state.drawerOpen ? 'true' : 'false',
+      menuLabel: ar ? 'القائمة' : 'Menu', langName: ar ? 'English' : 'العربية',
+      burgerPath: this.state.drawerOpen ? 'M6 6l12 12M18 6 6 18' : 'M4 7h16M4 12h16M4 17h16',
+      toggleDrawer: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState(s => ({ drawerOpen: !s.drawerOpen, menuOpen: false, curMenuOpen: false })); },
+      closeDrawer: () => this.setState({ drawerOpen: false }),
+      isDark: theme === 'dark', isLight: theme !== 'dark',
+      loggedIn, loggedOut: !loggedIn, isAdmin, initial,
+      acctName: (sess && sess.name) || (ar ? 'حسابي' : 'Account'),
+      acctEmail: (sess && sess.email) || '',
+      wishHref: loggedIn ? 'Wishlist.dc.html' : ('Auth.dc.html?next=' + encodeURIComponent('Wishlist.dc.html')),
+      loginTitle: ar ? 'تسجيل الدخول' : 'Log in',
+      dashLabel: ar ? 'لوحة التحكم' : 'Dashboard',
+      settingsLabel: ar ? 'إعدادات الحساب' : 'Account settings',
+      wishMenuLabel: ar ? 'قائمة الرغبات' : 'Wishlist',
+      hasWish: this.state.wishCount > 0, wishCount: this.state.wishCount > 9 ? '9+' : this.state.wishCount,
+      logoutLabel: ar ? 'تسجيل الخروج' : 'Log out',
+      menuOpen: this.state.menuOpen, menuRef: this.menuRef,
+      menuBg: theme === 'dark' ? '#161719' : '#ffffff',
+      menuBorder: theme === 'dark' ? 'rgba(255,255,255,.12)' : 'rgba(20,20,22,.1)',
+      menuText: theme === 'dark' ? '#f7f7f5' : '#141414',
+      menuSub: theme === 'dark' ? 'rgba(247,247,245,.55)' : '#6c6c70',
+      toggleMenu: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState(st => ({ menuOpen: !st.menuOpen, curMenuOpen: false })); },
+      logout: () => { const P = window.Palmas; if (P) P.API.signOut(); else { try { localStorage.removeItem('palmas_session'); } catch(e) {} } this.setState({ session: null, menuOpen: false }); try { location.reload(); } catch(e) {} },
+      langLabel: ar ? 'EN' : 'ع',
+      ctaLabel: ar ? 'تواصل معنا' : 'Contact',
+      wishTitle: ar ? 'المفضلة' : 'Wishlist',
+      listLabel: ar ? 'اعرض عقارك' : 'List property',
+      listOpen: this.state.listOpen, listSent: this.state.listSent, listForm: !this.state.listSent, listErr: this.state.listErr,
+      closeLbl: ar ? 'إغلاق' : 'Close', doneLbl: ar ? 'تم' : 'Done', submitLbl: ar ? 'إرسال الطلب' : 'Submit request',
+      listTitle: ar ? 'اعرض عقارك على بالماس' : 'List your property with Palmas',
+      listSub: ar ? 'املأ التفاصيل وسيتواصل معك فريقنا لعرض عقارك أمام آلاف الباحثين.' : 'Fill in the details and our team will contact you to showcase it to thousands of buyers.',
+      sentTitle: ar ? 'تم استلام طلبك!' : 'Request received!',
+      sentSub: ar ? 'شكراً لك — سيتواصل معك فريق بالماس قريباً لإتمام عرض عقارك.' : 'Thank you — the Palmas team will reach out shortly to complete your listing.',
+      errMsg: ar ? 'الرجاء إدخال الاسم ورقم الهاتف.' : 'Please enter your name and phone number.',
+      f: ar
+        ? { name: 'الاسم الكامل *', phone: 'رقم الهاتف *', city: 'المدينة / الموقع', sale: 'للبيع', rent: 'للإيجار', price: 'السعر المتوقع', notes: 'تفاصيل إضافية (المساحة، الغرف، الحالة...)', typePh: 'نوع العقار' }
+        : { name: 'Full name *', phone: 'Phone number *', city: 'City / location', sale: 'For sale', rent: 'For rent', price: 'Expected price', notes: 'Additional details (area, rooms, condition...)', typePh: 'Property type' },
+      listTypeOpts: window.Palmas ? window.Palmas.TYPES.filter(k => k !== 'all').map(k => ({ id: k, label: window.Palmas.LABELS[lang].type[k] })) : [],
+      listCurrencyOpts: window.Palmas ? window.Palmas.Currency.list().map(c => ({ id: c.id, label: (ar ? c.shortAr : c.shortEn) })) : [],
+      modalBg: theme === 'dark' ? '#161719' : '#ffffff',
+      modalBorder: theme === 'dark' ? 'rgba(255,255,255,.12)' : 'rgba(20,20,22,.1)',
+      mHeading: theme === 'dark' ? '#f7f7f5' : '#141414',
+      mDim: theme === 'dark' ? 'rgba(247,247,245,.6)' : 'rgba(20,20,22,.55)',
+      fieldBg: theme === 'dark' ? 'rgba(255,255,255,.05)' : '#f4f5f7',
+      fieldBorder: theme === 'dark' ? 'rgba(255,255,255,.14)' : 'rgba(20,20,22,.1)',
+      fieldFg: theme === 'dark' ? '#f7f7f5' : '#141414',
+      lNameRef: this.lNameRef, lPhoneRef: this.lPhoneRef, lCityRef: this.lCityRef, lTypeRef: this.lTypeRef, lPriceRef: this.lPriceRef, lNotesRef: this.lNotesRef,
+      lPropTypeRef: this.lPropTypeRef, lCurrencyRef: this.lCurrencyRef,
+      openList: () => this.setState({ listOpen: true, listSent: false, listErr: false, menuOpen: false }),
+      closeList: () => this.setState({ listOpen: false, listSent: false, listErr: false }),
+      stopList: (e) => { if (e && e.stopPropagation) e.stopPropagation(); },
+      submitList: (e) => {
+        e.preventDefault();
+        const v = r => r.current ? r.current.value.trim() : '';
+        const name = v(this.lNameRef), phone = v(this.lPhoneRef);
+        if (!name || !phone) { this.setState({ listErr: true }); return; }
+        const rec = {
+          id: 'lst' + Date.now(), name, phone, city: v(this.lCityRef),
+          deal: this.lTypeRef.current ? this.lTypeRef.current.value : 'sale',
+          propType: this.lPropTypeRef.current ? this.lPropTypeRef.current.value : 'apartment',
+          price: v(this.lPriceRef), currency: this.lCurrencyRef.current ? this.lCurrencyRef.current.value : 'usd',
+          notes: v(this.lNotesRef), date: new Date().toISOString().slice(0, 10), ts: Date.now(),
+        };
+        // shared with the CRM "listing request" lead source (Palmas.CRM.buildLeads reads palmas_listings) —
+        // an owner asking to sell/rent through Palmas shows up in the pipeline like any other lead.
+        try { const arr = JSON.parse(localStorage.getItem('palmas_listings') || '[]'); arr.push(rec); localStorage.setItem('palmas_listings', JSON.stringify(arr)); } catch (er) {}
+        this.setState({ listSent: true, listErr: false });
+      },
+      themeTitle: ar ? (theme === 'dark' ? 'الوضع الفاتح' : 'الوضع الداكن') : (theme === 'dark' ? 'Light mode' : 'Dark mode'),
+      toggleTheme: () => { const nt = (this.state.theme || 'light') === 'dark' ? 'light' : 'dark'; try { localStorage.setItem('palmas_theme', nt); } catch(e) {} document.documentElement.setAttribute('data-theme', nt); this.setState({ theme: nt }); },
+      toggleLang: () => { const nl = (lang === 'en') ? 'ar' : 'en'; try { localStorage.setItem('palmas_lang', nl); } catch(e) {} document.documentElement.lang = nl; document.documentElement.dir = nl === 'en' ? 'ltr' : 'rtl'; location.reload(); },
+      currencyTitle: ar ? 'عملة العرض' : 'Display currency',
+      currencyValueLabel: (() => {
+        const cur = this.state.currency || 'auto';
+        if (cur === 'auto') return ar ? 'تلقائي' : 'Auto';
+        const P = window.Palmas;
+        const meta = P ? P.Currency.meta(cur) : null;
+        return meta ? (ar ? meta.shortAr : meta.shortEn) : cur.toUpperCase();
+      })(),
+      curMenuOpen: this.state.curMenuOpen,
+      /* المرجع كان ناقصاً هنا، فيبقى curMenuRef.current فارغاً ولا تنغلق
+         قائمة العملات بالضغط خارجها — بعكس قائمة الحساب المجاورة. */
+      curMenuRef: this.curMenuRef,
+      toggleCurMenu: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState(s => ({ curMenuOpen: !s.curMenuOpen, menuOpen: false })); },
+      currencyOpts: (() => {
+        const P = window.Palmas;
+        const cur = this.state.currency || 'auto';
+        const base = [{ id: 'auto', label: ar ? 'تلقائي' : 'Auto' }];
+        const list = P ? P.Currency.list().map(c => ({ id: c.id, label: ar ? c.shortAr : c.shortEn })) : [{ id: 'usd', label: 'USD' }, { id: 'ils', label: 'ILS' }, { id: 'jod', label: 'JOD' }];
+        const dimText = theme === 'dark' ? '#f7f7f5' : '#141414';
+        return base.concat(list).map(o => {
+          const active = o.id === cur;
+          return { ...o, active, bg: active ? 'rgba(246,135,67,.14)' : 'transparent', color: active ? '#f68743' : dimText,
+            pick: () => {
+              const PP = window.Palmas; if (!PP) return;
+              PP.Currency.setViewCurrency(o.id);
+              this.setState({ currency: o.id, curMenuOpen: false });
+              location.reload();
+            } };
+        });
+      })(),
+    };
+  }
+}
+</script>
+</body>
+</html>

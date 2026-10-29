@@ -1,0 +1,260 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="uploads/palmas-icon.png">
+<title>Palmas.ps</title>
+<script src="./support.js"></script>
+<style>@view-transition{navigation:auto}::view-transition-old(root),::view-transition-new(root){animation-duration:.34s;animation-timing-function:cubic-bezier(.4,0,.2,1)}</style>
+<script>try{var t=localStorage.getItem('palmas_theme');document.documentElement.setAttribute('data-theme',(t==='light'||t==='dark')?t:'light');var l=localStorage.getItem('palmas_lang');document.documentElement.lang=(l==='en')?'en':'ar';document.documentElement.dir=(l==='en')?'ltr':'rtl';}catch(e){}</script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--page-bg:#edeef0;--heading:#141414;--body-dim:rgba(20,20,22,.55);--card:#ffffff;--card-border:rgba(20,20,22,.1);--field-bg:#ffffff;--field-border:rgba(20,20,22,.18);--field-fg:#141414;--nav-text:#2a2a2c;--glass-bg:rgba(20,20,22,.05);--glass-border:rgba(20,20,22,.14);--hairline:rgba(20,20,22,.1);--accent-ink:#b53a0f;--footer-base:#101013}
+html[data-theme='dark']{--page-bg:#0d0d0f;--heading:#f7f7f5;--body-dim:rgba(247,247,245,.55);--card:rgba(255,255,255,.055);--card-border:rgba(255,255,255,.14);--field-bg:rgba(255,255,255,.06);--field-border:rgba(255,255,255,.16);--field-fg:#f7f7f5;--nav-text:#ededeb;--glass-bg:rgba(255,255,255,.08);--glass-border:rgba(255,255,255,.16);--hairline:rgba(255,255,255,.14);--accent-ink:#ffcdb0;--footer-base:#000000}
+html,body{margin:0;padding:0;background:var(--page-bg);transition:background .5s ease}
+*{box-sizing:border-box}
+a{color:#f68743;text-decoration:none}
+a:hover{color:#ffab7a}
+::selection{background:#f68743;color:#121212}
+input{font-family:'Cairo',sans-serif}
+input::placeholder{color:var(--body-dim)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.acc-field{width:100%;border:1.5px solid var(--field-border);border-radius:14px;padding:13px 17px;font-size:14.5px;outline:none;background:var(--field-bg);color:var(--field-fg);transition:border-color .3s ease,box-shadow .3s ease,background .3s ease}
+</style>
+<script src="palmas-core.js"></script>
+<script src="palmas-config.js"></script>
+<script src="palmas-backend.js"></script>
+</helmet>
+<div dir="{{ dir }}" style="position:relative;font-family:'Cairo',sans-serif;min-height:100vh;color:var(--heading);display:flex;flex-direction:column;background:var(--page-bg);transition:background .5s ease,color .5s ease">
+
+<dc-import name="SiteHeader" dir="{{ dir }}" hint-size="100%,68px"></dc-import>
+
+<sc-if value="{{ ready }}" hint-placeholder-val="{{ false }}">
+<main style="flex:1;padding:44px 24px 70px">
+  <div style="max-width:560px;margin:0 auto">
+    <div style="margin-bottom:26px">
+      <h1 style="margin:0;font-size:26px;font-weight:800;color:var(--heading)">{{ t.pageTitle }}</h1>
+      <p style="margin:8px 0 0;font-size:14px;color:var(--body-dim);line-height:1.8">{{ t.pageSub }}</p>
+    </div>
+
+    <!-- profile card -->
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:22px;padding:28px 26px;margin-bottom:20px;box-shadow:0 20px 50px rgba(0,0,0,.06);animation:fadeUp .5s ease both">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+        <span style="width:42px;height:42px;min-width:42px;border-radius:13px;background:rgba(246,135,67,.14);display:grid;place-items:center"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
+        <div>
+          <div style="font-weight:800;font-size:16.5px;color:var(--heading)">{{ t.profileTitle }}</div>
+          <div style="font-size:12.5px;color:var(--body-dim)">{{ t.profileSub }}</div>
+        </div>
+      </div>
+      <form onSubmit="{{ saveProfile }}" style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:700;color:var(--body-dim);margin-bottom:6px">{{ t.fName }}</label>
+          <input class="acc-field" value="{{ profileName }}" onChange="{{ onProfileName }}" placeholder="{{ t.fNamePh }}" style-focus="border-color:#f68743;box-shadow:0 0 0 4px rgba(246,135,67,.16)">
+        </div>
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:700;color:var(--body-dim);margin-bottom:6px">{{ t.fEmail }}</label>
+          <input class="acc-field" type="email" dir="ltr" style="text-align:start" value="{{ profileEmail }}" onChange="{{ onProfileEmail }}" placeholder="{{ t.fEmailPh }}" style-focus="border-color:#f68743;box-shadow:0 0 0 4px rgba(246,135,67,.16)">
+        </div>
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:700;color:var(--body-dim);margin-bottom:6px">{{ t.fPhone }}</label>
+          <input class="acc-field" type="tel" dir="ltr" style="text-align:start" value="{{ profilePhone }}" onChange="{{ onProfilePhone }}" placeholder="{{ t.fPhonePh }}" style-focus="border-color:#f68743;box-shadow:0 0 0 4px rgba(246,135,67,.16)">
+        </div>
+        <sc-if value="{{ profileErr }}" hint-placeholder-val="{{ false }}"><div style="color:#e0245e;font-size:13px;font-weight:700">{{ profileErr }}</div></sc-if>
+        <sc-if value="{{ profileMsg }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:8px;color:#1f9d5c;font-size:13px;font-weight:700;background:rgba(31,157,92,.12);border-radius:11px;padding:9px 13px">
+            <span style="width:18px;height:18px;min-width:18px;border-radius:50%;background:#1f9d5c;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:900">✓</span>
+            {{ profileMsg }}
+          </div>
+        </sc-if>
+        <button type="submit" style="align-self:start;margin-top:4px;background:linear-gradient(135deg,#f68743,#d1662a);border:none;border-radius:16px;padding:13px 30px;font-family:'Cairo',sans-serif;font-weight:800;font-size:14.5px;color:#121212;cursor:pointer;box-shadow:0 10px 26px rgba(246,135,67,.3);transition:all .35s ease" style-hover="transform:translateY(-2px);box-shadow:0 14px 32px rgba(246,135,67,.4)">{{ t.saveProfile }}</button>
+      </form>
+    </div>
+
+    <!-- password card -->
+    <div style="background:var(--card);border:1px solid var(--card-border);border-radius:22px;padding:28px 26px;box-shadow:0 20px 50px rgba(0,0,0,.06);animation:fadeUp .6s ease both">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+        <span style="width:42px;height:42px;min-width:42px;border-radius:13px;background:rgba(246,135,67,.14);display:grid;place-items:center"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+        <div>
+          <div style="font-weight:800;font-size:16.5px;color:var(--heading)">{{ t.passTitle }}</div>
+          <div style="font-size:12.5px;color:var(--body-dim)">{{ t.passSub }}</div>
+        </div>
+      </div>
+      <sc-if value="{{ recoveryMode }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:10px;background:rgba(31,157,92,.1);border:1px solid rgba(31,157,92,.3);border-radius:14px;padding:12px 16px;margin-bottom:16px;font-size:13px;font-weight:700;color:#1f9d5c">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f9d5c" stroke-width="2" style="flex-shrink:0"><path d="M20 6 9 17l-5-5"></path></svg>
+          {{ t.recoveryHint }}
+        </div>
+      </sc-if>
+      <form onSubmit="{{ savePassword }}" style="display:flex;flex-direction:column;gap:14px">
+        <sc-if value="{{ notRecovery }}" hint-placeholder-val="{{ true }}">
+        <div style="position:relative">
+          <label style="display:block;font-size:12.5px;font-weight:700;color:var(--body-dim);margin-bottom:6px">{{ t.fCurrentPass }}</label>
+          <input ref="{{ curPassRef }}" type="{{ passType }}" class="acc-field" style="padding-inline-end:52px" placeholder="{{ t.fCurrentPassPh }}" style-focus="border-color:#f68743;box-shadow:0 0 0 4px rgba(246,135,67,.16)">
+          <button type="button" onClick="{{ togglePass }}" style="position:absolute;top:36px;inset-inline-end:12px;width:32px;height:32px;border:none;border-radius:50%;background:var(--glass-bg);color:var(--body-dim);cursor:pointer;display:grid;place-items:center" style-hover="background:rgba(246,135,67,.3)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+        </div>
+        </sc-if>
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:700;color:var(--body-dim);margin-bottom:6px">{{ t.fNewPass }}</label>
+          <input ref="{{ newPassRef }}" type="{{ passType }}" class="acc-field" placeholder="{{ t.fNewPassPh }}" style-focus="border-color:#f68743;box-shadow:0 0 0 4px rgba(246,135,67,.16)">
+        </div>
+        <div>
+          <label style="display:block;font-size:12.5px;font-weight:700;color:var(--body-dim);margin-bottom:6px">{{ t.fConfirmPass }}</label>
+          <input ref="{{ confirmPassRef }}" type="{{ passType }}" class="acc-field" placeholder="{{ t.fConfirmPassPh }}" style-focus="border-color:#f68743;box-shadow:0 0 0 4px rgba(246,135,67,.16)">
+        </div>
+        <sc-if value="{{ passErr }}" hint-placeholder-val="{{ false }}"><div style="color:#e0245e;font-size:13px;font-weight:700">{{ passErr }}</div></sc-if>
+        <sc-if value="{{ passMsg }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:8px;color:#1f9d5c;font-size:13px;font-weight:700;background:rgba(31,157,92,.12);border-radius:11px;padding:9px 13px">
+            <span style="width:18px;height:18px;min-width:18px;border-radius:50%;background:#1f9d5c;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:900">✓</span>
+            {{ passMsg }}
+          </div>
+        </sc-if>
+        <button type="submit" style="align-self:start;margin-top:4px;background:linear-gradient(135deg,#f68743,#d1662a);border:none;border-radius:16px;padding:13px 30px;font-family:'Cairo',sans-serif;font-weight:800;font-size:14.5px;color:#121212;cursor:pointer;box-shadow:0 10px 26px rgba(246,135,67,.3);transition:all .35s ease" style-hover="transform:translateY(-2px);box-shadow:0 14px 32px rgba(246,135,67,.4)">{{ t.savePass }}</button>
+      </form>
+      <sc-if value="{{ notRecovery }}" hint-placeholder-val="{{ true }}">
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--hairline);font-size:12.5px;color:var(--body-dim);line-height:1.8">
+        {{ t.forgotHint }} <a href="Auth.dc.html">{{ t.forgotLink }}</a>
+      </div>
+      </sc-if>
+    </div>
+  </div>
+</main>
+</sc-if>
+
+<div style="margin-top:auto"><dc-import name="SiteFooter" dir="{{ dir }}" hint-size="100%,300px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultLang&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;ar&quot;, &quot;en&quot;], &quot;default&quot;: &quot;ar&quot;, &quot;tsType&quot;: &quot;string&quot;}}">
+class Component extends DCLogic {
+  state = {
+    lang: null, ready: false, session: null, showPass: false, recoveryMode: false,
+    profileName: '', profileEmail: '', profilePhone: '', profileErr: '', profileMsg: '',
+    passErr: '', passMsg: '',
+  };
+  curPassRef = React.createRef(); newPassRef = React.createRef(); confirmPassRef = React.createRef();
+  componentDidMount() {
+    try { const tv = localStorage.getItem('palmas_theme'); const th = (tv === 'light' || tv === 'dark') ? tv : 'light'; document.documentElement.setAttribute('data-theme', th); } catch (e) {}
+    try { const lv = localStorage.getItem('palmas_lang'); if (lv === 'ar' || lv === 'en') { this.setState({ lang: lv }); document.documentElement.lang = lv; document.documentElement.dir = lv === 'en' ? 'ltr' : 'rtl'; } } catch (e) {}
+    this._boot();
+  }
+  componentWillUnmount() { if (this._offAuth) this._offAuth(); }
+  /* a settings page only makes sense for a signed-in visitor — bounce anyone else to Auth and
+     bring them straight back here once they sign in (same `next`/palmas_return convention Auth.dc.html already honours) */
+  _boot() {
+    const P = window.Palmas;
+    if (!P) { setTimeout(() => this._boot(), 60); return; }
+    const s = P.API.session();
+    if (!s || !s.loggedIn) {
+      try { localStorage.setItem('palmas_return', 'Account.dc.html'); } catch (e) {}
+      location.href = 'Auth.dc.html?next=' + encodeURIComponent('Account.dc.html');
+      return;
+    }
+    let recoveryMode = false;
+    try { if (localStorage.getItem('palmas_pw_recovery') === '1') { recoveryMode = true; localStorage.removeItem('palmas_pw_recovery'); } } catch (e) {}
+    this.setState({ session: s, ready: true, recoveryMode, profileName: s.name || '', profileEmail: s.email || '', profilePhone: s.phone || '' });
+    if (!this._offAuth) this._offAuth = P.API.onAuthChange(() => {
+      const s2 = window.Palmas.API.session();
+      if (!s2 || !s2.loggedIn) { location.href = 'Auth.dc.html'; return; }
+      this.setState({ session: s2 });
+    });
+  }
+  data() {
+    return {
+      ar: {
+        pageTitle: 'إعدادات الحساب', pageSub: 'عدّل معلومات حسابك وكلمة المرور — التغييرات تنعكس فوراً على كل الموقع.',
+        profileTitle: 'المعلومات الشخصية', profileSub: 'الاسم، البريد الإلكتروني ورقم الهاتف',
+        fName: 'الاسم الكامل', fNamePh: 'اسمك الكامل',
+        fEmail: 'البريد الإلكتروني', fEmailPh: 'example@email.com',
+        fPhone: 'رقم الهاتف', fPhonePh: '+970 5X XXX XXXX',
+        saveProfile: 'حفظ التعديلات', profileSaved: '✓ تم تحديث معلومات حسابك بنجاح',
+        passTitle: 'كلمة المرور', passSub: 'غيّر كلمة مرور حسابك',
+        recoveryHint: 'تم التحقق من هويتك عبر الرمز المُرسَل — عيّن كلمة مرور جديدة مباشرة، بدون الحاجة لكلمة المرور القديمة.',
+        fCurrentPass: 'كلمة المرور الحالية', fCurrentPassPh: 'أدخل كلمة المرور الحالية',
+        fNewPass: 'كلمة المرور الجديدة', fNewPassPh: 'كلمة مرور جديدة',
+        fConfirmPass: 'تأكيد كلمة المرور الجديدة', fConfirmPassPh: 'أعد إدخال كلمة المرور الجديدة',
+        savePass: 'تحديث كلمة المرور', passSaved: '✓ تم تحديث كلمة المرور بنجاح',
+        forgotHint: 'نسيت كلمة المرور الحالية؟', forgotLink: 'استعادة كلمة المرور',
+        errNameReq: 'الرجاء إدخال الاسم.', errGeneric: 'حدث خطأ، حاول مرة أخرى.',
+        errCurrentReq: 'الرجاء إدخال كلمة المرور الحالية.', errCurrentWrong: 'كلمة المرور الحالية غير صحيحة.',
+        errPassShort: 'كلمة المرور الجديدة قصيرة جداً (4 أحرف على الأقل).', errPassMismatch: 'كلمتا المرور الجديدتان غير متطابقتين.',
+      },
+      en: {
+        pageTitle: 'Account settings', pageSub: 'Edit your profile and password — changes apply across the whole site immediately.',
+        profileTitle: 'Personal information', profileSub: 'Name, email and phone number',
+        fName: 'Full name', fNamePh: 'Your full name',
+        fEmail: 'Email address', fEmailPh: 'example@email.com',
+        fPhone: 'Phone number', fPhonePh: '+970 5X XXX XXXX',
+        saveProfile: 'Save changes', profileSaved: '✓ Your profile was updated successfully',
+        passTitle: 'Password', passSub: "Change your account's password",
+        recoveryHint: "Your identity was verified via the code we sent — set a new password directly, no old password needed.",
+        fCurrentPass: 'Current password', fCurrentPassPh: 'Enter your current password',
+        fNewPass: 'New password', fNewPassPh: 'New password',
+        fConfirmPass: 'Confirm new password', fConfirmPassPh: 'Re-enter the new password',
+        savePass: 'Update password', passSaved: '✓ Password updated successfully',
+        forgotHint: 'Forgot your current password?', forgotLink: 'Reset password',
+        errNameReq: 'Please enter your name.', errGeneric: 'Something went wrong, please try again.',
+        errCurrentReq: 'Please enter your current password.', errCurrentWrong: 'Your current password is incorrect.',
+        errPassShort: 'New password is too short (min. 4 characters).', errPassMismatch: "The new passwords don't match.",
+      },
+    };
+  }
+  renderVals() {
+    const lang = this.state.lang || this.props.defaultLang || 'ar';
+    const t = this.data()[lang];
+    const st = this.state;
+    return {
+      t, dir: lang === 'ar' ? 'rtl' : 'ltr', ready: st.ready,
+      recoveryMode: st.recoveryMode, notRecovery: !st.recoveryMode,
+      profileName: st.profileName, profileEmail: st.profileEmail, profilePhone: st.profilePhone,
+      profileErr: st.profileErr, profileMsg: st.profileMsg,
+      onProfileName: (e) => this.setState({ profileName: e.target.value, profileErr: '', profileMsg: '' }),
+      onProfileEmail: (e) => this.setState({ profileEmail: e.target.value, profileErr: '', profileMsg: '' }),
+      onProfilePhone: (e) => this.setState({ profilePhone: e.target.value, profileErr: '', profileMsg: '' }),
+      saveProfile: (e) => {
+        e.preventDefault();
+        const P = window.Palmas;
+        const name = (st.profileName || '').trim(), email = (st.profileEmail || '').trim(), phone = (st.profilePhone || '').trim();
+        if (!name) { this.setState({ profileErr: t.errNameReq, profileMsg: '' }); return; }
+        P.API.updateProfile({ name, email, phone }).then((s) => {
+          this.setState({ session: s, profileErr: '', profileMsg: t.profileSaved });
+          setTimeout(() => this.setState({ profileMsg: '' }), 3000);
+        }).catch(() => this.setState({ profileErr: t.errGeneric, profileMsg: '' }));
+      },
+      passType: this.state.showPass ? 'text' : 'password',
+      togglePass: () => this.setState((s) => ({ showPass: !s.showPass })),
+      curPassRef: this.curPassRef, newPassRef: this.newPassRef, confirmPassRef: this.confirmPassRef,
+      passErr: st.passErr, passMsg: st.passMsg,
+      savePassword: (e) => {
+        e.preventDefault();
+        const P = window.Palmas;
+        const cur = this.curPassRef.current ? this.curPassRef.current.value : '';
+        const n1 = this.newPassRef.current ? this.newPassRef.current.value : '';
+        const n2 = this.confirmPassRef.current ? this.confirmPassRef.current.value : '';
+        if (!st.recoveryMode && !cur) { this.setState({ passErr: t.errCurrentReq, passMsg: '' }); return; }
+        if (n1.length < 4) { this.setState({ passErr: t.errPassShort, passMsg: '' }); return; }
+        if (n1 !== n2) { this.setState({ passErr: t.errPassMismatch, passMsg: '' }); return; }
+        // recovery mode: identity was already proven by the emailed code — no current password to check,
+        // just write the new one straight to this session's account record via the same reset path
+        // the forgot-password flow uses.
+        const req = st.recoveryMode
+          ? P.API.resetPassword({ identifier: (st.session && (st.session.email || st.session.phone)) || '', password: n1 })
+          : P.API.changePassword({ currentPassword: cur, newPassword: n1 });
+        req.then(() => {
+          this.setState({ passErr: '', passMsg: t.passSaved, recoveryMode: false });
+          [this.curPassRef, this.newPassRef, this.confirmPassRef].forEach((r) => { if (r.current) r.current.value = ''; });
+          setTimeout(() => this.setState({ passMsg: '' }), 3000);
+        }).catch((err) => {
+          this.setState({ passErr: (err && err.message === 'BAD_PASSWORD') ? t.errCurrentWrong : t.errGeneric, passMsg: '' });
+        });
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

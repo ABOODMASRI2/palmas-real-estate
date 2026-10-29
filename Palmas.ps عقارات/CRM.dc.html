@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+@keyframes crmIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes crmDrawer{from{transform:translateX(var(--crm-dx,40px));opacity:.4}to{transform:none;opacity:1}}
+.crm-scroll::-webkit-scrollbar{width:8px;height:8px}
+.crm-scroll::-webkit-scrollbar-thumb{background:var(--hairline,rgba(20,20,22,.12));border-radius:8px}
+.crm-in::placeholder{color:var(--dim,rgba(20,20,22,.45))}
+.crm-card{transition:transform .25s cubic-bezier(.25,.8,.35,1),box-shadow .25s ease}
+.crm-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,20,30,.14)}
+</style>
+<script src="palmas-core.js"></script>
+<script src="palmas-config.js"></script>
+<script src="palmas-backend.js"></script>
+</helmet>
+<div dir="{{ dir }}" style="font-family:'Cairo',sans-serif;color:var(--body,#4a4a4d);min-height:520px">
+
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:20px">
+  <div style="display:flex;flex-wrap:wrap;gap:4px;background:var(--inset,#f2f3f5);border:1px solid var(--hairline,rgba(20,20,22,.08));border-radius:16px;padding:5px">
+    <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="5">
+      <button onClick="{{ tb.go }}" style="display:inline-flex;align-items:center;gap:8px;border:none;background:{{ tb.bg }};color:{{ tb.color }};font-family:'Cairo',sans-serif;font-weight:800;font-size:13.5px;padding:9px 16px;border-radius:12px;cursor:pointer;box-shadow:{{ tb.shadow }};transition:all .3s ease">
+        {{ tb.label }}<sc-if value="{{ tb.showCount }}" hint-placeholder-val="{{ false }}"><span style="background:{{ tb.countBg }};color:{{ tb.countColor }};font-size:11px;font-weight:800;padding:1px 8px;border-radius:9px">{{ tb.count }}</span></sc-if>
+      </button>
+    </sc-for>
+  </div>
+  <button onClick="{{ openAdd }}" style="margin-inline-start:auto;display:inline-flex;align-items:center;gap:8px;background:#f68743;border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:13.5px;padding:10px 20px;border-radius:14px;cursor:pointer;box-shadow:0 8px 20px rgba(246,135,67,.28);transition:all .3s ease" style-hover="background:#d1662a;transform:translateY(-2px)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>{{ t.addLead }}
+  </button>
+</div>
+
+<sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:18px">
+    <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+      <div style="background:var(--card,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:16px;padding:18px 20px;box-shadow:var(--shadow,0 12px 34px rgba(20,20,35,.07));animation:crmIn .4s ease both">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <div style="color:var(--dim,rgba(20,20,22,.5));font-size:12.5px;font-weight:700">{{ k.label }}</div>
+          <span style="width:32px;height:32px;border-radius:10px;background:{{ k.iconBg }};display:grid;place-items:center;color:{{ k.iconColor }};font-weight:900;font-size:15px">{{ k.glyph }}</span>
+        </div>
+        <div style="font-size:26px;font-weight:900;color:var(--heading,#141414);margin-top:8px">{{ k.val }}</div>
+        <div style="font-size:12px;font-weight:700;color:{{ k.subColor }};margin-top:2px">{{ k.sub }}</div>
+      </div>
+    </sc-for>
+  </div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:14px;margin-bottom:14px">
+    <div style="background:var(--card,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:16px;padding:20px;box-shadow:var(--shadow,0 12px 34px rgba(20,20,35,.07));min-width:0">
+      <div style="font-weight:800;font-size:15px;color:var(--heading,#141414);margin-bottom:16px">{{ t.funnelTitle }}</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <sc-for list="{{ stageStats }}" as="s" hint-placeholder-count="6">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;margin-bottom:5px">
+              <span style="color:var(--body,#4a4a4d)">{{ s.label }}</span>
+              <span style="color:var(--dim,rgba(20,20,22,.5))">{{ s.count }} · {{ s.value }}</span>
+            </div>
+            <div style="height:9px;border-radius:5px;background:var(--inset,#f2f3f5);overflow:hidden">
+              <div style="height:100%;width:{{ s.pct }};border-radius:5px;background:{{ s.color }};transition:width .5s ease"></div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="background:var(--card,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:16px;padding:20px;box-shadow:var(--shadow,0 12px 34px rgba(20,20,35,.07));min-width:0">
+      <div style="font-weight:800;font-size:15px;color:var(--heading,#141414);margin-bottom:16px">{{ t.sourcesTitle }}</div>
+      <div style="display:flex;flex-direction:column;gap:13px">
+        <sc-for list="{{ sourceStats }}" as="s" hint-placeholder-count="4">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;margin-bottom:5px">
+              <span style="color:var(--body,#4a4a4d);display:inline-flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:3px;background:{{ s.color }}"></span>{{ s.label }}</span>
+              <span style="color:var(--dim,rgba(20,20,22,.5))">{{ s.count }}</span>
+            </div>
+            <div style="height:8px;border-radius:4px;background:var(--inset,#f2f3f5);overflow:hidden">
+              <div style="height:100%;width:{{ s.pct }};border-radius:4px;background:{{ s.color }}"></div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  <div style="background:var(--card,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:16px;padding:20px;box-shadow:var(--shadow,0 12px 34px rgba(20,20,35,.07))">
+    <div style="font-weight:800;font-size:15px;color:var(--heading,#141414);margin-bottom:8px">{{ t.recentTitle }}</div>
+    <sc-for list="{{ recent }}" as="a" hint-placeholder-count="5">
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px solid var(--hairline,rgba(20,20,22,.08))">
+        <span style="width:32px;height:32px;min-width:32px;border-radius:10px;background:{{ a.bg }};display:grid;place-items:center;color:{{ a.color }};font-weight:900;font-size:13px">{{ a.glyph }}</span>
+        <div style="font-size:13px;font-weight:600;color:var(--body,#4a4a4d);min-width:0">{{ a.text }}</div>
+        <div style="margin-inline-start:auto;font-size:11.5px;color:var(--dim,rgba(20,20,22,.5));font-weight:600;white-space:nowrap">{{ a.time }}</div>
+      </div>
+    </sc-for>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isPipeline }}" hint-placeholder-val="{{ false }}">
+  <div class="crm-scroll" style="overflow-x:auto;padding-bottom:8px">
+    <div style="display:flex;gap:13px;min-width:min-content">
+      <sc-for list="{{ columns }}" as="c" hint-placeholder-count="6">
+        <div onDragOver="{{ c.onDragOver }}" onDrop="{{ c.onDrop }}" style="width:248px;flex-shrink:0;background:var(--inset,#f2f3f5);border:1px solid var(--hairline,rgba(20,20,22,.08));border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px;min-height:120px">
+          <div style="display:flex;align-items:center;gap:8px;padding:2px 4px">
+            <span style="width:10px;height:10px;border-radius:3px;background:{{ c.color }}"></span>
+            <span style="font-weight:800;font-size:13.5px;color:var(--heading,#141414)">{{ c.label }}</span>
+            <span style="margin-inline-start:auto;background:var(--card,#fff);border:1px solid var(--hairline,rgba(20,20,22,.08));color:var(--dim,rgba(20,20,22,.5));font-size:11.5px;font-weight:800;padding:1px 9px;border-radius:9px">{{ c.count }}</span>
+          </div>
+          <div style="font-size:11.5px;font-weight:700;color:{{ c.color }};padding:0 4px 4px">{{ c.valueLabel }}</div>
+          <sc-for list="{{ c.cards }}" as="p" hint-placeholder-count="2">
+            <div class="crm-card" draggable="true" onDragStart="{{ p.onDragStart }}" onClick="{{ p.open }}" style="background:var(--card,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:13px;padding:13px;cursor:grab;box-shadow:0 2px 8px rgba(20,20,30,.05)">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">
+                <span style="width:8px;height:8px;border-radius:50%;background:{{ p.sourceColor }}"></span>
+                <span style="font-size:11px;font-weight:700;color:var(--dim,rgba(20,20,22,.5))">{{ p.sourceLabel }}</span>
+              </div>
+              <div style="font-weight:800;font-size:14px;color:var(--heading,#141414);margin-bottom:3px">{{ p.name }}</div>
+              <div style="font-size:12px;color:var(--dim,rgba(20,20,22,.5));font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.sub }}</div>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--hairline,rgba(20,20,22,.08))">
+                <span style="color:#c2410c;font-weight:900;font-size:13px">{{ p.valueLabel }}</span>
+                <sc-if value="{{ p.hasAgent }}" hint-placeholder-val="{{ false }}">
+                  <span title="{{ p.agentName }}" style="margin-inline-start:auto;width:26px;height:26px;border-radius:50%;background:{{ p.agentColor }};display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px">{{ p.agentInitial }}</span>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isContacts }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+    <input value="{{ q }}" onChange="{{ onQ }}" class="crm-in" placeholder="{{ t.searchPh }}" style="flex:1;min-width:200px;background:var(--field-bg,#fff);border:1px solid var(--field-border,rgba(20,20,22,.14));border-radius:12px;padding:11px 15px;color:var(--heading,#141414);font-family:'Cairo',sans-serif;font-size:14px;outline:none" style-focus="border-color:#f68743">
+    <select ref="{{ fSourceRef }}" value="{{ fSource }}" onChange="{{ onSource }}" class="crm-in" style="background:var(--field-bg,#fff);border:1px solid var(--field-border,rgba(20,20,22,.14));border-radius:12px;padding:11px 13px;color:var(--heading,#141414);font-family:'Cairo',sans-serif;font-size:14px;outline:none;cursor:pointer"><sc-for list="{{ sourceOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.id }}" selected="{{ o.seld }}">{{ o.label }}</option></sc-for></select>
+    <select ref="{{ fStageRef }}" value="{{ fStage }}" onChange="{{ onStage }}" class="crm-in" style="background:var(--field-bg,#fff);border:1px solid var(--field-border,rgba(20,20,22,.14));border-radius:12px;padding:11px 13px;color:var(--heading,#141414);font-family:'Cairo',sans-serif;font-size:14px;outline:none;cursor:pointer"><sc-for list="{{ stageOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.id }}" selected="{{ o.seld }}">{{ o.label }}</option></sc-for></select>
+    <select ref="{{ fAgentRef }}" value="{{ fAgent }}" onChange="{{ onAgent }}" class="crm-in" style="background:var(--field-bg,#fff);border:1px solid var(--field-border,rgba(20,20,22,.14));border-radius:12px;padding:11px 13px;color:var(--heading,#141414);font-family:'Cairo',sans-serif;font-size:14px;outline:none;cursor:pointer"><sc-for list="{{ agentOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.id }}" selected="{{ o.seld }}">{{ o.label }}</option></sc-for></select>
+  </div>
+  <div style="background:var(--card,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:16px;overflow:hidden;box-shadow:var(--shadow,0 12px 34px rgba(20,20,35,.07))">
+    <div style="display:grid;grid-template-columns:1.7fr 1.2fr 1.1fr 1.1fr 1fr 88px;gap:10px;padding:13px 18px;background:var(--inset,#f2f3f5);font-size:12px;font-weight:800;color:var(--dim,rgba(20,20,22,.5))">
+      <div>{{ t.hName }}</div><div>{{ t.hSource }}</div><div>{{ t.hStage }}</div><div>{{ t.hAgent }}</div><div>{{ t.hValue }}</div><div>{{ t.hDate }}</div>
+    </div>
+    <sc-if value="{{ contactsEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:40px;text-align:center;color:var(--dim,rgba(20,20,22,.5));font-weight:700;font-size:14px">{{ t.noContacts }}</div>
+    </sc-if>
+    <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+      <div onClick="{{ r.open }}" style="display:grid;grid-template-columns:1.7fr 1.2fr 1.1fr 1.1fr 1fr 88px;gap:10px;align-items:center;padding:12px 18px;border-top:1px solid var(--hairline,rgba(20,20,22,.08));font-size:13px;cursor:pointer;transition:background .25s ease" style-hover="background:var(--chip-bg,rgba(20,20,22,.045))">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0">
+          <span style="width:32px;height:32px;min-width:32px;border-radius:50%;background:{{ r.avBg }};display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px">{{ r.initial }}</span>
+          <div style="min-width:0"><div style="font-weight:800;color:var(--heading,#141414);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</div><div dir="ltr" style="font-size:11.5px;color:var(--dim,rgba(20,20,22,.5));text-align:start">{{ r.phone }}</div></div>
+        </div>
+        <div><span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--body,#4a4a4d)"><span style="width:8px;height:8px;border-radius:50%;background:{{ r.sourceColor }}"></span>{{ r.sourceLabel }}</span></div>
+        <div><span style="background:{{ r.stageBg }};color:{{ r.stageColor }};font-size:11.5px;font-weight:800;padding:3px 11px;border-radius:11px;white-space:nowrap">{{ r.stageLabel }}</span></div>
+        <div style="color:var(--body,#4a4a4d);font-weight:600;font-size:12.5px">{{ r.agentLabel }}</div>
+        <div style="color:#c2410c;font-weight:900;white-space:nowrap">{{ r.valueLabel }}</div>
+        <div style="color:var(--dim,rgba(20,20,22,.5));font-weight:600;font-size:12px">{{ r.created }}</div>
+      </div>
+    </sc-for>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isInbox }}" hint-placeholder-val="{{ false }}">
+  <div style="display:grid;grid-template-columns:300px 1fr;gap:14px;min-height:520px">
+    <div class="crm-scroll" style="background:var(--card,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:16px;overflow:hidden auto;max-height:640px;box-shadow:var(--shadow,0 12px 34px rgba(20,20,35,.07))">
+      <sc-if value="{{ inboxEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:36px 20px;text-align:center;color:var(--dim,rgba(20,20,22,.5));font-weight:700;font-size:13.5px">{{ t.noChats }}</div>
+      </sc-if>
+      <sc-for list="{{ convos }}" as="c" hint-placeholder-count="4">
+        <div onClick="{{ c.open }}" style="display:flex;align-items:center;gap:11px;padding:13px 15px;border-bottom:1px solid var(--hairline,rgba(20,20,22,.08));cursor:pointer;background:{{ c.activeBg }};transition:background .25s ease" style-hover="background:var(--chip-bg,rgba(20,20,22,.045))">
+          <span style="width:38px;height:38px;min-width:38px;border-radius:50%;background:{{ c.avBg }};display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px">{{ c.initial }}</span>
+          <div style="min-width:0;flex:1">
+            <div style="display:flex;align-items:center;gap:6px"><span style="font-weight:800;font-size:13.5px;color:var(--heading,#141414);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.name }}</span><sc-if value="{{ c.unread }}" hint-placeholder-val="{{ false }}"><span style="width:8px;height:8px;border-radius:50%;background:#f68743;flex-shrink:0"></span></sc-if></div>
+            <div style="font-size:12px;color:var(--dim,rgba(20,20,22,.5));white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.preview }}</div>
+          </div>
+          <div style="font-size:10.5px;color:var(--dim,rgba(20,20,22,.5));font-weight:600;white-space:nowrap">{{ c.time }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="background:var(--card,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:16px;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow,0 12px 34px rgba(20,20,35,.07));min-height:520px">
+      <sc-if value="{{ hasInboxSel }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--hairline,rgba(20,20,22,.08));flex-shrink:0">
+          <span style="width:40px;height:40px;border-radius:50%;background:{{ thread.avBg }};display:grid;place-items:center;color:#fff;font-weight:800;font-size:16px">{{ thread.initial }}</span>
+          <div><div style="font-weight:800;font-size:15px;color:var(--heading,#141414)">{{ thread.name }}</div><div dir="ltr" style="font-size:12px;color:var(--dim,rgba(20,20,22,.5));text-align:start">{{ thread.phone }}</div></div>
+          <button onClick="{{ thread.openLead }}" style="margin-inline-start:auto;background:rgba(246,135,67,.12);border:1px solid rgba(246,135,67,.35);color:#c2410c;font-family:'Cairo',sans-serif;font-weight:800;font-size:12.5px;padding:7px 15px;border-radius:13px;cursor:pointer;transition:all .3s ease" style-hover="background:#f68743;color:#fff">{{ t.viewLead }}</button>
+        </div>
+        <div ref="{{ threadRef }}" class="crm-scroll" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px;background:var(--inset,#f2f3f5)">
+          <sc-for list="{{ thread.msgsV }}" as="m" hint-placeholder-count="3">
+            <div style="display:flex;flex-direction:column;align-items:{{ m.align }}">
+              <sc-if value="{{ m.showSub }}" hint-placeholder-val="{{ false }}"><div style="font-size:10px;font-weight:800;color:{{ m.subColor }};margin:0 6px 3px">{{ m.sub }}</div></sc-if>
+              <div style="max-width:74%;padding:10px 14px;border-radius:{{ m.radius }};background:{{ m.bg }};color:{{ m.color }};font-size:13.5px;white-space:pre-wrap;word-break:break-word">{{ m.text }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;align-items:center;gap:9px;padding:12px 15px;border-top:1px solid var(--hairline,rgba(20,20,22,.08));flex-shrink:0">
+          <input ref="{{ replyRef }}" onKeyDown="{{ onReplyKey }}" class="crm-in" placeholder="{{ t.replyPh }}" style="flex:1;background:var(--field-bg,#fff);border:1px solid var(--field-border,rgba(20,20,22,.14));border-radius:22px;padding:11px 16px;color:var(--heading,#141414);font-family:'Cairo',sans-serif;font-size:14px;outline:none" style-focus="border-color:#f68743">
+          <button onClick="{{ sendReply }}" style="width:44px;height:44px;border:none;border-radius:50%;background:#f68743;color:#fff;cursor:pointer;display:grid;place-items:center;transition:background .3s ease" style-hover="background:#d1662a"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="transform:{{ sendFlip }}"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ noInboxSel }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1;display:grid;place-items:center;text-align:center;color:var(--dim,rgba(20,20,22,.5));padding:30px">
+          <div><div style="font-size:40px;margin-bottom:10px">💬</div><div style="font-weight:700;font-size:14.5px">{{ t.pickChat }}</div></div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isTasks }}" hint-placeholder-val="{{ false }}">
+  <div style="background:var(--card,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:16px;overflow:hidden;box-shadow:var(--shadow,0 12px 34px rgba(20,20,35,.07))">
+    <sc-if value="{{ tasksEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:44px;text-align:center;color:var(--dim,rgba(20,20,22,.5));font-weight:700;font-size:14px">{{ t.noTasks }}</div>
+    </sc-if>
+    <sc-for list="{{ taskRows }}" as="tk" hint-placeholder-count="5">
+      <div style="display:flex;align-items:center;gap:13px;padding:14px 18px;border-top:1px solid var(--hairline,rgba(20,20,22,.08))">
+        <button onClick="{{ tk.toggle }}" style="width:24px;height:24px;min-width:24px;border-radius:7px;border:2px solid {{ tk.boxBorder }};background:{{ tk.boxBg }};cursor:pointer;display:grid;place-items:center;transition:all .25s ease">
+          <sc-if value="{{ tk.done }}" hint-placeholder-val="{{ false }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2"><polyline points="20 6 9 17 4 12"></polyline></svg></sc-if>
+        </button>
+        <div style="min-width:0;flex:1">
+          <div style="font-weight:700;font-size:14px;color:var(--heading,#141414);text-decoration:{{ tk.strike }}">{{ tk.text }}</div>
+          <button onClick="{{ tk.openLead }}" style="background:none;border:none;padding:0;color:#c2410c;font-family:'Cairo',sans-serif;font-weight:700;font-size:12px;cursor:pointer;text-align:start">{{ tk.leadName }}</button>
+        </div>
+        <span style="background:{{ tk.dueBg }};color:{{ tk.dueColor }};font-size:12px;font-weight:800;padding:5px 12px;border-radius:11px;white-space:nowrap">{{ tk.dueLabel }}</span>
+      </div>
+    </sc-for>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isBookings }}" hint-placeholder-val="{{ false }}">
+  <div style="background:var(--card,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:16px;overflow:hidden;box-shadow:var(--shadow,0 12px 34px rgba(20,20,35,.07))">
+    <div style="display:grid;grid-template-columns:1.6fr 1.3fr 1.2fr 1fr .9fr 200px;gap:10px;padding:13px 18px;background:var(--inset,#f2f3f5);font-size:12px;font-weight:800;color:var(--dim,rgba(20,20,22,.5))">
+      <div>{{ t.bProp }}</div><div>{{ t.bWhen }}</div><div>{{ t.bClient }}</div><div>{{ t.bPhone }}</div><div>{{ t.bStatus }}</div><div></div>
+    </div>
+    <sc-if value="{{ bookingsEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:40px;text-align:center;color:var(--dim,rgba(20,20,22,.5));font-weight:700;font-size:14px">{{ t.noBookings }}</div>
+    </sc-if>
+    <sc-for list="{{ bookingRows }}" as="b" hint-placeholder-count="4">
+      <div style="display:grid;grid-template-columns:1.6fr 1.3fr 1.2fr 1fr .9fr 200px;gap:10px;align-items:center;padding:12px 18px;border-top:1px solid var(--hairline,rgba(20,20,22,.08));font-size:13px">
+        <div style="font-weight:800;color:var(--heading,#141414)">{{ b.pname }}</div>
+        <div style="color:#c2410c;font-weight:700">{{ b.when }}</div>
+        <div style="color:var(--body,#4a4a4d);font-weight:600">{{ b.name }}</div>
+        <div dir="ltr" style="color:var(--dim,rgba(20,20,22,.5));font-weight:600;text-align:end">{{ b.phone }}</div>
+        <div><span style="background:{{ b.stBg }};color:{{ b.stC }};font-size:11px;font-weight:800;padding:3px 10px;border-radius:10px;white-space:nowrap">{{ b.stLbl }}</span></div>
+        <div style="justify-self:end;display:flex;gap:6px">
+          <sc-if value="{{ b.canConfirm }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ b.confirm }}" style="border:1px solid rgba(31,157,92,.4);background:rgba(31,157,92,.1);color:#1f9d5c;font-family:'Cairo',sans-serif;font-weight:800;font-size:11.5px;padding:6px 11px;border-radius:12px;cursor:pointer;transition:all .3s ease" style-hover="background:#1f9d5c;color:#fff">{{ t.bConfirm }}</button>
+          </sc-if>
+          <sc-if value="{{ b.canCancel }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ b.cancel }}" style="border:1px solid rgba(224,36,94,.35);background:rgba(224,36,94,.08);color:#e0245e;font-family:'Cairo',sans-serif;font-weight:800;font-size:11.5px;padding:6px 11px;border-radius:12px;cursor:pointer;transition:all .3s ease" style-hover="background:#e0245e;color:#fff">{{ t.bCancel }}</button>
+          </sc-if>
+          <button onClick="{{ b.openLead }}" style="border:1px solid var(--field-border,rgba(20,20,22,.14));background:transparent;color:var(--body,#4a4a4d);font-family:'Cairo',sans-serif;font-weight:800;font-size:11.5px;padding:6px 11px;border-radius:12px;cursor:pointer">{{ t.viewLead }}</button>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</sc-if>
+
+<sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeDrawer }}" style="position:fixed;inset:0;z-index:400;background:rgba(8,8,12,.5);backdrop-filter:blur(4px);display:flex;justify-content:flex-end">
+  <div onClick="{{ stopEv }}" dir="{{ dir }}" class="crm-scroll" style="width:min(440px,100%);height:100%;overflow-y:auto;background:var(--card,#fff);border-inline-start:1px solid var(--card-border,rgba(20,20,22,.08));box-shadow:-20px 0 60px rgba(0,0,0,.3);animation:crmDrawer .32s cubic-bezier(.25,.8,.35,1) both;--crm-dx:40px">
+    <div style="position:sticky;top:0;z-index:2;display:flex;align-items:flex-start;gap:12px;padding:20px 22px 16px;background:var(--card,#fff);border-bottom:1px solid var(--hairline,rgba(20,20,22,.08))">
+      <span style="width:46px;height:46px;border-radius:50%;background:{{ sel.avBg }};display:grid;place-items:center;color:#fff;font-weight:900;font-size:18px">{{ sel.initial }}</span>
+      <div style="min-width:0;flex:1">
+        <div style="font-weight:900;font-size:18px;color:var(--heading,#141414)">{{ sel.name }}</div>
+        <div style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--dim,rgba(20,20,22,.5));margin-top:2px"><span style="width:8px;height:8px;border-radius:50%;background:{{ sel.sourceColor }}"></span>{{ sel.sourceLabel }}</div>
+      </div>
+      <button onClick="{{ closeDrawer }}" style="width:34px;height:34px;border:1px solid var(--field-border,rgba(20,20,22,.14));background:var(--chip-bg,rgba(20,20,22,.045));border-radius:10px;color:var(--body,#4a4a4d);cursor:pointer;display:grid;place-items:center;transition:all .3s ease" style-hover="background:rgba(224,36,94,.12);color:#e0245e"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+    <div style="padding:18px 22px;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <sc-if value="{{ sel.phone }}" hint-placeholder-val="{{ true }}"><a href="{{ sel.telHref }}" dir="ltr" style="display:flex;align-items:center;gap:10px;color:var(--body,#4a4a4d);font-weight:700;font-size:13.5px;text-align:start"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z"></path></svg>{{ sel.phone }}</a></sc-if>
+        <sc-if value="{{ sel.email }}" hint-placeholder-val="{{ false }}"><div dir="ltr" style="display:flex;align-items:center;gap:10px;color:var(--body,#4a4a4d);font-weight:700;font-size:13.5px;text-align:start"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m2 7 10 6 10-6"></path></svg>{{ sel.email }}</div></sc-if>
+        <sc-if value="{{ sel.propName }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:10px;color:var(--body,#4a4a4d);font-weight:700;font-size:13.5px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path></svg>{{ sel.propName }}</div></sc-if>
+      </div>
+      <div>
+        <div style="font-size:11.5px;font-weight:800;color:var(--dim,rgba(20,20,22,.5));margin-bottom:8px">{{ t.stage }}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <sc-for list="{{ sel.stageOpts }}" as="o" hint-placeholder-count="7">
+            <button onClick="{{ o.pick }}" style="border:1px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }};font-family:'Cairo',sans-serif;font-weight:800;font-size:12px;padding:6px 12px;border-radius:11px;cursor:pointer;transition:all .25s ease">{{ o.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11.5px;font-weight:800;color:var(--dim,rgba(20,20,22,.5));margin-bottom:8px">{{ t.agent }}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <sc-for list="{{ sel.agentOpts }}" as="o" hint-placeholder-count="4">
+            <button onClick="{{ o.pick }}" style="border:1px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }};font-family:'Cairo',sans-serif;font-weight:800;font-size:12px;padding:6px 12px;border-radius:11px;cursor:pointer;transition:all .25s ease">{{ o.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+      <div><div style="font-size:11.5px;font-weight:800;color:var(--dim,rgba(20,20,22,.5));margin-bottom:6px">{{ t.dealValue }}</div>
+        <div style="display:flex;align-items:center;gap:8px;background:var(--field-bg,#fff);border:1px solid var(--field-border,rgba(20,20,22,.14));border-radius:11px;padding:0 12px">
+          <span style="color:#c2410c;font-weight:900;font-size:15px">$</span>
+          <input value="{{ sel.value }}" onChange="{{ sel.onValue }}" type="number" class="crm-in" style="flex:1;background:none;border:none;padding:11px 0;color:var(--heading,#141414);font-family:'Cairo',sans-serif;font-size:14px;font-weight:800;outline:none">
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11.5px;font-weight:800;color:var(--dim,rgba(20,20,22,.5));margin-bottom:8px">{{ t.addTask }}</div>
+        <div style="display:flex;gap:8px">
+          <input ref="{{ taskRef }}" class="crm-in" placeholder="{{ t.taskPh }}" style="flex:1;min-width:0;background:var(--field-bg,#fff);border:1px solid var(--field-border,rgba(20,20,22,.14));border-radius:11px;padding:10px 12px;color:var(--heading,#141414);font-family:'Cairo',sans-serif;font-size:13.5px;outline:none" style-focus="border-color:#f68743">
+          <input ref="{{ taskDueRef }}" type="date" class="crm-in" style="background:var(--field-bg,#fff);border:1px solid var(--field-border,rgba(20,20,22,.14));border-radius:11px;padding:10px;color:var(--heading,#141414);font-family:'Cairo',sans-serif;font-size:13px;outline:none">
+          <button onClick="{{ sel.addTask }}" style="background:#f68743;border:none;color:#fff;border-radius:11px;width:42px;flex-shrink:0;cursor:pointer;font-size:20px;font-weight:700;transition:background .3s ease" style-hover="background:#d1662a">+</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px">
+          <sc-for list="{{ sel.tasks }}" as="tk" hint-placeholder-count="0">
+            <div style="display:flex;align-items:center;gap:9px;background:var(--inset,#f2f3f5);border-radius:10px;padding:8px 11px">
+              <button onClick="{{ tk.toggle }}" style="width:20px;height:20px;min-width:20px;border-radius:6px;border:2px solid {{ tk.boxBorder }};background:{{ tk.boxBg }};cursor:pointer;display:grid;place-items:center"><sc-if value="{{ tk.done }}" hint-placeholder-val="{{ false }}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4"><polyline points="20 6 9 17 4 12"></polyline></svg></sc-if></button>
+              <span style="flex:1;font-size:13px;font-weight:600;color:var(--body,#4a4a4d);text-decoration:{{ tk.strike }}">{{ tk.text }}</span>
+              <span style="font-size:11px;font-weight:700;color:{{ tk.dueColor }}">{{ tk.dueLabel }}</span>
+              <button onClick="{{ tk.del }}" style="background:none;border:none;color:var(--dim,rgba(20,20,22,.5));cursor:pointer;font-size:15px;padding:0 2px">×</button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11.5px;font-weight:800;color:var(--dim,rgba(20,20,22,.5));margin-bottom:8px">{{ t.addNote }}</div>
+        <div style="display:flex;gap:8px">
+          <input ref="{{ noteRef }}" onKeyDown="{{ sel.onNoteKey }}" class="crm-in" placeholder="{{ t.notePh }}" style="flex:1;min-width:0;background:var(--field-bg,#fff);border:1px solid var(--field-border,rgba(20,20,22,.14));border-radius:11px;padding:10px 12px;color:var(--heading,#141414);font-family:'Cairo',sans-serif;font-size:13.5px;outline:none" style-focus="border-color:#f68743">
+          <button onClick="{{ sel.addNote }}" style="background:var(--inset,#f2f3f5);border:1px solid var(--field-border,rgba(20,20,22,.14));color:var(--heading,#141414);border-radius:11px;padding:0 16px;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer">{{ t.save }}</button>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11.5px;font-weight:800;color:var(--dim,rgba(20,20,22,.5));margin-bottom:10px">{{ t.timeline }}</div>
+        <div style="display:flex;flex-direction:column">
+          <sc-for list="{{ sel.timeline }}" as="ev" hint-placeholder-count="3">
+            <div style="display:flex;gap:11px;padding-bottom:14px">
+              <div style="display:flex;flex-direction:column;align-items:center"><span style="width:26px;height:26px;min-width:26px;border-radius:8px;background:{{ ev.bg }};display:grid;place-items:center;color:{{ ev.color }};font-weight:900;font-size:12px">{{ ev.glyph }}</span><span style="flex:1;width:2px;background:var(--hairline,rgba(20,20,22,.1));margin-top:4px"></span></div>
+              <div style="padding-top:2px;min-width:0"><div style="font-size:13px;font-weight:600;color:var(--body,#4a4a4d)">{{ ev.text }}</div><div style="font-size:11px;color:var(--dim,rgba(20,20,22,.5));font-weight:600;margin-top:1px">{{ ev.time }}</div></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <button onClick="{{ sel.del }}" style="background:rgba(224,36,94,.08);border:1px solid rgba(224,36,94,.3);color:#e0245e;font-family:'Cairo',sans-serif;font-weight:800;font-size:13.5px;padding:11px;border-radius:12px;cursor:pointer;transition:all .3s ease" style-hover="background:#e0245e;color:#fff">{{ t.delLead }}</button>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ addOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeAdd }}" style="position:fixed;inset:0;z-index:410;background:rgba(8,8,12,.55);backdrop-filter:blur(5px);display:grid;place-items:center;padding:20px">
+  <div onClick="{{ stopEv }}" dir="{{ dir }}" style="width:100%;max-width:440px;background:var(--card,#fff);border:1px solid var(--card-border,rgba(20,20,22,.08));border-radius:22px;box-shadow:0 30px 90px rgba(0,0,0,.4);overflow:hidden;animation:crmIn .3s ease both">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 24px 14px;border-bottom:1px solid var(--hairline,rgba(20,20,22,.08))">
+      <div style="font-weight:900;font-size:18px;color:var(--heading,#141414)">{{ t.newLead }}</div>
+      <button onClick="{{ closeAdd }}" style="width:32px;height:32px;border:1px solid var(--field-border,rgba(20,20,22,.14));background:var(--chip-bg,rgba(20,20,22,.045));border-radius:10px;color:var(--body,#4a4a4d);cursor:pointer;display:grid;place-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+    <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px">
+      <input ref="{{ mNameRef }}" class="crm-in" placeholder="{{ t.mName }}" style="background:var(--field-bg,#fff);border:1px solid var(--field-border,rgba(20,20,22,.14));border-radius:12px;padding:12px 14px;color:var(--heading,#141414);font-family:'Cairo',sans-serif;font-size:14px;outline:none" style-focus="border-color:#f68743">
+      <input ref="{{ mPhoneRef }}" dir="ltr" class="crm-in" placeholder="{{ t.mPhone }}" style="background:var(--field-bg,#fff);border:1px solid var(--field-border,rgba(20,20,22,.14));border-radius:12px;padding:12px 14px;color:var(--heading,#141414);font-family:'Cairo',sans-serif;font-size:14px;outline:none;text-align:start" style-focus="border-color:#f68743">
+      <input ref="{{ mEmailRef }}" dir="ltr" class="crm-in" placeholder="{{ t.mEmail }}" style="background:var(--field-bg,#fff);border:1px solid var(--field-border,rgba(20,20,22,.14));border-radius:12px;padding:12px 14px;color:var(--heading,#141414);font-family:'Cairo',sans-serif;font-size:14px;outline:none;text-align:start" style-focus="border-color:#f68743">
+      <input ref="{{ mNoteRef }}" class="crm-in" placeholder="{{ t.mNote }}" style="background:var(--field-bg,#fff);border:1px solid var(--field-border,rgba(20,20,22,.14));border-radius:12px;padding:12px 14px;color:var(--heading,#141414);font-family:'Cairo',sans-serif;font-size:14px;outline:none" style-focus="border-color:#f68743">
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;padding:14px 24px;border-top:1px solid var(--hairline,rgba(20,20,22,.08))">
+      <button onClick="{{ closeAdd }}" style="background:transparent;border:1px solid var(--field-border,rgba(20,20,22,.14));color:var(--body,#4a4a4d);font-family:'Cairo',sans-serif;font-weight:800;font-size:13.5px;padding:10px 20px;border-radius:12px;cursor:pointer">{{ t.cancel }}</button>
+      <button onClick="{{ saveManual }}" style="background:#f68743;border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:13.5px;padding:10px 24px;border-radius:12px;cursor:pointer;box-shadow:0 8px 20px rgba(246,135,67,.28)">{{ t.save }}</button>
+    </div>
+  </div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1180, &quot;height&quot;: 760}, &quot;lang&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;ar&quot;, &quot;en&quot;], &quot;default&quot;: &quot;ar&quot;, &quot;tsType&quot;: &quot;string&quot;}, &quot;dark&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { lang: null, ready: false, tab: 'overview', users: [], bookings: [], messages: [], chats: [], manual: [], favMap: {}, projFavMap: {}, listings: [], session: null, overlay: {}, sel: null, inboxSel: null, q: '', fSource: '', fStage: '', fAgent: '', addOpen: false };
+  mNameRef = React.createRef(); mPhoneRef = React.createRef(); mEmailRef = React.createRef(); mNoteRef = React.createRef();
+  noteRef = React.createRef(); taskRef = React.createRef(); taskDueRef = React.createRef(); replyRef = React.createRef(); threadRef = React.createRef();
+  fSourceRef = React.createRef(); fStageRef = React.createRef(); fAgentRef = React.createRef(); dStageRef = React.createRef(); dAgentRef = React.createRef();
+  componentDidMount() { this._reload(); this.setState({ ready: true });
+    this._onStorage = (e) => { if (e.key && e.key.indexOf('palmas_') === 0) this._reload(); };
+    window.addEventListener('storage', this._onStorage);
+  }
+  componentWillUnmount() { if (this._onStorage) window.removeEventListener('storage', this._onStorage); }
+  _syncSelects() {
+    try {
+      if (this.fSourceRef.current) this.fSourceRef.current.value = this.state.fSource;
+      if (this.fStageRef.current) this.fStageRef.current.value = this.state.fStage;
+      if (this.fAgentRef.current) this.fAgentRef.current.value = this.state.fAgent;
+      if (this.dStageRef.current && this._curSelStage != null) this.dStageRef.current.value = this._curSelStage;
+      if (this.dAgentRef.current && this._curSelAgent != null) this.dAgentRef.current.value = this._curSelAgent;
+    } catch (e) {}
+  }
+  /* support.js passes only prevProps to componentDidUpdate, never prevState — keep our own snapshot */
+  componentDidUpdate() { const ps = this._ps || {}; this._ps = this.state; this._syncSelects(); if (this.threadRef.current && this.state.inboxSel && (ps.inboxSel !== this.state.inboxSel || (this._threadLen !== undefined && this._threadLen !== this._curThreadLen))) { const el = this.threadRef.current; el.scrollTop = el.scrollHeight; } this._threadLen = this._curThreadLen; }
+  _g(k, d) { try { return JSON.parse(localStorage.getItem(k) || d); } catch (e) { return JSON.parse(d); } }
+  _reload() {
+    this.setState({
+      users: this._g('palmas_users', '[]'), bookings: this._g('palmas_bookings', '[]'),
+      messages: this._g('palmas_crm_messages', '[]'), chats: this._g('palmas_crm_chats', '[]'),
+      manual: this._g('palmas_crm_manual', '[]'), favMap: window.Palmas ? window.Palmas.API.allFavorites() : this._g('palmas_favs', '{}'),
+      projFavMap: window.Palmas ? window.Palmas.API.allProjectFavorites() : this._g('palmas_wishlist_projects', '{}'),
+      listings: this._g('palmas_listings', '[]'),
+      session: window.Palmas ? window.Palmas.API.session() : this._g('palmas_session', 'null'),
+      overlay: this._g('palmas_crm_leads', '{}'),
+    });
+  }
+  _save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  _mutate(key, fn) {
+    const P = window.Palmas;
+    const ov = P ? P.CRM.mutate(key, fn) : (() => { const o = { ...this.state.overlay }; o[key] = fn({ ...(o[key] || {}) }); this._save('palmas_crm_leads', o); return o; })();
+    this.setState({ overlay: ov });
+  }
+  _ar() { return (this.state.lang || this.props.lang || 'ar') !== 'en'; }
+  _money(n) { return '$' + Number(n || 0).toLocaleString('en-US'); }
+  _timeAgo(ts) { const ar = this._ar(); return window.Palmas ? window.Palmas.CRM.timeAgo(ts, ar ? 'ar' : 'en') : ''; }
+  _stages() { const ar = this._ar(); return window.Palmas ? window.Palmas.CRM.stages(ar ? 'ar' : 'en') : []; }
+  /* CRM's agent picker = the ERP staff directory filtered to agent:true (sales roles) —
+     one employee list shared by both surfaces, not a separate hardcoded name set. */
+  _agents() {
+    const ar = this._ar();
+    const P = window.Palmas;
+    if (!P) return [];
+    return P.StaffAdmin.agents().map(s => ({ id: s.id, name: s.name[ar ? 'ar' : 'en'], color: s.color }));
+  }
+  /* the normalization engine (seed data, stage/agent/value merge, source metadata) now lives in
+     palmas-core.js as Palmas.CRM — ERP's finance-facing deals view reads the exact same leads. */
+  _initial(n) { return window.Palmas ? window.Palmas.CRM.initial(n) : '?'; }
+  _av(i) { return window.Palmas ? window.Palmas.CRM.avatarColor(i) : '#f68743'; }
+  _sourceMeta(src) { const ar = this._ar(); return window.Palmas ? window.Palmas.CRM.sourceMeta(ar ? 'ar' : 'en', src) : { label: src, color: '#f68743', glyph: '•' }; }
+  _leads() {
+    const P = window.Palmas; if (!P) return [];
+    const ar = this._ar();
+    return P.CRM.buildLeads(ar ? 'ar' : 'en', { users: this.state.users, bookings: this.state.bookings, messages: this.state.messages,
+      chats: this.state.chats, manual: this.state.manual, favMap: this.state.favMap, projFavMap: this.state.projFavMap, listings: this.state.listings, session: this.state.session, overlay: this.state.overlay });
+  }
+  _open(key) { this.setState({ sel: key }); }
+  renderVals() {
+    const ar = this._ar(); const st = this.state;
+    const t = ar ? {
+      addLead: 'عميل جديد', tabs: { overview: 'نظرة عامة', pipeline: 'المسار', contacts: 'جهات الاتصال', inbox: 'الوارد', bookings: 'المواعيد', tasks: 'المهام' },
+      bProp: 'العقار', bWhen: 'الموعد', bClient: 'العميل', bPhone: 'الهاتف', bStatus: 'الحالة', bConfirm: 'تأكيد', bCancel: 'إلغاء الموعد',
+      noBookings: 'لا توجد مواعيد معاينة محجوزة بعد — تظهر هنا حجوزات الزبائن من صفحات تفاصيل العقارات.',
+      stPending: 'بانتظار التأكيد', stConfirmed: 'مؤكّد', stCancelled: 'ملغى',
+      funnelTitle: 'توزيع مراحل المسار', sourcesTitle: 'مصادر العملاء', recentTitle: 'آخر النشاطات',
+      kLeads: 'إجمالي العملاء', kPipeline: 'قيمة المسار', kWon: 'الإيرادات المحققة', kTasks: 'مهام مفتوحة',
+      kLeadsSub: 'عميل محتمل', kPipelineSub: 'صفقات نشطة', kWonSub: 'صفقة مغلقة', kTasksSub: 'منها متأخرة: ',
+      searchPh: 'ابحث بالاسم أو الهاتف...', hName: 'العميل', hSource: 'المصدر', hStage: 'المرحلة', hAgent: 'الوكيل', hValue: 'القيمة', hDate: 'التاريخ',
+      noContacts: 'لا يوجد عملاء مطابقون للفلترة', allSources: 'كل المصادر', allStages: 'كل المراحل', allAgents: 'كل الوكلاء', noAgent: 'غير مُسند',
+      noChats: 'لا توجد محادثات بعد', pickChat: 'اختر محادثة لعرضها والرد عليها', replyPh: 'اكتب رداً للعميل...', viewLead: 'ملف العميل',
+      noTasks: 'لا توجد مهام — أضف متابعات من ملف العميل', overdue: 'متأخرة', today: 'اليوم', noDue: 'بدون موعد',
+      stage: 'المرحلة', agent: 'الوكيل المسؤول', dealValue: 'قيمة الصفقة', addTask: 'إضافة مهمة/متابعة', taskPh: 'مثال: الاتصال بالعميل', addNote: 'ملاحظة داخلية', notePh: 'اكتب ملاحظة...', save: 'حفظ', timeline: 'سجل النشاط', delLead: 'حذف العميل',
+      newLead: 'إضافة عميل يدوياً', mName: 'اسم العميل', mPhone: 'رقم الهاتف', mEmail: 'البريد (اختياري)', mNote: 'ملاحظة أولية (اختياري)', cancel: 'إلغاء',
+      logStage: 'نُقل إلى مرحلة: ', logAgent: 'أُسند إلى: ', logAgentNone: 'أُلغي الإسناد', note: 'ملاحظة: ', task: 'مهمة: ',
+    } : {
+      addLead: 'New lead', tabs: { overview: 'Overview', pipeline: 'Pipeline', contacts: 'Contacts', inbox: 'Inbox', bookings: 'Bookings', tasks: 'Tasks' },
+      bProp: 'Property', bWhen: 'When', bClient: 'Client', bPhone: 'Phone', bStatus: 'Status', bConfirm: 'Confirm', bCancel: 'Cancel booking',
+      noBookings: 'No viewing appointments yet — client bookings from property detail pages appear here.',
+      stPending: 'Awaiting confirmation', stConfirmed: 'Confirmed', stCancelled: 'Cancelled',
+      funnelTitle: 'Pipeline stage distribution', sourcesTitle: 'Lead sources', recentTitle: 'Recent activity',
+      kLeads: 'Total leads', kPipeline: 'Pipeline value', kWon: 'Won revenue', kTasks: 'Open tasks',
+      kLeadsSub: 'prospects', kPipelineSub: 'active deals', kWonSub: 'closed deals', kTasksSub: 'overdue: ',
+      searchPh: 'Search by name or phone...', hName: 'Lead', hSource: 'Source', hStage: 'Stage', hAgent: 'Agent', hValue: 'Value', hDate: 'Date',
+      noContacts: 'No leads match the filters', allSources: 'All sources', allStages: 'All stages', allAgents: 'All agents', noAgent: 'Unassigned',
+      noChats: 'No conversations yet', pickChat: 'Pick a conversation to view and reply', replyPh: 'Type a reply to the lead...', viewLead: 'Lead profile',
+      noTasks: 'No tasks — add follow-ups from a lead profile', overdue: 'Overdue', today: 'Today', noDue: 'No date',
+      stage: 'Stage', agent: 'Owner', dealValue: 'Deal value', addTask: 'Add task / follow-up', taskPh: 'e.g. Call the lead', addNote: 'Internal note', notePh: 'Write a note...', save: 'Save', timeline: 'Activity log', delLead: 'Delete lead',
+      newLead: 'Add a lead manually', mName: 'Lead name', mPhone: 'Phone number', mEmail: 'Email (optional)', mNote: 'Initial note (optional)', cancel: 'Cancel',
+      logStage: 'Moved to stage: ', logAgent: 'Assigned to: ', logAgentNone: 'Unassigned', note: 'Note: ', task: 'Task: ',
+    };
+    const stages = this._stages(); const agents = this._agents();
+    const stageById = {}; stages.forEach(s => stageById[s.id] = s);
+    const agentById = {}; agents.forEach(a => agentById[a.id] = a);
+    const leads = this._leads();
+    const bump = (hex, a) => { return hex; };
+    const softBg = { new: 'rgba(74,168,216,.14)', contacted: 'rgba(246,135,67,.16)', interested: 'rgba(160,111,224,.16)', visit: 'rgba(224,168,0,.18)', negotiation: 'rgba(224,111,156,.16)', won: 'rgba(31,157,92,.16)', lost: 'rgba(224,36,94,.14)' };
+    const tabsMeta = ['overview', 'pipeline', 'contacts', 'inbox', 'bookings', 'tasks'];
+    const chatUnread = (st.chats || []).filter(c => { const ms = c.messages || []; const lastU = [...ms].reverse().find(x => x.role === 'user'); const lastA = [...ms].reverse().find(x => x.role === 'agent'); return lastU && (!lastA || lastA.ts < lastU.ts); }).length;
+    const bookingsPending = (st.bookings || []).filter(b => (b.status || 'pending') === 'pending').length;
+    const tabCounts = { contacts: leads.length, inbox: chatUnread, bookings: bookingsPending };
+    const tabs = tabsMeta.map(id => ({ id, label: t.tabs[id], go: () => this.setState({ tab: id }),
+      bg: st.tab === id ? '#f68743' : 'transparent', color: st.tab === id ? '#fff' : 'var(--body,#4a4a4d)',
+      shadow: st.tab === id ? '0 6px 16px rgba(246,135,67,.3)' : 'none',
+      showCount: !!tabCounts[id], count: tabCounts[id] || 0,
+      countBg: st.tab === id ? 'rgba(255,255,255,.28)' : (id === 'inbox' ? '#e0245e' : 'var(--chip-bg,rgba(20,20,22,.08))'),
+      countColor: st.tab === id ? '#fff' : (id === 'inbox' ? '#fff' : 'var(--dim,rgba(20,20,22,.5))') }));
+
+    // KPIs
+    const active = leads.filter(l => l.stage !== 'won' && l.stage !== 'lost');
+    const wonLeads = leads.filter(l => l.stage === 'won');
+    const pipelineVal = active.reduce((s, l) => s + (l.value || 0), 0);
+    const wonVal = wonLeads.reduce((s, l) => s + (l.value || 0), 0);
+    let openTasks = 0, overdue = 0; const todayStr = new Date().toISOString().slice(0, 10);
+    leads.forEach(l => (l.tasks || []).forEach(tk => { if (!tk.done) { openTasks++; if (tk.due && tk.due < todayStr) overdue++; } }));
+    const kpis = [
+      { label: t.kLeads, val: String(leads.length), sub: leads.length + ' ' + t.kLeadsSub, subColor: 'var(--dim,rgba(20,20,22,.5))', glyph: '👥', iconBg: 'rgba(74,168,216,.15)', iconColor: '#4aa8d8' },
+      { label: t.kPipeline, val: this._money(pipelineVal), sub: active.length + ' ' + t.kPipelineSub, subColor: '#c2410c', glyph: '$', iconBg: 'rgba(246,135,67,.15)', iconColor: '#f68743' },
+      { label: t.kWon, val: this._money(wonVal), sub: wonLeads.length + ' ' + t.kWonSub, subColor: '#1f9d5c', glyph: '✓', iconBg: 'rgba(31,157,92,.15)', iconColor: '#1f9d5c' },
+      { label: t.kTasks, val: String(openTasks), sub: t.kTasksSub + overdue, subColor: overdue ? '#e0245e' : 'var(--dim,rgba(20,20,22,.5))', glyph: '✔', iconBg: 'rgba(224,168,0,.16)', iconColor: '#b8860b' },
+    ];
+    const maxStageCount = Math.max(1, ...stages.map(s => leads.filter(l => l.stage === s.id).length));
+    const stageStats = stages.map(s => { const ls = leads.filter(l => l.stage === s.id); const val = ls.reduce((a, l) => a + (l.value || 0), 0);
+      return { label: s.label, color: s.color, count: ls.length, value: this._money(val), pct: Math.round(ls.length / maxStageCount * 100) + '%' }; });
+    const srcOrder = ['user', 'booking', 'message', 'chat', 'wishlist', 'manual'];
+    const maxSrc = Math.max(1, ...srcOrder.map(sr => leads.filter(l => l.source === sr).length));
+    const sourceStats = srcOrder.map(sr => { const m = this._sourceMeta(sr); const n = leads.filter(l => l.source === sr).length;
+      return { label: m.label, color: m.color, count: n, pct: Math.round(n / maxSrc * 100) + '%' }; }).filter(x => x.count > 0);
+    const allEvents = [];
+    leads.forEach(l => (l.baseEvents || []).forEach(e => allEvents.push({ text: l.name + ' — ' + e.text, ts: e.ts, src: l.source })));
+    allEvents.sort((a, b) => b.ts - a.ts);
+    const recent = allEvents.slice(0, 6).map(e => { const m = this._sourceMeta(e.src); return { text: e.text, time: this._timeAgo(e.ts), glyph: m.glyph, bg: 'rgba(20,20,22,.05)', color: m.color }; });
+
+    // Pipeline columns
+    this._dragKey = this._dragKey || null;
+    const columns = stages.map(s => {
+      const cards = leads.filter(l => l.stage === s.id).map(l => { const m = this._sourceMeta(l.source); const ag = agentById[l.agent];
+        return { key: l.key, name: l.name, sub: l.propName || m.label, sourceLabel: m.label, sourceColor: m.color,
+          valueLabel: l.value ? this._money(l.value) : '—', hasAgent: !!ag, agentInitial: ag ? this._initial(ag.name) : '', agentColor: ag ? ag.color : '#ccc', agentName: ag ? ag.name : '',
+          onDragStart: () => { this._dragKey = l.key; }, open: () => this._open(l.key) }; });
+      const colVal = leads.filter(l => l.stage === s.id).reduce((a, l) => a + (l.value || 0), 0);
+      return { id: s.id, label: s.label, color: s.color, count: cards.length, valueLabel: this._money(colVal), cards,
+        onDragOver: (e) => e.preventDefault(), onDrop: () => { const k = this._dragKey; if (k) this._setStage(k, s.id); this._dragKey = null; } };
+    });
+
+    // Contacts
+    const q = st.q.trim().toLowerCase();
+    const rows = leads.filter(l => {
+      if (q && !((l.name + ' ' + l.phone + ' ' + (l.email || '')).toLowerCase().includes(q))) return false;
+      if (st.fSource && l.source !== st.fSource) return false;
+      if (st.fStage && l.stage !== st.fStage) return false;
+      if (st.fAgent && (st.fAgent === '__none' ? l.agent : l.agent !== st.fAgent)) return false;
+      return true;
+    }).sort((a, b) => b.createdAt - a.createdAt).map((l, i) => { const m = this._sourceMeta(l.source); const sg = stageById[l.stage]; const ag = agentById[l.agent];
+      return { key: l.key, name: l.name, phone: l.phone || '—', initial: this._initial(l.name), avBg: this._av(i),
+        sourceLabel: m.label, sourceColor: m.color, stageLabel: sg.label, stageColor: sg.color, stageBg: softBg[l.stage] || 'var(--chip-bg)',
+        agentLabel: ag ? ag.name : t.noAgent, valueLabel: l.value ? this._money(l.value) : '—', created: this._timeAgo(l.createdAt), open: () => this._open(l.key) }; });
+    const sourceOpts = [{ id: '', label: t.allSources, seld: !st.fSource }].concat(srcOrder.map(sr => ({ id: sr, label: this._sourceMeta(sr).label, seld: st.fSource === sr })));
+    const stageOpts = [{ id: '', label: t.allStages, seld: !st.fStage }].concat(stages.map(s => ({ id: s.id, label: s.label, seld: st.fStage === s.id })));
+    const agentOpts = [{ id: '', label: t.allAgents, seld: !st.fAgent }, { id: '__none', label: t.noAgent, seld: st.fAgent === '__none' }].concat(agents.map(a => ({ id: a.id, label: a.name, seld: st.fAgent === a.id })));
+
+    // Inbox
+    const convos = (st.chats || []).slice().sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).map((c, i) => {
+      const ms = c.messages || []; const last = ms[ms.length - 1]; const lastU = [...ms].reverse().find(x => x.role === 'user'); const lastA = [...ms].reverse().find(x => x.role === 'agent');
+      const unread = lastU && (!lastA || lastA.ts < lastU.ts);
+      return { id: c.id, name: c.name || (ar ? 'زائر' : 'Visitor'), initial: this._initial(c.name), avBg: this._av(i),
+        preview: last ? (last.role === 'user' ? '' : (last.role === 'agent' ? (ar ? 'أنت: ' : 'You: ') : '')) + (last.text || '').slice(0, 40) : '',
+        time: this._timeAgo(c.updatedAt || c.createdAt), unread, activeBg: st.inboxSel === c.id ? 'var(--chip-bg,rgba(20,20,22,.05))' : 'transparent',
+        open: () => this.setState({ inboxSel: c.id }) };
+    });
+    const selChat = (st.chats || []).find(c => c.id === st.inboxSel);
+    this._curThreadLen = selChat ? (selChat.messages || []).length : 0;
+    const thread = selChat ? {
+      name: selChat.name || (ar ? 'زائر' : 'Visitor'), phone: selChat.phone || '—', initial: this._initial(selChat.name), avBg: this._av(0),
+      msgsV: (selChat.messages || []).map((mm, i) => ({ key: i, text: mm.text, align: mm.role === 'user' ? 'flex-start' : 'flex-end',
+        bg: mm.role === 'user' ? '#fff' : (mm.role === 'agent' ? '#f68743' : '#e9f6ee'), color: mm.role === 'agent' ? '#fff' : '#1c1c1e',
+        radius: mm.role === 'user' ? '14px 14px 14px 4px' : '14px 14px 4px 14px', showSub: mm.role !== 'user',
+        sub: mm.role === 'agent' ? (ar ? 'أنت (وكيل)' : 'You (agent)') : (ar ? 'مساعد آلي' : 'AI'), subColor: mm.role === 'agent' ? '#c2410c' : '#1f9d5c' })),
+      openLead: () => this.setState({ sel: 'c:' + selChat.id, tab: 'inbox' }),
+    } : null;
+
+    // Tasks
+    const allTasks = [];
+    leads.forEach(l => (l.tasks || []).forEach(tk => allTasks.push({ ...tk, leadKey: l.key, leadName: l.name })));
+    allTasks.sort((a, b) => (a.done - b.done) || ((a.due || '9999') < (b.due || '9999') ? -1 : 1));
+    const dueMeta = (due, done) => {
+      if (!due) return { label: t.noDue, color: 'var(--dim,rgba(20,20,22,.5))', bg: 'var(--chip-bg,rgba(20,20,22,.05))' };
+      if (done) return { label: due, color: '#1f9d5c', bg: 'rgba(31,157,92,.14)' };
+      if (due < todayStr) return { label: t.overdue + ' · ' + due, color: '#e0245e', bg: 'rgba(224,36,94,.14)' };
+      if (due === todayStr) return { label: t.today, color: '#c2410c', bg: 'rgba(246,135,67,.16)' };
+      return { label: due, color: '#4aa8d8', bg: 'rgba(74,168,216,.14)' };
+    };
+    const taskRows = allTasks.map(tk => { const dm = dueMeta(tk.due, tk.done);
+      return { id: tk.id, text: tk.text, leadName: tk.leadName, done: !!tk.done, strike: tk.done ? 'line-through' : 'none',
+        boxBorder: tk.done ? '#1f9d5c' : 'var(--field-border,rgba(20,20,22,.2))', boxBg: tk.done ? '#1f9d5c' : 'transparent',
+        dueLabel: dm.label, dueColor: dm.color, dueBg: dm.bg,
+        toggle: () => this._toggleTask(tk.leadKey, tk.id), openLead: () => this._open(tk.leadKey) }; });
+
+    // Bookings (viewing appointments) — same records that feed the "booking" lead source above
+    const stBadge = { pending: { l: t.stPending, bg: 'rgba(224,168,0,.16)', c: '#b8860b' },
+      confirmed: { l: t.stConfirmed, bg: 'rgba(31,157,92,.14)', c: '#1f9d5c' },
+      cancelled: { l: t.stCancelled, bg: 'rgba(224,36,94,.12)', c: '#e0245e' } };
+    const bookingRows = (st.bookings || []).map((b, i) => {
+      const status = b.status || 'pending';
+      const sm = stBadge[status] || stBadge.pending;
+      const leadKey = 'b:' + (b.phone || i) + ':' + (b.pid || i);
+      const ts = b.created ? new Date(b.created).getTime() : (leads.length - i);
+      return { pname: b.pname || b.pid, when: (b.dow || '') + ' ' + (b.dateNum || b.date || '') + ' — ' + (b.time || ''),
+        name: b.name, phone: b.phone || '—', stLbl: sm.l, stBg: sm.bg, stC: sm.c,
+        canConfirm: status === 'pending', canCancel: status !== 'cancelled',
+        confirm: () => this._setBookingStatus(b, 'confirmed'), cancel: () => this._setBookingStatus(b, 'cancelled'),
+        openLead: () => this.setState({ sel: leadKey }), _ts: ts };
+    }).sort((a, b) => (b._ts || 0) - (a._ts || 0));
+
+    // Drawer
+    const selLead = st.sel ? leads.find(l => l.key === st.sel) : null;
+    this._curSelStage = selLead ? selLead.stage : null; this._curSelAgent = selLead ? (selLead.agent || '') : null;
+    let sel = null;
+    if (selLead) {
+      const m = this._sourceMeta(selLead.source);
+      const tl = [];
+      (selLead.baseEvents || []).forEach(e => tl.push({ text: e.text, ts: e.ts, kind: 'source' }));
+      (selLead.log || []).forEach(lg => { if (lg.type === 'stage') tl.push({ text: t.logStage + (stageById[lg.to] ? stageById[lg.to].label : lg.to), ts: lg.ts, kind: 'stage' });
+        else if (lg.type === 'agent') tl.push({ text: lg.to ? (t.logAgent + (agentById[lg.to] ? agentById[lg.to].name : lg.to)) : t.logAgentNone, ts: lg.ts, kind: 'agent' }); });
+      (selLead.notes || []).forEach(n => tl.push({ text: t.note + n.text, ts: n.ts, kind: 'note' }));
+      tl.sort((a, b) => b.ts - a.ts);
+      const kindMeta = { source: { g: m.glyph, c: m.color, bg: 'rgba(20,20,22,.06)' }, stage: { g: '⇄', c: '#f68743', bg: 'rgba(246,135,67,.14)' }, agent: { g: '@', c: '#4aa8d8', bg: 'rgba(74,168,216,.14)' }, note: { g: '✎', c: '#a06fe0', bg: 'rgba(160,111,224,.14)' } };
+      const timeline = tl.map((e, i) => { const km = kindMeta[e.kind] || kindMeta.source; return { key: i, text: e.text, time: this._timeAgo(e.ts), glyph: km.g, color: km.c, bg: km.bg }; });
+      const dtasks = (selLead.tasks || []).map(tk => { const dm = dueMeta(tk.due, tk.done);
+        return { id: tk.id, text: tk.text, done: !!tk.done, strike: tk.done ? 'line-through' : 'none', boxBorder: tk.done ? '#1f9d5c' : 'var(--field-border,rgba(20,20,22,.2))', boxBg: tk.done ? '#1f9d5c' : 'transparent', dueLabel: tk.due || t.noDue, dueColor: dm.color, toggle: () => this._toggleTask(selLead.key, tk.id), del: () => this._delTask(selLead.key, tk.id) }; });
+      const ag = agentById[selLead.agent];
+      const chip = (activeColor, on) => ({ bd: on ? activeColor : 'var(--field-border,rgba(20,20,22,.14))', bg: on ? activeColor : 'transparent', fg: on ? '#fff' : 'var(--body,#4a4a4d)' });
+      const stageSel = stages.map(s => { const on = s.id === selLead.stage; return { id: s.id, label: s.label, active: on, ...chip(s.color, on), pick: () => this._setStage(selLead.key, s.id) }; });
+      const agentList = [{ id: '', label: t.noAgent, color: '#9a9a9e' }].concat(agents.map(a => ({ id: a.id, label: a.name, color: a.color })));
+      const agentSel = agentList.map(a => { const on = (a.id || '') === (selLead.agent || ''); return { id: a.id, label: a.label, active: on, ...chip(a.color, on), pick: () => this._setAgent(selLead.key, a.id) }; });
+      sel = { key: selLead.key, name: selLead.name, initial: this._initial(selLead.name), avBg: this._av(2),
+        phone: selLead.phone || '', telHref: 'tel:' + (selLead.phone || '').replace(/[^0-9+]/g, ''), email: selLead.email || '', propName: selLead.propName || '',
+        sourceLabel: m.label, sourceColor: m.color, stage: selLead.stage, agent: selLead.agent || '', value: selLead.value || 0,
+        stageOpts: stageSel, agentOpts: agentSel,
+        timeline, tasks: dtasks,
+        onStage: (e) => this._setStage(selLead.key, e.target.value), onAgent: (e) => this._setAgent(selLead.key, e.target.value),
+        onValue: (e) => this._mutate(selLead.key, c => { c.value = parseInt(e.target.value, 10) || 0; return c; }),
+        addTask: () => { const txt = (this.taskRef.current && this.taskRef.current.value.trim()) || ''; const due = (this.taskDueRef.current && this.taskDueRef.current.value) || ''; if (!txt) return; this._mutate(selLead.key, c => { c.tasks = (c.tasks || []).concat({ id: 't' + Date.now(), text: txt, due, done: false, ts: Date.now() }); return c; }); if (this.taskRef.current) this.taskRef.current.value = ''; if (this.taskDueRef.current) this.taskDueRef.current.value = ''; },
+        addNote: () => { const txt = (this.noteRef.current && this.noteRef.current.value.trim()) || ''; if (!txt) return; this._mutate(selLead.key, c => { c.notes = (c.notes || []).concat({ text: txt, ts: Date.now() }); return c; }); if (this.noteRef.current) this.noteRef.current.value = ''; },
+        onNoteKey: (e) => { if (e.key === 'Enter') { e.preventDefault(); sel.addNote(); } },
+        del: () => { this._mutate(selLead.key, c => { c.hidden = true; return c; }); this.setState({ sel: null }); } };
+    }
+
+    const stageOptsRaw = stages.map(s => ({ id: s.id, label: s.label }));
+    const agentOptsRaw = [{ id: '', label: t.noAgent }].concat(agents.map(a => ({ id: a.id, label: a.name })));
+
+    return {
+      dir: ar ? 'rtl' : 'ltr', t, sendFlip: ar ? 'scaleX(-1)' : 'none',
+      tabs, isOverview: st.tab === 'overview', isPipeline: st.tab === 'pipeline', isContacts: st.tab === 'contacts', isInbox: st.tab === 'inbox', isBookings: st.tab === 'bookings', isTasks: st.tab === 'tasks',
+      bookingRows, bookingsEmpty: bookingRows.length === 0,
+      kpis, stageStats, sourceStats, recent,
+      columns,
+      rows, contactsEmpty: rows.length === 0, sourceOpts, stageOpts, agentOpts,
+      q: st.q, fSource: st.fSource, fStage: st.fStage, fAgent: st.fAgent,
+      onQ: (e) => this.setState({ q: e.target.value }), onSource: (e) => this.setState({ fSource: e.target.value }), onStage: (e) => this.setState({ fStage: e.target.value }), onAgent: (e) => this.setState({ fAgent: e.target.value }),
+      convos, inboxEmpty: convos.length === 0, hasInboxSel: !!thread, noInboxSel: !thread, thread: thread || {}, threadRef: this.threadRef, replyRef: this.replyRef,
+      sendReply: () => this._sendReply(), onReplyKey: (e) => { if (e.key === 'Enter') { e.preventDefault(); this._sendReply(); } },
+      taskRows, tasksEmpty: taskRows.length === 0,
+      hasSel: !!sel, sel: sel || {}, closeDrawer: () => this.setState({ sel: null }), stopEv: (e) => e.stopPropagation(),
+      stageOptsRaw, agentOptsRaw, noteRef: this.noteRef, taskRef: this.taskRef, taskDueRef: this.taskDueRef,
+      fSourceRef: this.fSourceRef, fStageRef: this.fStageRef, fAgentRef: this.fAgentRef, dStageRef: this.dStageRef, dAgentRef: this.dAgentRef,
+      addOpen: st.addOpen, openAdd: () => this.setState({ addOpen: true }), closeAdd: () => this.setState({ addOpen: false }),
+      mNameRef: this.mNameRef, mPhoneRef: this.mPhoneRef, mEmailRef: this.mEmailRef, mNoteRef: this.mNoteRef,
+      saveManual: () => this._saveManual(),
+    };
+  }
+  _setBookingStatus(b, status) {
+    const bookings = (this.state.bookings || []).map(x => (x.id && b.id ? x.id === b.id : x === b) ? { ...x, status } : x);
+    this._save('palmas_bookings', bookings);
+    this.setState({ bookings });
+  }
+  _setStage(key, stage) { this._mutate(key, c => { c.stage = stage; c.log = (c.log || []).concat({ type: 'stage', to: stage, ts: Date.now() }); return c; }); }
+  _setAgent(key, agent) { this._mutate(key, c => { c.agent = agent; c.log = (c.log || []).concat({ type: 'agent', to: agent, ts: Date.now() }); return c; }); }
+  _toggleTask(key, id) { this._mutate(key, c => { c.tasks = (c.tasks || []).map(tk => tk.id === id ? { ...tk, done: !tk.done } : tk); return c; }); }
+  _delTask(key, id) { this._mutate(key, c => { c.tasks = (c.tasks || []).filter(tk => tk.id !== id); return c; }); }
+  _saveManual() {
+    const name = (this.mNameRef.current && this.mNameRef.current.value.trim()) || '';
+    if (!name) return;
+    const rec = { id: 'x' + Date.now(), name, phone: (this.mPhoneRef.current && this.mPhoneRef.current.value.trim()) || '', email: (this.mEmailRef.current && this.mEmailRef.current.value.trim()) || '', note: (this.mNoteRef.current && this.mNoteRef.current.value.trim()) || '', ts: Date.now() };
+    const manual = (this.state.manual || []).concat(rec); this._save('palmas_crm_manual', manual);
+    this.setState({ manual, addOpen: false });
+  }
+  _sendReply() {
+    const txt = (this.replyRef.current && this.replyRef.current.value.trim()) || '';
+    if (!txt || !this.state.inboxSel) return;
+    const chats = (this.state.chats || []).map(c => c.id === this.state.inboxSel ? { ...c, messages: (c.messages || []).concat({ role: 'agent', text: txt, ts: Date.now() }), updatedAt: Date.now() } : c);
+    this._save('palmas_crm_chats', chats);
+    if (this.replyRef.current) this.replyRef.current.value = '';
+    this.setState({ chats });
+  }
+}
+</script>
+</body>
+</html>

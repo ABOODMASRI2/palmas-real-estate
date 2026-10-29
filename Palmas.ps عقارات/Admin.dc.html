@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="uploads/palmas-icon.png">
+<title>Palmas.ps</title>
+<script src="./support.js"></script>
+<style>@view-transition{navigation:auto}::view-transition-old(root),::view-transition-new(root){animation-duration:.34s;animation-timing-function:cubic-bezier(.4,0,.2,1)}</style>
+<script>try{var t=localStorage.getItem('palmas_theme');document.documentElement.setAttribute('data-theme',(t==='light'||t==='dark')?t:'light');var l=localStorage.getItem('palmas_lang');document.documentElement.lang=(l==='en')?'en':'ar';document.documentElement.dir=(l==='en')?'ltr':'rtl';}catch(e){}</script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--page-bg:radial-gradient(circle at 85% 4%,#f4f5f7 0%,#edeef0 55%,#e6e8ea 100%);--page-solid:#edeef0;--heading:#141414;--body:#4a4a4d;--dim:rgba(20,20,22,.5);--card:#ffffff;--card-border:rgba(20,20,22,.08);--inset:#f2f3f5;--inset-border:rgba(20,20,22,.07);--hairline:rgba(20,20,22,.08);--field-bg:#ffffff;--field-border:rgba(20,20,22,.14);--field-fg:#141414;--sidebar-bg:rgba(255,255,255,.72);--chip-bg:rgba(20,20,22,.045);--shadow:0 12px 34px rgba(20,20,35,.07)}
+html[data-theme='dark']{--page-bg:radial-gradient(circle at 85% 8%,#18191c 0%,#0d0d0f 60%);--page-solid:#0d0d0f;--heading:#f7f7f5;--body:#c9cbc8;--dim:rgba(247,247,245,.5);--card:rgba(255,255,255,.05);--card-border:rgba(255,255,255,.12);--inset:rgba(0,0,0,.28);--inset-border:rgba(255,255,255,.08);--hairline:rgba(255,255,255,.1);--field-bg:rgba(0,0,0,.3);--field-border:rgba(255,255,255,.16);--field-fg:#f7f7f5;--sidebar-bg:rgba(0,0,0,.28);--chip-bg:rgba(255,255,255,.06);--shadow:0 14px 40px rgba(0,0,0,.4)}
+html,body{margin:0;padding:0;background:var(--page-solid);transition:background .5s ease}
+*{box-sizing:border-box}
+a{color:#f68743;text-decoration:none}
+a:hover{color:#d1662a}
+::selection{background:#f68743;color:#fff}
+input,select{font-family:'Cairo',sans-serif}
+input::placeholder{color:var(--dim)}
+select option{background:#fff;color:#141414}
+html[data-theme='dark'] select option{background:#161719;color:#f7f7f5}
+.adm-scroll::-webkit-scrollbar{width:8px}
+.adm-scroll::-webkit-scrollbar-thumb{background:var(--hairline);border-radius:8px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes growBar{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.pf-cell{display:flex;flex-direction:column;gap:6px;min-width:0}
+.pf-lb{font-size:12px;font-weight:700;color:var(--dim)}
+.pf-in{background:var(--field-bg);border:1px solid var(--field-border);border-radius:12px;padding:11px 13px;color:var(--field-fg);font-size:14px;outline:none;width:100%;font-family:'Cairo',sans-serif;transition:border-color .3s ease}
+.pf-in:focus{border-color:#f68743}
+textarea.pf-in{resize:vertical;min-height:84px;line-height:1.7}
+</style>
+<script src="image-slot.js"></script>
+<script src="palmas-photos.js"></script>
+<script src="palmas-core.js"></script>
+<script src="palmas-config.js"></script>
+<script src="palmas-backend.js"></script>
+</helmet>
+<div dir="{{ dir }}" style="font-family:'Cairo',sans-serif;min-height:100vh;color:var(--heading);background:var(--page-bg);transition:background .5s ease,color .5s ease">
+
+<sc-if value="{{ denied }}" hint-placeholder-val="{{ false }}">
+  <div style="min-height:100vh;display:grid;place-items:center;padding:24px">
+    <div style="max-width:430px;text-align:center;background:var(--card);backdrop-filter:blur(18px);border:1px solid var(--card-border);border-radius:26px;padding:46px 38px;box-shadow:var(--shadow);animation:fadeUp .5s ease both">
+      <div style="width:70px;height:70px;margin:0 auto 20px;border-radius:50%;background:rgba(246,135,67,.14);display:grid;place-items:center">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </div>
+      <div style="font-weight:800;font-size:22px;color:var(--heading);margin-bottom:10px">{{ t.deniedTitle }}</div>
+      <div style="color:var(--dim);font-size:14.5px;line-height:1.9;margin-bottom:24px">{{ t.deniedDesc }}</div>
+      <a href="Auth.dc.html" style="display:inline-block;background:#f68743;color:#fff;font-weight:800;font-size:14.5px;padding:13px 34px;border-radius:26px;box-shadow:0 10px 26px rgba(246,135,67,.3);transition:all .35s ease" style-hover="background:#d1662a;transform:translateY(-2px)">{{ t.deniedCta }}</a>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ authed }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;min-height:100vh;align-items:stretch">
+
+  <aside class="adm-scroll" style="width:256px;flex-shrink:0;display:flex;flex-direction:column;gap:4px;padding:22px 16px;border-inline-end:1px solid var(--hairline);background:var(--sidebar-bg);backdrop-filter:blur(18px);position:sticky;top:0;height:100vh;overflow-y:auto">
+    <a href="Palmas Home.dc.html" style="display:flex;align-items:center;gap:11px;padding:2px 8px;margin-bottom:24px">
+      <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(140deg,#f68743,#d1662a);display:grid;place-items:center;font-weight:900;font-size:21px;color:#fff;box-shadow:0 8px 20px rgba(246,135,67,.32)">P</div>
+      <div style="line-height:1.15">
+        <div style="font-weight:800;font-size:17px"><span style="color:var(--heading)">PALMAS</span><span style="color:#f68743">.ps</span></div>
+        <div style="font-size:11px;color:#f68743;letter-spacing:2px;font-weight:700">{{ t.panelSub }}</div>
+      </div>
+    </a>
+    <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="4">
+      <button onClick="{{ n.go }}" style="display:flex;align-items:center;gap:12px;width:100%;border:none;text-align:start;padding:12px 14px;border-radius:13px;background:{{ n.bg }};color:{{ n.color }};font-family:'Cairo',sans-serif;font-weight:800;font-size:14.5px;cursor:pointer;box-shadow:{{ n.shadow }};transition:all .3s ease" style-hover="background:rgba(246,135,67,.14)">
+      <span style="display:grid;place-items:center">{{ n.iconEl }}</span>{{ n.label }}</button>
+    </sc-for>
+    <a href="ERP.dc.html" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:13px;color:var(--body);font-weight:800;font-size:14.5px;transition:all .3s ease" style-hover="background:rgba(246,135,67,.14);color:#f68743">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+      {{ t.erp }}
+      <span style="margin-inline-start:auto;background:rgba(246,135,67,.16);color:#d1662a;font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:9px">{{ t.badgeNew }}</span>
+    </a>
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--hairline);padding-top:12px">
+      <a href="Palmas Home.dc.html" style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:13px;color:var(--body);font-weight:700;font-size:14px;transition:all .3s ease" style-hover="background:var(--chip-bg);color:var(--heading)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path></svg>
+        {{ t.backSite }}
+      </a>
+      <button onClick="{{ logout }}" style="display:flex;align-items:center;gap:12px;width:100%;border:none;text-align:start;padding:11px 14px;border-radius:13px;background:none;color:var(--body);font-family:'Cairo',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .3s ease" style-hover="background:rgba(224,36,94,.12);color:#e0245e">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        {{ t.logout }}
+      </button>
+    </div>
+  </aside>
+
+  <main style="flex:1;min-width:0;padding:26px clamp(18px,3.5vw,44px) 60px">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin-bottom:26px">
+      <div>
+        <h1 style="margin:0;font-size:clamp(23px,3vw,28px);font-weight:800;color:var(--heading)">{{ tabTitle }}</h1>
+        <div style="color:var(--dim);font-size:13.5px;font-weight:600;margin-top:3px">{{ tabSub }}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <sc-if value="{{ canExport }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ exportCsv }}" title="{{ exportLabel }}" style="display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(246,135,67,.4);background:rgba(246,135,67,.1);color:#d1662a;font-family:'Cairo',sans-serif;font-weight:800;font-size:13.5px;padding:9px 18px;border-radius:22px;cursor:pointer;transition:all .3s ease" style-hover="background:#f68743;color:#fff">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            {{ exportLabel }}
+          </button>
+        </sc-if>
+        <button onClick="{{ toggleLang }}" title="Language" style="height:42px;padding:0 15px;border-radius:21px;border:1px solid var(--hairline);background:var(--card);color:#f68743;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:all .3s ease" style-hover="border-color:#f68743">{{ langLabel }}</button>
+        <button onClick="{{ toggleTheme }}" title="{{ themeTitle }}" style="width:42px;height:42px;border-radius:50%;border:1px solid var(--hairline);background:var(--card);display:grid;place-items:center;cursor:pointer;transition:all .3s ease" style-hover="border-color:#f68743">
+          <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--heading)" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"></path></svg></sc-if>
+          <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--heading)" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></sc-if>
+        </button>
+        <div style="position:relative">
+          <button onClick="{{ toggleAcctMenu }}" style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--hairline);border-radius:24px;padding:6px 16px 6px 8px;cursor:pointer;font-family:'Cairo',sans-serif" style-hover="border-color:#f68743">
+            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(140deg,#f68743,#d1662a);display:grid;place-items:center;font-weight:900;font-size:15px;color:#fff">{{ adminInitial }}</div>
+            <div style="line-height:1.2;text-align:start">
+              <div style="font-weight:800;font-size:13.5px;color:var(--heading)">{{ adminName }}</div>
+              <div style="font-size:11px;color:#f68743;font-weight:700">{{ t.roleAdmin }}</div>
+            </div>
+          </button>
+          <sc-if value="{{ acctMenuOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;top:calc(100% + 10px);inset-inline-end:0;min-width:200px;background:var(--card);border:1px solid var(--hairline);border-radius:16px;box-shadow:var(--shadow);padding:8px;z-index:200">
+              <a href="Account.dc.html" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;color:var(--body);font-size:14px;font-weight:700"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>{{ t.acctSettings }}</a>
+              <button onClick="{{ logout }}" style="display:flex;align-items:center;gap:10px;width:100%;border:none;text-align:start;padding:10px 12px;border-radius:11px;background:none;color:#e0245e;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;cursor:pointer" style-hover="background:rgba(224,36,94,.1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>{{ t.logout }}</button>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+
+    <sc-if value="{{ isDash }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(214px,1fr));gap:16px;margin-bottom:20px">
+        <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+          <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow);animation:fadeUp .5s ease both">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <div style="color:var(--dim);font-size:13px;font-weight:700">{{ k.label }}</div>
+              <span style="display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:rgba(246,135,67,.12)">{{ k.iconEl }}</span>
+            </div>
+            <div style="font-size:29px;font-weight:900;color:var(--heading);margin-top:8px">{{ k.val }}</div>
+            <div style="font-size:12.5px;font-weight:700;color:{{ k.deltaColor }};margin-top:3px">{{ k.delta }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px">
+        <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;padding:22px;box-shadow:var(--shadow);min-width:0">
+          <div style="font-weight:800;font-size:16px;color:var(--heading);margin-bottom:20px">{{ t.visitsTitle }}</div>
+          <sc-if value="{{ hasVisits }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;align-items:flex-end;gap:12px;height:190px">
+              <sc-for list="{{ months }}" as="m" hint-placeholder-count="8">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end">
+                  <div style="font-size:11.5px;font-weight:800;color:{{ m.txt }}">{{ m.v }}</div>
+                  <div style="width:100%;max-width:44px;height:{{ m.h }};border-radius:8px 8px 3px 3px;background:{{ m.bg }};transform-origin:bottom;animation:growBar .8s cubic-bezier(.25,.8,.35,1) both"></div>
+                  <div style="font-size:11.5px;font-weight:700;color:var(--dim);white-space:nowrap">{{ m.m }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ visitsLoading }}" hint-placeholder-val="{{ false }}">
+            <div style="height:190px;display:grid;place-items:center;color:var(--dim);font-size:13.5px;font-weight:600">{{ t.loadingTxt }}</div>
+          </sc-if>
+          <sc-if value="{{ visitsEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="height:190px;display:grid;place-items:center;text-align:center;color:var(--dim);font-size:13.5px;font-weight:600;line-height:1.7;padding:0 12px">{{ t.noVisits }}</div>
+          </sc-if>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;padding:22px;box-shadow:var(--shadow);min-width:0">
+          <div style="font-weight:800;font-size:16px;color:var(--heading);margin-bottom:20px">{{ t.sourcesTitle }}</div>
+          <sc-if value="{{ hasSources }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:15px">
+              <sc-for list="{{ sources }}" as="s" hint-placeholder-count="4">
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:6px">
+                    <span style="color:var(--body)">{{ s.label }}</span><span style="color:#d1662a">{{ s.pct }}</span>
+                  </div>
+                  <div style="height:8px;border-radius:4px;background:var(--inset);overflow:hidden">
+                    <div style="height:100%;width:{{ s.pct }};border-radius:4px;background:{{ s.color }}"></div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ sourcesLoading }}" hint-placeholder-val="{{ false }}">
+            <div style="color:var(--dim);font-size:13.5px;font-weight:600">{{ t.loadingTxt }}</div>
+          </sc-if>
+          <sc-if value="{{ sourcesEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="color:var(--dim);font-size:13.5px;font-weight:600;line-height:1.7">{{ t.noSources }}</div>
+          </sc-if>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px">
+        <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;padding:22px;box-shadow:var(--shadow);min-width:0">
+          <div style="font-weight:800;font-size:16px;color:var(--heading);margin-bottom:14px">{{ t.activityTitle }}</div>
+          <sc-if value="{{ hasActivity }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column">
+              <sc-for list="{{ activity }}" as="a" hint-placeholder-count="5">
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px solid var(--hairline)">
+                  <span style="width:36px;height:36px;min-width:36px;border-radius:11px;background:{{ a.iconBg }};display:grid;place-items:center">{{ a.iconEl }}</span>
+                  <div style="font-size:13.5px;font-weight:600;color:var(--body);min-width:0">{{ a.txt }}</div>
+                  <div style="margin-inline-start:auto;font-size:12px;color:var(--dim);font-weight:600;white-space:nowrap">{{ a.time }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ activityLoading }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:24px 2px;color:var(--dim);font-size:13.5px;font-weight:600">{{ t.loadingTxt }}</div>
+          </sc-if>
+          <sc-if value="{{ activityEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:24px 2px;color:var(--dim);font-size:13.5px;font-weight:600;line-height:1.7">{{ t.noActivity }}</div>
+          </sc-if>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;padding:22px;box-shadow:var(--shadow);min-width:0">
+          <div style="font-weight:800;font-size:16px;color:var(--heading);margin-bottom:16px">{{ t.topTitle }}</div>
+          <sc-if value="{{ hasTop }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:13px">
+              <sc-for list="{{ topViews }}" as="tv" hint-placeholder-count="5">
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:5px">
+                    <span style="color:var(--body)">{{ tv.name }}</span><span style="color:var(--dim)">{{ tv.views }}</span>
+                  </div>
+                  <div style="height:7px;border-radius:4px;background:var(--inset);overflow:hidden">
+                    <div style="height:100%;width:{{ tv.w }};border-radius:4px;background:linear-gradient(90deg,#f68743,#d1662a)"></div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ topLoading }}" hint-placeholder-val="{{ false }}">
+            <div style="color:var(--dim);font-size:13.5px;font-weight:600">{{ t.loadingTxt }}</div>
+          </sc-if>
+          <sc-if value="{{ topEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="color:var(--dim);font-size:13.5px;font-weight:600;line-height:1.7">{{ t.noTop }}</div>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isProps }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap">
+        <sc-if value="{{ addedMsg }}" hint-placeholder-val="{{ false }}">
+          <div style="display:inline-flex;align-items:center;gap:8px;color:#1f9d5c;font-weight:800;font-size:14px;background:rgba(31,157,92,.12);padding:8px 16px;border-radius:14px">{{ t.addedMsg }}</div>
+        </sc-if>
+        <button onClick="{{ openAdd }}" style="margin-inline-start:auto;display:inline-flex;align-items:center;gap:9px;background:#f68743;border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:14.5px;padding:12px 26px;border-radius:22px;cursor:pointer;box-shadow:0 10px 24px rgba(246,135,67,.28);transition:all .35s ease" style-hover="background:#d1662a;transform:translateY(-2px)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          {{ t.addBtn }}
+        </button>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow);margin-bottom:18px">
+        <div style="font-weight:800;font-size:15px;color:var(--heading);margin-bottom:4px">{{ t.curTitle }}</div>
+        <div style="font-size:12.5px;color:var(--dim);margin-bottom:14px">{{ t.curSub }}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;align-items:end">
+          <div class="pf-cell"><label class="pf-lb">{{ t.curUsdLb }}</label><input class="pf-in" value="1.00" disabled style="opacity:.6;cursor:not-allowed"></div>
+          <div class="pf-cell"><label class="pf-lb">{{ t.curIlsLb }}</label><input type="number" step="0.001" class="pf-in" value="{{ curIlsVal }}" onChange="{{ onCurIls }}"></div>
+          <div class="pf-cell"><label class="pf-lb">{{ t.curJodLb }}</label><input type="number" step="0.001" class="pf-in" value="{{ curJodVal }}" onChange="{{ onCurJod }}"></div>
+          <button type="button" onClick="{{ saveCurRates }}" style="height:44px;background:#f68743;border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:13.5px;padding:0 22px;border-radius:14px;cursor:pointer;transition:all .35s ease" style-hover="background:#d1662a">{{ t.curSave }}</button>
+          <button type="button" onClick="{{ resetCurRates }}" style="height:44px;background:none;border:1px solid var(--field-border);color:var(--body);font-family:'Cairo',sans-serif;font-weight:700;font-size:13px;padding:0 18px;border-radius:14px;cursor:pointer;transition:all .3s ease" style-hover="border-color:#f68743;color:#f68743">{{ t.curReset }}</button>
+        </div>
+        <sc-if value="{{ curSaved }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:12px;color:#1f9d5c;font-weight:700;font-size:12.5px">{{ t.curSavedMsg }}</div>
+        </sc-if>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)">
+        <div style="display:grid;grid-template-columns:2fr 1fr 1.6fr 1fr 1.4fr 168px;gap:10px;padding:14px 20px;background:var(--inset);font-size:12.5px;font-weight:800;color:var(--dim)">
+          <div>{{ t.hProp }}</div><div>{{ t.hCat }}</div><div>{{ t.hLoc }}</div><div>{{ t.hPrice }}</div><div>{{ t.hSpecs }}</div><div></div>
+        </div>
+        <sc-for list="{{ props }}" as="p" hint-placeholder-count="8">
+          <div style="display:grid;grid-template-columns:2fr 1fr 1.6fr 1fr 1.4fr 168px;gap:10px;align-items:center;padding:13px 20px;border-top:1px solid var(--hairline);font-size:13.5px;transition:background .25s ease" style-hover="background:var(--chip-bg)">
+          <div style="font-weight:800;color:var(--heading)">{{ p.name }}<sc-if value="{{ p.custom }}" hint-placeholder-val="{{ false }}"><span style="margin-inline-start:8px;background:rgba(58,160,214,.16);color:#2b86b8;font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:8px">{{ t.addedBadge }}</span></sc-if></div>
+            <div><span style="background:{{ p.catBg }};color:#121212;font-size:11.5px;font-weight:800;padding:3px 11px;border-radius:11px;white-space:nowrap">{{ p.catLabel }}</span></div>
+            <div style="color:var(--body);font-weight:600">{{ p.loc }}</div>
+            <div style="color:#d1662a;font-weight:900;white-space:nowrap">{{ p.priceLbl }}</div>
+            <div style="color:var(--dim);font-weight:600;font-size:12.5px">{{ p.specs }}</div>
+            <div style="justify-self:end;display:inline-flex;gap:7px">
+              <button onClick="{{ p.edit }}" title="{{ t.edit }}" style="display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(246,135,67,.4);background:rgba(246,135,67,.1);color:#c2410c;font-family:'Cairo',sans-serif;font-weight:800;font-size:12.5px;padding:6px 14px;border-radius:14px;cursor:pointer;transition:all .3s ease" style-hover="background:#f68743;color:#fff">{{ t.edit }}</button>
+              <button onClick="{{ p.del }}" title="{{ t.del }}" style="display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(224,36,94,.35);background:rgba(224,36,94,.08);color:#e0245e;font-family:'Cairo',sans-serif;font-weight:800;font-size:12.5px;padding:6px 14px;border-radius:14px;cursor:pointer;transition:all .3s ease" style-hover="background:#e0245e;color:#fff">{{ t.del }}</button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isProjects }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap">
+        <sc-if value="{{ addedProjMsg }}" hint-placeholder-val="{{ false }}">
+          <div style="display:inline-flex;align-items:center;gap:8px;color:#1f9d5c;font-weight:800;font-size:14px;background:rgba(31,157,92,.12);padding:8px 16px;border-radius:14px">{{ t.addedMsg }}</div>
+        </sc-if>
+        <button onClick="{{ openAddProj }}" style="margin-inline-start:auto;display:inline-flex;align-items:center;gap:9px;background:#f68743;border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:14.5px;padding:12px 26px;border-radius:22px;cursor:pointer;box-shadow:0 10px 24px rgba(246,135,67,.28);transition:all .35s ease" style-hover="background:#d1662a;transform:translateY(-2px)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          {{ t.addProjBtn }}
+        </button>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)">
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 168px;gap:10px;padding:14px 20px;background:var(--inset);font-size:12.5px;font-weight:800;color:var(--dim)">
+          <div>{{ t.hProj }}</div><div>{{ t.hKind }}</div><div>{{ t.hStatus }}</div><div>{{ t.hProgress }}</div><div>{{ t.hPrice }}</div><div></div>
+        </div>
+        <sc-for list="{{ projectsList }}" as="p" hint-placeholder-count="4">
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 168px;gap:10px;align-items:center;padding:13px 20px;border-top:1px solid var(--hairline);font-size:13.5px;transition:background .25s ease" style-hover="background:var(--chip-bg)">
+            <div style="font-weight:800;color:var(--heading)">{{ p.name }}<sc-if value="{{ p.custom }}" hint-placeholder-val="{{ false }}"><span style="margin-inline-start:8px;background:rgba(58,160,214,.16);color:#2b86b8;font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:8px">{{ t.addedBadge }}</span></sc-if>
+              <div style="color:var(--dim);font-weight:600;font-size:12px;margin-top:2px">{{ p.loc }}</div>
+            </div>
+            <div style="color:var(--body);font-weight:700">{{ p.kindLbl }}</div>
+            <div><span style="background:{{ p.stateBg }};color:#fff;font-size:11.5px;font-weight:800;padding:3px 11px;border-radius:11px;white-space:nowrap">{{ p.stateLbl }}</span></div>
+            <div style="color:var(--body);font-weight:700">{{ p.progress }}</div>
+            <div style="color:#d1662a;font-weight:900;white-space:nowrap">{{ p.priceLbl }}</div>
+            <div style="justify-self:end;display:inline-flex;gap:7px">
+              <button onClick="{{ p.edit }}" title="{{ t.edit }}" style="display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(246,135,67,.4);background:rgba(246,135,67,.1);color:#c2410c;font-family:'Cairo',sans-serif;font-weight:800;font-size:12.5px;padding:6px 14px;border-radius:14px;cursor:pointer;transition:all .3s ease" style-hover="background:#f68743;color:#fff">{{ t.edit }}</button>
+              <button onClick="{{ p.del }}" title="{{ t.del }}" style="display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(224,36,94,.35);background:rgba(224,36,94,.08);color:#e0245e;font-family:'Cairo',sans-serif;font-weight:800;font-size:12.5px;padding:6px 14px;border-radius:14px;cursor:pointer;transition:all .3s ease" style-hover="background:#e0245e;color:#fff">{{ t.del }}</button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isUsers }}" hint-placeholder-val="{{ false }}">
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)">
+        <div style="display:grid;grid-template-columns:1.6fr 2fr 1.3fr .9fr 1fr;gap:10px;padding:14px 20px;background:var(--inset);font-size:12.5px;font-weight:800;color:var(--dim)">
+          <div>{{ t.hName }}</div><div>{{ t.hEmail }}</div><div>{{ t.hPhone }}</div><div>{{ t.hRole }}</div><div>{{ t.hJoined }}</div>
+        </div>
+        <sc-for list="{{ users }}" as="u" hint-placeholder-count="5">
+          <div style="display:grid;grid-template-columns:1.6fr 2fr 1.3fr .9fr 1fr;gap:10px;align-items:center;padding:12px 20px;border-top:1px solid var(--hairline);font-size:13.5px;transition:background .25s ease" style-hover="background:var(--chip-bg)">
+            <div style="display:flex;align-items:center;gap:10px;font-weight:800;color:var(--heading);min-width:0">
+              <span style="width:32px;height:32px;min-width:32px;border-radius:50%;background:{{ u.avBg }};display:grid;place-items:center;font-weight:900;font-size:14px;color:#121212">{{ u.initial }}</span>
+              {{ u.name }}
+            </div>
+            <div style="direction:ltr;text-align:end;color:var(--body);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ u.email }}</div>
+            <div style="direction:ltr;text-align:end;color:var(--body);font-weight:600">{{ u.phone }}</div>
+            <div><span style="background:rgba(246,135,67,.14);color:#c2410c;font-size:11.5px;font-weight:800;padding:3px 11px;border-radius:11px">{{ u.roleLbl }}</span></div>
+            <div style="color:var(--dim);font-weight:600;direction:ltr;text-align:end">{{ u.joined }}</div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ usersLoading }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:28px 20px;border-top:1px solid var(--hairline);color:var(--dim);font-size:13.5px;font-weight:600">{{ t.loadingTxt }}</div>
+        </sc-if>
+        <sc-if value="{{ usersEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:28px 20px;border-top:1px solid var(--hairline);color:var(--dim);font-size:13.5px;font-weight:600">{{ t.noAccounts }}</div>
+        </sc-if>
+      </div>
+      <div style="margin-top:14px;color:var(--dim);font-size:12.5px;font-weight:600;line-height:1.8">{{ t.usersNote }}</div>
+    </sc-if>
+
+    <sc-if value="{{ isCRM }}" hint-placeholder-val="{{ false }}">
+      <dc-import name="CRM" lang="{{ lang }}" dark="{{ isDark }}" hint-size="100%,640px"></dc-import>
+    </sc-if>
+
+    <sc-if value="{{ isOwners }}" hint-placeholder-val="{{ false }}">
+      <dc-import name="Owners" lang="{{ lang }}" dark="{{ isDark }}" hint-size="100%,640px"></dc-import>
+    </sc-if>
+
+    <sc-if value="{{ isContent }}" hint-placeholder-val="{{ false }}">
+      <dc-import name="SiteContent" lang="{{ lang }}" hint-size="100%,900px"></dc-import>
+    </sc-if>
+  </main>
+
+  <sc-if value="{{ addOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeAdd }}" style="position:fixed;inset:0;z-index:300;background:rgba(8,8,12,.6);backdrop-filter:blur(5px);display:flex;padding:24px 16px;overflow-y:auto">
+    <div onClick="{{ stopEv }}" dir="{{ dir }}" style="width:100%;max-width:820px;margin:auto;background:var(--card);border:1px solid var(--card-border);border-radius:24px;box-shadow:0 30px 90px rgba(0,0,0,.45);display:flex;flex-direction:column;max-height:calc(100vh - 48px);animation:fadeUp .32s ease both;overflow:hidden">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:22px 26px 16px;border-bottom:1px solid var(--hairline);flex-shrink:0">
+        <div>
+          <div style="font-weight:900;font-size:20px;color:var(--heading);display:flex;align-items:center;gap:10px">
+            <span style="width:34px;height:34px;border-radius:11px;background:rgba(246,135,67,.14);display:grid;place-items:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2.2"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path></svg></span>{{ propModalTitle }}
+          </div>
+          <div style="color:var(--dim);font-size:13px;margin-top:6px;margin-inline-start:44px">{{ propModalSub }}</div>
+        </div>
+        <button type="button" onClick="{{ closeAdd }}" title="{{ t.cancelAdd }}" style="width:36px;height:36px;flex-shrink:0;border:1px solid var(--field-border);background:var(--chip-bg);border-radius:11px;color:var(--body);cursor:pointer;display:grid;place-items:center;transition:all .3s ease" style-hover="background:rgba(224,36,94,.12);color:#e0245e;border-color:rgba(224,36,94,.35)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      </div>
+      <form onSubmit="{{ addProp }}" style="display:flex;flex-direction:column;min-height:0;flex:1">
+        <div class="adm-scroll" style="flex:1;overflow:hidden auto;padding:22px 26px;display:flex;flex-direction:column;gap:18px">
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--heading);margin-bottom:4px">{{ t.imgSection }}</div>
+            <div style="font-size:12px;color:var(--dim);margin-bottom:10px">{{ t.imgSub }}</div>
+            <div style="height:220px;border-radius:16px;overflow:hidden;border:1px solid var(--field-border);background:var(--inset);margin-bottom:12px"><image-slot id="{{ slotMain }}" shape="rect" placeholder="{{ t.imgMain }}"></image-slot></div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+              <sc-for list="{{ slotExtra }}" as="s" hint-placeholder-count="9">
+                <div style="height:100px;border-radius:12px;overflow:hidden;border:1px solid var(--field-border);background:var(--inset)"><image-slot id="{{ s.id }}" shape="rect" placeholder="{{ s.ph }}"></image-slot></div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ hasPhotos }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--hairline)">
+                <div style="font-size:12.5px;font-weight:800;color:var(--heading);margin-bottom:9px">{{ t.photosManage }}</div>
+                <div style="display:flex;flex-wrap:wrap;gap:10px">
+                  <sc-for list="{{ photoList }}" as="ph" hint-placeholder-count="3">
+                    <div style="position:relative;width:104px;height:78px;border-radius:11px;overflow:hidden;border:2px solid {{ ph.border }};background:var(--inset)">
+                      <img src="{{ ph.url }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+                      <sc-if value="{{ ph.isCover }}" hint-placeholder-val="{{ true }}">
+                        <span style="position:absolute;inset-inline-start:4px;top:4px;background:#f68743;color:#fff;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:7px">{{ t.coverBadge }}</span>
+                      </sc-if>
+                      <div style="position:absolute;inset-inline:0;bottom:0;display:flex;background:rgba(0,0,0,.62)">
+                        <sc-if value="{{ ph.canCover }}" hint-placeholder-val="{{ true }}">
+                          <button type="button" onClick="{{ ph.makeCover }}" title="{{ t.makeCover }}" style="flex:1;border:none;background:none;color:#fff;font-family:'Cairo',sans-serif;font-size:10.5px;font-weight:800;padding:5px 0;cursor:pointer">{{ t.makeCover }}</button>
+                        </sc-if>
+                        <button type="button" onClick="{{ ph.del }}" title="{{ t.del }}" style="flex:1;border:none;background:none;color:#ff8ba8;font-family:'Cairo',sans-serif;font-size:10.5px;font-weight:800;padding:5px 0;cursor:pointer">{{ t.del }}</button>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="margin-top:8px;color:var(--dim);font-size:11.5px;font-weight:600">{{ t.photosHint }}</div>
+              </div>
+            </sc-if>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">
+            <div class="pf-cell"><label class="pf-lb">{{ t.fNameAr }}</label><input ref="{{ pNameArRef }}" class="pf-in" placeholder="{{ t.fNamePh }}"></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fNameEn }}</label><input ref="{{ pNameEnRef }}" class="pf-in" placeholder="{{ t.fNamePhEn }}"></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fLocAr }}</label><input ref="{{ pLocArRef }}" class="pf-in" placeholder="{{ t.fLocPh }}"></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fLocEn }}</label><input ref="{{ pLocEnRef }}" class="pf-in" placeholder="{{ t.fLocPhEn }}"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px">
+            <div class="pf-cell"><label class="pf-lb">{{ t.fCountry }}</label><select value="{{ addCountry }}" onChange="{{ onCountry }}" class="pf-in"><sc-for list="{{ countryOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fCity }}</label><select ref="{{ pCityRef }}" class="pf-in"><sc-for list="{{ cityOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fOffer }}</label><select ref="{{ pOfferRef }}" class="pf-in"><sc-for list="{{ offerOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fType }}</label><select ref="{{ pTypeRef }}" class="pf-in"><sc-for list="{{ typeOpts }}" as="o" hint-placeholder-count="6">
+              <option value="{{ o.id }}">{{ o.label }}</option>
+            </sc-for></select></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px">
+            <div class="pf-cell"><label class="pf-lb">{{ t.fPrice }}</label><input ref="{{ pPriceRef }}" type="number" class="pf-in" placeholder="{{ t.fPricePh }}"></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fCurrency }}</label><select ref="{{ pCurrencyRef }}" class="pf-in"><sc-for list="{{ currencyOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fRooms }}</label><input ref="{{ pRoomsRef }}" type="number" class="pf-in" placeholder="0"></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fBaths }}</label><input ref="{{ pBathsRef }}" type="number" class="pf-in" placeholder="0"></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fArea }}</label><input ref="{{ pAreaRef }}" type="number" class="pf-in" placeholder="0"></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fOwn }}</label><select ref="{{ pOwnRef }}" class="pf-in"><sc-for list="{{ ownOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fZone }}</label><select ref="{{ pZoneRef }}" class="pf-in"><sc-for list="{{ zoneOpts }}" as="o" hint-placeholder-count="6"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px">
+            <div class="pf-cell"><label class="pf-lb">{{ t.fFloor }}</label><input ref="{{ pFloorRef }}" type="number" class="pf-in" placeholder="—"></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fYear }}</label><input ref="{{ pYearRef }}" type="number" class="pf-in" placeholder="2024"></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fPark }}</label><input ref="{{ pParkRef }}" type="number" class="pf-in" placeholder="0"></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fLat }}</label><input ref="{{ pLatRef }}" type="number" step="0.0001" class="pf-in" placeholder="31.9038"></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fLng }}</label><input ref="{{ pLngRef }}" type="number" step="0.0001" class="pf-in" placeholder="35.2034"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="pf-cell"><label class="pf-lb">{{ t.fDescAr }}</label><textarea ref="{{ pDescArRef }}" class="pf-in" placeholder="{{ t.fDescPh }}"></textarea></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fDescEn }}</label><textarea ref="{{ pDescEnRef }}" class="pf-in" placeholder="{{ t.fDescPhEn }}"></textarea></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="pf-cell"><label class="pf-lb">{{ t.fFeatAr }}</label><textarea ref="{{ pFeatArRef }}" class="pf-in" style="min-height:110px" placeholder="{{ t.fFeatPh }}"></textarea></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fFeatEn }}</label><textarea ref="{{ pFeatEnRef }}" class="pf-in" style="min-height:110px" placeholder="{{ t.fFeatPhEn }}"></textarea></div>
+          </div>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;font-weight:700;color:var(--body)"><input ref="{{ pExcRef }}" type="checkbox" style="width:18px;height:18px;accent-color:#f68743;cursor:pointer">{{ t.fExc }}</label>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;justify-content:flex-end;padding:16px 26px;border-top:1px solid var(--hairline);flex-shrink:0">
+          <button type="button" onClick="{{ closeAdd }}" style="background:transparent;border:1px solid var(--field-border);color:var(--body);font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;padding:11px 24px;border-radius:20px;cursor:pointer;transition:all .3s ease" style-hover="background:var(--chip-bg)">{{ t.cancelAdd }}</button>
+          <button type="submit" style="background:#f68743;border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:14.5px;padding:11px 32px;border-radius:20px;cursor:pointer;box-shadow:0 10px 24px rgba(246,135,67,.28);transition:all .3s ease" style-hover="background:#d1662a;transform:translateY(-2px)">{{ saveLabel }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ addProjOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeAddProj }}" style="position:fixed;inset:0;z-index:300;background:rgba(8,8,12,.6);backdrop-filter:blur(5px);display:flex;padding:24px 16px;overflow-y:auto">
+    <div onClick="{{ stopEv }}" dir="{{ dir }}" style="width:100%;max-width:820px;margin:auto;background:var(--card);border:1px solid var(--card-border);border-radius:24px;box-shadow:0 30px 90px rgba(0,0,0,.45);display:flex;flex-direction:column;max-height:calc(100vh - 48px);animation:fadeUp .32s ease both;overflow:hidden">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:22px 26px 16px;border-bottom:1px solid var(--hairline);flex-shrink:0">
+        <div>
+          <div style="font-weight:900;font-size:20px;color:var(--heading);display:flex;align-items:center;gap:10px">
+            <span style="width:34px;height:34px;border-radius:11px;background:rgba(246,135,67,.14);display:grid;place-items:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2.2"><rect x="4" y="3" width="16" height="18" rx="1.5"></rect></svg></span>{{ projModalTitle }}
+          </div>
+          <div style="color:var(--dim);font-size:13px;margin-top:6px;margin-inline-start:44px">{{ projModalSub }}</div>
+        </div>
+        <button type="button" onClick="{{ closeAddProj }}" title="{{ t.cancelAdd }}" style="width:36px;height:36px;flex-shrink:0;border:1px solid var(--field-border);background:var(--chip-bg);border-radius:11px;color:var(--body);cursor:pointer;display:grid;place-items:center;transition:all .3s ease" style-hover="background:rgba(224,36,94,.12);color:#e0245e;border-color:rgba(224,36,94,.35)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      </div>
+      <form onSubmit="{{ addProj }}" style="display:flex;flex-direction:column;min-height:0;flex:1">
+        <div class="adm-scroll" style="flex:1;overflow:hidden auto;padding:22px 26px;display:flex;flex-direction:column;gap:18px">
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--heading);margin-bottom:4px">{{ t.imgSection }}</div>
+            <div style="font-size:12px;color:var(--dim);margin-bottom:10px">{{ t.pjImgSub }}</div>
+            <div style="height:220px;border-radius:16px;overflow:hidden;border:1px solid var(--field-border);background:var(--inset);margin-bottom:12px"><image-slot id="{{ projSlotMain }}" shape="rect" placeholder="{{ t.imgMain }}"></image-slot></div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+              <sc-for list="{{ projSlotExtra }}" as="s" hint-placeholder-count="5">
+                <div style="height:100px;border-radius:12px;overflow:hidden;border:1px solid var(--field-border);background:var(--inset)"><image-slot id="{{ s.id }}" shape="rect" placeholder="{{ s.ph }}"></image-slot></div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">
+            <div class="pf-cell"><label class="pf-lb">{{ t.fNameAr }}</label><input ref="{{ pjNameArRef }}" class="pf-in" placeholder="{{ t.pjNamePh }}"></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fNameEn }}</label><input ref="{{ pjNameEnRef }}" class="pf-in" placeholder="{{ t.pjNamePhEn }}"></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fLocAr }}</label><input ref="{{ pjLocArRef }}" class="pf-in" placeholder="{{ t.fLocPh }}"></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fLocEn }}</label><input ref="{{ pjLocEnRef }}" class="pf-in" placeholder="{{ t.fLocPhEn }}"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px">
+            <div class="pf-cell"><label class="pf-lb">{{ t.fCountry }}</label><select value="{{ addProjCountry }}" onChange="{{ onProjCountry }}" class="pf-in"><sc-for list="{{ countryOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fCity }}</label><select ref="{{ pjCityRef }}" class="pf-in"><sc-for list="{{ projCityOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fKind }}</label><select ref="{{ pjKindRef }}" class="pf-in"><option value="residential">{{ t.kResidential }}</option><option value="commercial">{{ t.kCommercial }}</option></select></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fState }}</label><select ref="{{ pjStateRef }}" class="pf-in"><option value="ongoing">{{ t.sOngoing }}</option><option value="done">{{ t.sDone }}</option></select></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px">
+            <div class="pf-cell"><label class="pf-lb">{{ t.fProgress }}</label><input ref="{{ pjProgressRef }}" type="number" min="0" max="100" class="pf-in" placeholder="65"></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fPrice }}</label><input ref="{{ pjPriceRef }}" type="number" class="pf-in" placeholder="{{ t.fPricePh }}"></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fCurrency }}</label><select ref="{{ pjCurrencyRef }}" class="pf-in"><sc-for list="{{ currencyOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.id }}">{{ o.label }}</option></sc-for></select></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="pf-cell"><label class="pf-lb">{{ t.fDescAr }}</label><textarea ref="{{ pjDescArRef }}" class="pf-in" placeholder="{{ t.fDescPh }}"></textarea></div>
+            <div class="pf-cell"><label class="pf-lb">{{ t.fDescEn }}</label><textarea ref="{{ pjDescEnRef }}" class="pf-in" placeholder="{{ t.fDescPhEn }}"></textarea></div>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--heading);margin-bottom:10px">{{ t.pjStatsTitle }}</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+              <div class="pf-cell"><label class="pf-lb">{{ t.pjStat1 }}</label>
+                <input ref="{{ pjS1NumRef }}" class="pf-in" placeholder="120" style="margin-bottom:8px">
+                <input ref="{{ pjS1ArRef }}" class="pf-in" placeholder="{{ t.pjLabelPh }}" style="margin-bottom:8px">
+                <input ref="{{ pjS1EnRef }}" class="pf-in" placeholder="{{ t.pjLabelPhEn }}">
+              </div>
+              <div class="pf-cell"><label class="pf-lb">{{ t.pjStat2 }}</label>
+                <input ref="{{ pjS2NumRef }}" class="pf-in" placeholder="3" style="margin-bottom:8px">
+                <input ref="{{ pjS2ArRef }}" class="pf-in" placeholder="{{ t.pjLabelPh }}" style="margin-bottom:8px">
+                <input ref="{{ pjS2EnRef }}" class="pf-in" placeholder="{{ t.pjLabelPhEn }}">
+              </div>
+              <div class="pf-cell"><label class="pf-lb">{{ t.pjStat3 }}</label>
+                <input ref="{{ pjS3NumRef }}" class="pf-in" placeholder="2027" style="margin-bottom:8px">
+                <input ref="{{ pjS3ArRef }}" class="pf-in" placeholder="{{ t.pjLabelPh }}" style="margin-bottom:8px">
+                <input ref="{{ pjS3EnRef }}" class="pf-in" placeholder="{{ t.pjLabelPhEn }}">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;justify-content:flex-end;padding:16px 26px;border-top:1px solid var(--hairline);flex-shrink:0">
+          <button type="button" onClick="{{ closeAddProj }}" style="background:transparent;border:1px solid var(--field-border);color:var(--body);font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;padding:11px 24px;border-radius:20px;cursor:pointer;transition:all .3s ease" style-hover="background:var(--chip-bg)">{{ t.cancelAdd }}</button>
+          <button type="submit" style="background:#f68743;border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:14.5px;padding:11px 32px;border-radius:20px;cursor:pointer;box-shadow:0 10px 24px rgba(246,135,67,.28);transition:all .3s ease" style-hover="background:#d1662a;transform:translateY(-2px)">{{ saveLabel }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  </sc-if>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { tab: 'dash', session: null, ready: false, addedMsg: false, theme: null, lang: null, addOpen: false, pendingId: null, addCountry: 'ps', curRates: null, curSaved: false, acctMenuOpen: false,
+    addProjOpen: false, pendingProjId: null, addProjCountry: 'ps', addedProjMsg: false,
+    /* null = إضافة، ومعرّف = تعديل عقار/مشروع قائم بنفس النموذج */
+    editId: null, editProjId: null,
+    /* أرقام حقيقية من السيرفر — null تعني "لم تصل بعد" لا "صفر" */
+    stats: null, visitRows: null, sourceRows: null, topRows: null, accounts: null, leadRows: null, statsOff: false };
+  pCurrencyRef = React.createRef();
+  pNameArRef = React.createRef(); pNameEnRef = React.createRef(); pLocArRef = React.createRef(); pLocEnRef = React.createRef();
+  pCityRef = React.createRef(); pOfferRef = React.createRef(); pTypeRef = React.createRef();
+  pPriceRef = React.createRef(); pRoomsRef = React.createRef(); pBathsRef = React.createRef(); pAreaRef = React.createRef();
+  pOwnRef = React.createRef(); pZoneRef = React.createRef(); pLatRef = React.createRef(); pLngRef = React.createRef();
+  pFloorRef = React.createRef(); pYearRef = React.createRef(); pParkRef = React.createRef();
+  pDescArRef = React.createRef(); pDescEnRef = React.createRef(); pFeatArRef = React.createRef(); pFeatEnRef = React.createRef(); pExcRef = React.createRef();
+  pjNameArRef = React.createRef(); pjNameEnRef = React.createRef(); pjLocArRef = React.createRef(); pjLocEnRef = React.createRef(); pjCityRef = React.createRef();
+  pjKindRef = React.createRef(); pjStateRef = React.createRef(); pjProgressRef = React.createRef(); pjPriceRef = React.createRef(); pjCurrencyRef = React.createRef();
+  pjDescArRef = React.createRef(); pjDescEnRef = React.createRef();
+  pjS1NumRef = React.createRef(); pjS1ArRef = React.createRef(); pjS1EnRef = React.createRef();
+  pjS2NumRef = React.createRef(); pjS2ArRef = React.createRef(); pjS2EnRef = React.createRef();
+  pjS3NumRef = React.createRef(); pjS3ArRef = React.createRef(); pjS3EnRef = React.createRef();
+  componentDidMount() {
+    try { const tv = localStorage.getItem('palmas_theme'); const th = (tv === 'light' || tv === 'dark') ? tv : 'light'; document.documentElement.setAttribute('data-theme', th); this.setState({ theme: th }); } catch (e) {}
+    try { const lv = localStorage.getItem('palmas_lang'); const lg = (lv === 'ar' || lv === 'en') ? lv : 'ar'; document.documentElement.lang = lg; document.documentElement.dir = lg === 'en' ? 'ltr' : 'rtl'; this.setState({ lang: lg }); } catch (e) {}
+    this._boot();
+  }
+  /* waits for palmas-core.js (window.Palmas) so the session check honours "remember me"
+     (sessionStorage-only sessions) instead of reading palmas_session from localStorage directly */
+  _boot() {
+    const P = window.Palmas;
+    if (!P) { setTimeout(() => this._boot(), 60); return; }
+    /* الحسابات لم تعد تُقرأ من تخزين المتصفّح: مصدرها الوحيد قاعدة البيانات
+       عبر _loadStats — فلا تظهر هنا حسابات وهمية ولا حسابات جهاز واحد. */
+    try {
+      this.setState({ session: P.API.session(), curRates: P.Currency.rates(), ready: true });
+    } catch (e) { this.setState({ ready: true }); }
+    if (!this._offAuth) this._offAuth = P.API.onAuthChange(() => {
+      this.setState({ session: P.API.session() });
+      this._loadStats();
+    });
+    this._loadStats();
+  }
+  /* الأرقام الحقيقية. كانت لوحة التحكم تعرض أرقاماً مكتوبة يدوياً (زيارات
+     ومبيعات ومصادر وحسابات)، وهذه تستبدلها بما في قاعدة البيانات فعلاً.
+     تُطلب مرة واحدة بعد التأكّد من أن الجلسة أدمن — الدوال نفسها ترفض غيره. */
+  _loadStats() {
+    const P = window.Palmas;
+    const s = P && P.API.session();
+    if (!s || s.role !== 'admin') return;
+    if (!P.Stats) { this.setState({ statsOff: true }); return; }   // بلا سيرفر
+    if (this._statsAsked) return;
+    this._statsAsked = true;
+
+    const fail = (label) => (e) => {
+      console.log('[Palmas] تعذّر جلب ' + label + ':', e && e.message);
+      this.setState({ statsOff: true });
+    };
+    P.Stats.overview().then(v => this.setState({ stats: v })).catch(fail('الأرقام'));
+    P.Stats.visitsByMonth().then(v => this.setState({ visitRows: v })).catch(fail('الزيارات'));
+    P.Stats.sources().then(v => this.setState({ sourceRows: v })).catch(fail('المصادر'));
+    P.Stats.topProperties(8).then(v => this.setState({ topRows: v })).catch(fail('الأكثر مشاهدة'));
+    P.Stats.accounts().then(v => this.setState({ accounts: v })).catch(fail('الحسابات'));
+    if (P.Leads) P.Leads.all().then(v => this.setState({ leadRows: v })).catch(fail('النشاطات'));
+  }
+  componentWillUnmount() { if (this._offAuth) this._offAuth(); }
+  /* حقول النموذج غير مربوطة بالحالة (refs بلا value)، فالتعبئة تتم بعد فتحه.
+     تُنفَّذ مرة واحدة لكل فتح — وإلا لأعادت الكتابة فوق ما يكتبه المستخدم. */
+  /* support.js passes only prevProps to componentDidUpdate, never prevState — keep our own snapshot */
+  componentDidUpdate() {
+    const ps = this._ps || {};
+    this._ps = this.state;
+    if (this.state.addOpen && !ps.addOpen && this.state.editId) this._fillProp();
+    if (this.state.addProjOpen && !ps.addProjOpen && this.state.editProjId) this._fillProj();
+  }
+  _set(ref, v) { if (ref.current) ref.current.value = (v == null ? '' : String(v)); }
+  _fillProp() {
+    const P = window.Palmas; if (!P) return;
+    const x = P.propBy(this.state.editId); if (!x) return;
+    this._set(this.pNameArRef, x.name.ar); this._set(this.pNameEnRef, x.name.en);
+    this._set(this.pLocArRef, x.loc.ar);   this._set(this.pLocEnRef, x.loc.en);
+    this._set(this.pCityRef, x.cityKey);   this._set(this.pOfferRef, x.offer);
+    this._set(this.pTypeRef, x.type);      this._set(this.pPriceRef, x.price);
+    this._set(this.pCurrencyRef, x.currency || 'usd');
+    this._set(this.pRoomsRef, x.rooms || ''); this._set(this.pBathsRef, x.baths || '');
+    this._set(this.pAreaRef, x.area || '');
+    this._set(this.pOwnRef, x.ownership || 'tabu'); this._set(this.pZoneRef, x.zone || '');
+    this._set(this.pLatRef, x.lat); this._set(this.pLngRef, x.lng);
+    this._set(this.pFloorRef, x.floor); this._set(this.pYearRef, x.year);
+    this._set(this.pParkRef, x.parking);
+    this._set(this.pDescArRef, (x.desc || {}).ar); this._set(this.pDescEnRef, (x.desc || {}).en);
+    this._set(this.pFeatArRef, ((x.features || {}).ar || []).join('\n'));
+    this._set(this.pFeatEnRef, ((x.features || {}).en || []).join('\n'));
+    if (this.pExcRef.current) this.pExcRef.current.checked = !!x.exc;
+  }
+  _fillProj() {
+    const P = window.Palmas; if (!P) return;
+    const x = P.projectBy(this.state.editProjId); if (!x) return;
+    this._set(this.pjNameArRef, x.name.ar); this._set(this.pjNameEnRef, x.name.en);
+    this._set(this.pjLocArRef, x.loc.ar);   this._set(this.pjLocEnRef, x.loc.en);
+    this._set(this.pjCityRef, x.cityKey);   this._set(this.pjKindRef, x.kind);
+    this._set(this.pjStateRef, x.state);    this._set(this.pjProgressRef, x.progress);
+    this._set(this.pjPriceRef, x.price);    this._set(this.pjCurrencyRef, x.currency || 'usd');
+    this._set(this.pjDescArRef, (x.desc || {}).ar); this._set(this.pjDescEnRef, (x.desc || {}).en);
+    const st = x.stats || [];
+    [[this.pjS1NumRef, this.pjS1ArRef, this.pjS1EnRef], [this.pjS2NumRef, this.pjS2ArRef, this.pjS2EnRef],
+     [this.pjS3NumRef, this.pjS3ArRef, this.pjS3EnRef]].forEach((refs, i) => {
+      const s = st[i] || { num: '', label: {} };
+      this._set(refs[0], s.num); this._set(refs[1], (s.label || {}).ar); this._set(refs[2], (s.label || {}).en);
+    });
+  }
+  _save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  _downloadCsv(name, rows) {
+    const esc = (c) => { const s = String(c == null ? '' : c); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    const csv = rows.map(r => r.map(esc).join(',')).join('\r\n');
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name + '-' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  _icon(n, c, s) {
+    const P = (d) => React.createElement('svg', { width: s, height: s, viewBox: '0 0 24 24', fill: 'none', stroke: c, strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round', key: n },
+      ...d.map((dd, i) => React.createElement(dd.tag || 'path', { key: i, ...dd })));
+    const icons = {
+      grid: [{ tag: 'rect', x: 3, y: 3, width: 7, height: 9, rx: 1.5 }, { tag: 'rect', x: 14, y: 3, width: 7, height: 5, rx: 1.5 }, { tag: 'rect', x: 14, y: 12, width: 7, height: 9, rx: 1.5 }, { tag: 'rect', x: 3, y: 16, width: 7, height: 5, rx: 1.5 }],
+      home: [{ d: 'M3 10.5 12 3l9 7.5' }, { d: 'M5 9.5V21h14V9.5' }, { d: 'M9 21v-6h6v6' }],
+      users: [{ d: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2' }, { tag: 'circle', cx: 9, cy: 7, r: 4 }, { d: 'M23 21v-2a4 4 0 0 0-3-3.87' }, { d: 'M16 3.13a4 4 0 0 1 0 7.75' }],
+      eye: [{ d: 'M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z' }, { tag: 'circle', cx: 12, cy: 12, r: 3 }],
+      dollar: [{ tag: 'line', x1: 12, y1: 1, x2: 12, y2: 23 }, { d: 'M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6' }],
+      plus: [{ tag: 'circle', cx: 12, cy: 12, r: 10 }, { tag: 'line', x1: 12, y1: 8, x2: 12, y2: 16 }, { tag: 'line', x1: 8, y1: 12, x2: 16, y2: 12 }],
+      heart: [{ d: 'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z' }],
+      msg: [{ d: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' }],
+      user: [{ d: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2' }, { tag: 'circle', cx: 12, cy: 7, r: 4 }],
+      cal: [{ tag: 'rect', x: 3, y: 4, width: 18, height: 18, rx: 2 }, { tag: 'line', x1: 16, y1: 2, x2: 16, y2: 6 }, { tag: 'line', x1: 8, y1: 2, x2: 8, y2: 6 }, { tag: 'line', x1: 3, y1: 10, x2: 21, y2: 10 }],
+      crm: [{ tag: 'rect', x: 3, y: 4, width: 5, height: 16, rx: 1.5 }, { tag: 'rect', x: 10, y: 4, width: 5, height: 11, rx: 1.5 }, { tag: 'rect', x: 17, y: 4, width: 4, height: 7, rx: 1.5 }],
+      building: [{ tag: 'rect', x: 4, y: 3, width: 16, height: 18, rx: 1.5 }, { d: 'M9 8h.01M15 8h.01M9 13h.01M15 13h.01' }, { d: 'M10 21v-4h4v4' }],
+      pen: [{ d: 'M12 20h9' }, { d: 'M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z' }],
+      handshake: [{ d: 'M11 17l2 2a1 1 0 0 0 1.4 0l4.6-4.6a1 1 0 0 0 0-1.4L14 8' }, { d: 'M3 12l5-5 4 1 2-2' }, { d: 'M3 12l4 4' }, { d: 'M14 8l-3 3a1.5 1.5 0 0 1-2-2l2-2' }, { d: 'M21 12l-3-3' }],
+    };
+    return P(icons[n] || icons.grid);
+  }
+  T() {
+    return {
+      ar: {
+        panelSub: 'لوحة التحكم', erp: 'نظام ERP', badgeNew: 'جديد', backSite: 'العودة للموقع', logout: 'تسجيل الخروج', roleAdmin: 'مدير', acctSettings: 'إعدادات الحساب',
+        deniedTitle: 'هذه الصفحة مخصصة لإدارة الموقع', deniedDesc: 'سجّل الدخول بحساب المدير للوصول إلى لوحة التحكم.', deniedCta: 'تسجيل الدخول',
+        navLabels: { dash: 'نظرة عامة', crm: 'العملاء (CRM)', owners: 'المالكون والعقود', props: 'العقارات', projects: 'المشاريع', content: 'محتوى الموقع', users: 'الحسابات' },
+        tabs: { dash: { title: 'نظرة عامة', sub: 'ملخص أداء الموقع والإحصائيات' }, props: { title: 'إدارة العقارات', sub: 'إضافة وحذف عقارات الموقع مع كامل التفاصيل' }, projects: { title: 'إدارة المشاريع', sub: 'إضافة وحذف المشاريع العمرانية المعروضة بصفحة المشاريع' }, users: { title: 'إدارة الحسابات', sub: 'حسابات المستخدمين المسجلة في الموقع' }, crm: { title: 'إدارة علاقات العملاء', sub: 'المسار، جهات الاتصال، الحجوزات، الوارد والمهام — كل العملاء في مكان واحد' }, content: { title: 'محتوى الموقع', sub: 'أرقام الرئيسية، آراء العملاء، حسابات التواصل وروابط التطبيق' }, owners: { title: 'المالكون وعقود الوساطة', sub: 'أصحاب العقارات، عقود التفويض، العمولات، وطلبات عرض العقار الواردة' } },
+        visitsTitle: 'زيارات الموقع — آخر 8 أشهر', sourcesTitle: 'مصادر الزيارات', activityTitle: 'آخر النشاطات', topTitle: 'العقارات الأكثر مشاهدة',
+        kpiLabels: ['إجمالي العقارات', 'الحسابات المسجلة', 'زيارات هذا الشهر', 'مبيعات ' + new Date().getFullYear()],
+        deltaPublished: (n) => (n == null ? '' : n + ' معروض للزوار'),
+        deltaNewAccounts: (n) => (!n ? 'ما في تسجيل جديد هذا الشهر' : '+' + n + ' هذا الشهر'),
+        deltaDeals: (n) => (!n ? 'ما في صفقة مسدّدة بعد' : n + ' صفقة مسدّدة'),
+        deltaVsPrev: '% عن الشهر الماضي', deltaNoBase: 'أول شهر فيه زيارات', deltaNone: 'ما في زيارات بعد',
+        sourceNames: { google: 'محركات البحث', social: 'وسائل التواصل', direct: 'زيارات مباشرة', referral: 'إحالات من مواقع' },
+        actBook: (p) => 'طلب معاينة — ' + p,
+        actMsg: (n) => 'رسالة جديدة من ' + n,
+        actListing: (n, c) => 'طلب عرض عقار من ' + n + (c ? ' — ' + c : ''),
+        agoMin: (n) => 'قبل ' + n + ' دقيقة', agoHour: (n) => 'قبل ' + n + ' ساعة', agoDay: (n) => 'قبل ' + n + ' يوم',
+        loadingTxt: 'جاري التحميل…',
+        noVisits: 'ما في زيارات مسجّلة بعد — التتبّع بلّش من هلأ، والأرقام رح تبان مع أول زوار.',
+        noSources: 'ما في مصادر بعد — بتبان أول ما يزور الموقع حدا.',
+        noActivity: 'ما في نشاطات — أول طلب معاينة أو رسالة رح تظهر هون.',
+        noTop: 'ما في مشاهدات بعد — العدّ بلّش من هلأ.',
+        noAccounts: 'ما في حسابات مسجّلة بعد.',
+        roleAdminLbl: 'مدير', roleAgentLbl: 'وسيط', roleCustomerLbl: 'زبون',
+        edit: 'تعديل', saveEdit: 'حفظ التعديلات',
+        photosManage: 'صور العقار الحالية', makeCover: 'اجعلها الغلاف', coverBadge: 'الغلاف',
+        photosHint: 'الغلاف هي الصورة الي بتظهر ببطاقة العقار وبالتطبيق. الحذف بيشيل الصورة نهائياً من السيرفر.',
+        editTitle: 'تعديل عقار', editSub: 'عدّل ما تريد واحفظ — التغيير يظهر فوراً بالموقع والتطبيق',
+        editProjTitle: 'تعديل مشروع', editProjSub: 'عدّل تفاصيل المشروع كما ستظهر بصفحة المشاريع',
+        addTitle: 'إضافة عقار جديد', fName: 'اسم العقار *', fPrice: 'السعر ($) *', fRooms: 'الغرف', fBaths: 'الحمّامات', fArea: 'المساحة (م²)',
+        addBtn: 'إضافة العقار', addedMsg: '✓ تمت إضافة العقار بنجاح', addedBadge: 'مضاف',
+        hProp: 'العقار', hCat: 'التصنيف', hLoc: 'الموقع', hPrice: 'السعر', hSpecs: 'المواصفات',
+        hProj: 'المشروع', hKind: 'النوع', hProgress: 'نسبة الإنجاز',
+        addProjBtn: 'إضافة مشروع', addProjTitle: 'إضافة مشروع جديد', addProjSub: 'أدخل تفاصيل المشروع كما ستظهر بصفحة المشاريع',
+        pjImgSub: 'حتى 6 صور — الرئيسية تظهر أولاً بصفحة تفاصيل المشروع، والباقي بمعرض الصور',
+        pjNamePh: 'مثال: أبراج بالماس السكنية', pjNamePhEn: 'e.g. Palmas Residential Towers',
+        fKind: 'نوع المشروع', fState: 'حالة المشروع', kResidential: 'سكني', kCommercial: 'تجاري', sOngoing: 'قيد الإنشاء', sDone: 'مكتمل',
+        fProgress: 'نسبة الإنجاز (%)',
+        pjStatsTitle: 'إحصاءات المشروع (تظهر ببطاقة المشروع)', pjStat1: 'الإحصاء الأول', pjStat2: 'الإحصاء الثاني', pjStat3: 'الإحصاء الثالث',
+        pjLabelPh: 'التسمية (عربي)', pjLabelPhEn: 'Label (English)',
+        hName: 'الاسم', hEmail: 'البريد الإلكتروني', hPhone: 'الهاتف', hRole: 'الصلاحية', hJoined: 'تاريخ التسجيل', hStatus: 'الحالة',
+        del: 'حذف', cancel: 'إلغاء', show: 'إظهار', active: 'نشط',
+        usersNote: 'الحسابات المسجلة عبر صفحة إنشاء الحساب تظهر هنا تلقائياً. كلمة المرور غير معروضة لأنها مخزّنة مُعمّاة ولا يقدر أي حدا يقرأها — ولا حتى المدير؛ الزبون بيغيّرها بنفسه من "نسيت كلمة المرور". وحذف الحساب بيتم من لوحة Supabase لحماية بياناته المرتبطة.',
+        expProps: 'تصدير العقارات', expProjects: 'تصدير المشاريع', expUsers: 'تصدير الحسابات', adminFallback: 'مدير الموقع',
+        roomsU: 'غرف', areaU: 'م²', perMonth: '/شهر',
+        fNameAr: 'اسم العقار (عربي) *', fNameEn: 'اسم العقار (إنجليزي)', fNamePh: 'مثال: فيلا الياسمين', fNamePhEn: 'e.g. Yasmine Villa',
+        fLocAr: 'الموقع (عربي)', fLocEn: 'الموقع (إنجليزي)', fLocPh: 'مثال: الطيرة، رام الله', fLocPhEn: 'e.g. Tira, Ramallah',
+        fPricePh: 'أدخل السعر بالعملة المختارة',
+        fCurrency: 'العملة',
+        curTitle: 'أسعار الصرف', curSub: 'تُستخدم لتحويل أي عقار مُسعّر بغير الدولار إلى الدولار داخلياً (الفلترة، الفرز، صفقات CRM، وعمولات ERP) — بينما يبقى سعر العقار المعروض بعملته الأصلية دائماً.',
+        curUsdLb: '1 دولار أمريكي =', curIlsLb: 'شيكل لكل 1 دولار', curJodLb: 'دينار لكل 1 دولار', curSave: 'حفظ الأسعار', curReset: 'إعادة للافتراضي', curSavedMsg: '✓ تم تحديث أسعار الصرف',
+        addSub: 'أدخل التفاصيل كما ستظهر في صفحة العقار', imgSection: 'صور العقار', imgSub: 'حتى 10 صور — الرئيسية تظهر أولاً بصفحة التفاصيل، والباقي بمعرض الصور', imgMain: 'الصورة الرئيسية',
+        fCountry: 'الدولة', fCity: 'المدينة', cityNone: 'بدون تحديد', fOffer: 'نوع العرض', fType: 'نوع العقار', fOwn: 'نوع الملكية', fZone: 'التصنيف السكني',
+        fFloor: 'الطابق', fYear: 'سنة البناء', fPark: 'مواقف',
+        fLat: 'خط العرض (Latitude)', fLng: 'خط الطول (Longitude)',
+        fDescAr: 'وصف العقار (عربي)', fDescEn: 'وصف العقار (إنجليزي)', fDescPh: 'اكتب وصفاً تفصيلياً للعقار كما سيظهر في صفحة التفاصيل...', fDescPhEn: 'Write a detailed description as it will appear on the property page...',
+        fFeatAr: 'المميزات (عربي) — ميزة في كل سطر', fFeatEn: 'المميزات (إنجليزي) — ميزة في كل سطر',
+        fFeatPh: 'تدفئة مركزية\nموقف خاص\nمصعد حديث\nإطلالة مفتوحة', fFeatPhEn: 'Central heating\nPrivate parking\nModern elevator\nOpen view',
+        fExc: 'تمييز كعقار حصري', save: 'حفظ العقار', cancelAdd: 'إلغاء',
+        expHeadProps: ['الاسم', 'الموقع', 'التصنيف', 'النوع', 'السعر', 'الغرف', 'الحمامات', 'المساحة'],
+        expHeadProjects: ['الاسم', 'الموقع', 'النوع', 'الحالة', 'نسبة الإنجاز', 'السعر'],
+        expHeadUsers: ['الاسم', 'البريد الإلكتروني', 'الهاتف'],
+      },
+      en: {
+        panelSub: 'DASHBOARD', erp: 'ERP System', badgeNew: 'New', backSite: 'Back to site', logout: 'Log out', roleAdmin: 'Admin', acctSettings: 'Account settings',
+        deniedTitle: 'This page is for site administrators', deniedDesc: 'Sign in with the admin account to access the dashboard.', deniedCta: 'Sign in',
+        navLabels: { dash: 'Overview', crm: 'CRM', owners: 'Owners & contracts', props: 'Properties', projects: 'Projects', content: 'Site content', users: 'Accounts' },
+        tabs: { dash: { title: 'Overview', sub: 'Site performance summary & statistics' }, props: { title: 'Manage properties', sub: 'Add and remove listings with full details' }, projects: { title: 'Manage projects', sub: 'Add and remove the developments shown on the Projects page' }, users: { title: 'Manage accounts', sub: 'Registered user accounts on the site' }, crm: { title: 'Customer relationships (CRM)', sub: 'Pipeline, contacts, bookings, inbox & tasks — all leads in one place' }, content: { title: 'Site content', sub: 'Home page numbers, testimonials, social accounts and app links' }, owners: { title: 'Owners & brokerage contracts', sub: 'Property owners, mandates, commissions, and incoming listing requests' } },
+        visitsTitle: 'Site visits — last 8 months', sourcesTitle: 'Traffic sources', activityTitle: 'Recent activity', topTitle: 'Most viewed properties',
+        kpiLabels: ['Total properties', 'Registered accounts', 'Visits this month', new Date().getFullYear() + ' sales'],
+        deltaPublished: (n) => (n == null ? '' : n + ' visible to visitors'),
+        deltaNewAccounts: (n) => (!n ? 'No new signups this month' : '+' + n + ' this month'),
+        deltaDeals: (n) => (!n ? 'No settled deals yet' : n + ' deals settled'),
+        deltaVsPrev: '% vs last month', deltaNoBase: 'First month with visits', deltaNone: 'No visits yet',
+        sourceNames: { google: 'Search engines', social: 'Social media', direct: 'Direct visits', referral: 'Referring sites' },
+        actBook: (p) => 'Viewing request — ' + p,
+        actMsg: (n) => 'New message from ' + n,
+        actListing: (n, c) => 'Listing request from ' + n + (c ? ' — ' + c : ''),
+        agoMin: (n) => n + 'm ago', agoHour: (n) => n + 'h ago', agoDay: (n) => n + 'd ago',
+        loadingTxt: 'Loading…',
+        noVisits: 'No visits recorded yet — tracking just started; numbers will appear with your first visitors.',
+        noSources: 'No sources yet — they appear as soon as someone visits.',
+        noActivity: 'No activity yet — the first viewing request or message will show here.',
+        noTop: 'No views yet — counting just started.',
+        noAccounts: 'No registered accounts yet.',
+        roleAdminLbl: 'Admin', roleAgentLbl: 'Agent', roleCustomerLbl: 'Customer',
+        edit: 'Edit', saveEdit: 'Save changes',
+        photosManage: 'Current photos', makeCover: 'Make cover', coverBadge: 'Cover',
+        photosHint: 'The cover is what shows on the listing card and in the app. Deleting removes the photo from the server for good.',
+        editTitle: 'Edit property', editSub: 'Change what you need and save — it updates the site and the app at once',
+        editProjTitle: 'Edit project', editProjSub: 'Update the project details as they appear on the Projects page',
+        addTitle: 'Add a new property', fName: 'Property name *', fPrice: 'Price ($) *', fRooms: 'Rooms', fBaths: 'Baths', fArea: 'Area (m²)',
+        addBtn: 'Add property', addedMsg: '✓ Property added successfully', addedBadge: 'Added',
+        hProp: 'Property', hCat: 'Category', hLoc: 'Location', hPrice: 'Price', hSpecs: 'Specs',
+        hProj: 'Project', hKind: 'Type', hProgress: 'Progress',
+        addProjBtn: 'Add project', addProjTitle: 'Add a new project', addProjSub: 'Enter the project details as they will appear on the Projects page',
+        pjImgSub: 'Up to 6 photos — the main one shows first on the project details page, the rest in the gallery',
+        pjNamePh: 'e.g. Palmas Residential Towers', pjNamePhEn: 'e.g. Palmas Residential Towers',
+        fKind: 'Project type', fState: 'Project status', kResidential: 'Residential', kCommercial: 'Commercial', sOngoing: 'Under construction', sDone: 'Completed',
+        fProgress: 'Progress (%)',
+        pjStatsTitle: 'Project stats (shown on the project card)', pjStat1: 'First stat', pjStat2: 'Second stat', pjStat3: 'Third stat',
+        pjLabelPh: 'Label (Arabic)', pjLabelPhEn: 'Label (English)',
+        hName: 'Name', hEmail: 'Email', hPhone: 'Phone', hRole: 'Role', hJoined: 'Joined', hStatus: 'Status',
+        del: 'Delete', cancel: 'Cancel', show: 'Show', active: 'Active',
+        usersNote: 'Accounts registered via the signup page appear here automatically. Passwords are not shown because they are stored hashed and cannot be read by anyone — not even the admin; customers reset their own via "Forgot password". Account deletion is done from the Supabase dashboard to protect the linked data.',
+        expProps: 'Export properties', expProjects: 'Export projects', expUsers: 'Export accounts', adminFallback: 'Site Admin',
+        roomsU: 'rooms', areaU: 'm²', perMonth: '/mo',
+        fNameAr: 'Property name (Arabic) *', fNameEn: 'Property name (English)', fNamePh: 'e.g. فيلا الياسمين', fNamePhEn: 'e.g. Yasmine Villa',
+        fLocAr: 'Location (Arabic)', fLocEn: 'Location (English)', fLocPh: 'e.g. الطيرة، رام الله', fLocPhEn: 'e.g. Tira, Ramallah',
+        fPricePh: 'Enter the price in the selected currency',
+        fCurrency: 'Currency',
+        curTitle: 'Exchange rates', curSub: 'Used to convert any non-USD-priced property to USD internally (filtering, sorting, CRM deals, ERP commissions) — while each listing always still displays in its own original currency.',
+        curUsdLb: '1 US Dollar =', curIlsLb: 'Shekels per 1 USD', curJodLb: 'Dinars per 1 USD', curSave: 'Save rates', curReset: 'Reset to default', curSavedMsg: '✓ Exchange rates updated',
+        addSub: 'Enter details as they will appear on the property page', imgSection: 'Property photos', imgSub: 'Up to 10 photos — the main one shows first on the details page, the rest in the gallery', imgMain: 'Main photo',
+        fCountry: 'Country', fCity: 'City', cityNone: 'None', fOffer: 'Offer type', fType: 'Property type', fOwn: 'Ownership', fZone: 'Zoning',
+        fFloor: 'Floor', fYear: 'Built', fPark: 'Parking',
+        fLat: 'Latitude', fLng: 'Longitude',
+        fDescAr: 'Description (Arabic)', fDescEn: 'Description (English)', fDescPh: 'اكتب وصفاً تفصيلياً للعقار...', fDescPhEn: 'Write a detailed description as it will appear on the property page...',
+        fFeatAr: 'Features (Arabic) — one per line', fFeatEn: 'Features (English) — one per line',
+        fFeatPh: 'تدفئة مركزية\nموقف خاص\nمصعد حديث\nإطلالة مفتوحة', fFeatPhEn: 'Central heating\nPrivate parking\nModern elevator\nOpen view',
+        fExc: 'Mark as exclusive', save: 'Save property', cancelAdd: 'Cancel',
+        expHeadProps: ['Name', 'Location', 'Category', 'Type', 'Price', 'Rooms', 'Baths', 'Area'],
+        expHeadProjects: ['Name', 'Location', 'Type', 'Status', 'Progress', 'Price'],
+        expHeadUsers: ['Name', 'Email', 'Phone'],
+      },
+    };
+  }
+  renderVals() {
+    const st = this.state;
+    const lang = st.lang || 'ar';
+    const t = this.T()[lang];
+    const dark = (st.theme || 'light') === 'dark';
+    const authed = !st.ready || (st.session && st.session.role === 'admin');
+    const denied = st.ready && !(st.session && st.session.role === 'admin');
+    const tab = st.tab;
+    const iconMuted = dark ? '#f89e64' : '#c2410c';
+    const barOther = dark ? 'rgba(246,135,67,.35)' : 'rgba(246,135,67,.3)';
+    /* single shared catalog (palmas-core.js) — same properties admin sees here are what
+       PropertyList/Map/PropertyDetails/Home render; add/edit/delete write to Palmas.PropsAdmin. */
+    const P = window.Palmas;
+    const L = P ? P.LABELS[lang] : null;
+    const catColor = { sale: '#f68743', rent: '#5fb0e6', residential: '#e0a92e', land: '#a97fe0' };
+    const catOf = (x) => x.type === 'land' ? 'land' : x.offer;
+    const allProps = P ? P.allProperties() : [];
+    const props = allProps.map(x => ({
+      id: x.id, custom: !!x.custom, name: x.name[lang], loc: x.loc[lang],
+      type: (L.type[x.type] || x.type), price: x.price, rooms: x.rooms, baths: x.baths, area: x.area,
+      catLabel: catOf(x) === 'land' ? L.offer.landOffer : L.offer[x.offer], catBg: catColor[catOf(x)] || '#f68743',
+      priceLbl: P.price(x, lang),
+      specs: [L.type[x.type] || x.type, x.rooms ? x.rooms + ' ' + t.roomsU : '', x.area ? x.area + ' ' + t.areaU : ''].filter(Boolean).join(' · '),
+      del: () => { P.PropsAdmin.remove(x.id); this.setState({ addedMsg: false }); },
+      /* pendingId يصير معرّف العقار نفسه، فأماكن الصور تشير لصوره الحقيقية */
+      edit: () => this.setState({ addOpen: true, editId: x.id, pendingId: x.id, addCountry: x.country || 'ps' }),
+    }));
+    /* development projects — a separate shared catalog from individual properties above,
+       same admin-overlay CRUD pattern (Palmas.ProjectsAdmin), read by Projects.dc.html/ProjectDetails.dc.html. */
+    const kindLabel = { residential: lang === 'ar' ? 'سكني' : 'Residential', commercial: lang === 'ar' ? 'تجاري' : 'Commercial' };
+    const stateLabel = { ongoing: lang === 'ar' ? 'قيد الإنشاء' : 'Ongoing', done: lang === 'ar' ? 'مكتمل' : 'Completed' };
+    const allProjectsRaw = P ? P.allProjects() : [];
+    const projectsList = allProjectsRaw.map(x => ({
+      id: x.id, custom: !!x.custom, name: x.name[lang], loc: x.loc[lang],
+      kindLbl: kindLabel[x.kind] || x.kind, stateLbl: stateLabel[x.state] || x.state,
+      stateBg: x.state === 'done' ? '#1f9d5c' : '#f68743',
+      progress: (x.progress || 0) + '%', priceLbl: P ? P.Currency.format(x.price, x.currency, lang) : x.price,
+      del: () => { P.ProjectsAdmin.remove(x.id); this.setState({ addedProjMsg: false }); },
+      edit: () => this.setState({ addProjOpen: true, editProjId: x.id, pendingProjId: x.id, addProjCountry: x.country || 'ps' }),
+    }));
+    const avCols = ['#f68743', '#7fd3ff', '#ffd166', '#c8a2ff', '#ff9e7b'];
+    /* الحسابات الحقيقية من قاعدة البيانات. كانت هنا خمسة حسابات مخترعة مع
+       كلمات مرور ظاهرة — وهي اليوم مستحيلة أصلاً: Supabase يخزّن كلمة المرور
+       مُعمّاة ولا يعيدها لأحد، ولا حتى للمدير. */
+    const accts = st.accounts || [];
+    const users = accts.map((u, i) => ({ ...u,
+      initial: (u.name || u.email || '?').trim().charAt(0), avBg: avCols[i % avCols.length],
+      roleLbl: u.role === 'admin' ? t.roleAdminLbl : (u.role === 'agent' ? t.roleAgentLbl : t.roleCustomerLbl),
+      phone: u.phone || '—',
+    }));
+    const usersEmpty = st.accounts !== null && accts.length === 0;
+    const usersLoading = st.accounts === null && !st.statsOff;
+
+    /* الزيارات: ٨ أشهر حقيقية من جدول page_views. الأشهر التي لم يُسجَّل فيها
+       شيء تظهر أصفاراً — وهذا خبر صحيح، لا فراغ. */
+    const vRows = st.visitRows || [];
+    const monthName = (iso, l) => {
+      const d = new Date(iso + 'T00:00:00');
+      return d.toLocaleDateString(l === 'ar' ? 'ar' : 'en', { month: 'short' });
+    };
+    const vis = vRows.map(r => Number(r.visits) || 0);
+    const max = Math.max(1, ...vis);
+    const months = vRows.map((r, i) => ({
+      m: monthName(r.month, lang), v: (Number(r.visits) || 0).toLocaleString(),
+      h: Math.round((Number(r.visits) || 0) / max * 150) + 'px', txt: iconMuted,
+      bg: i === vRows.length - 1 ? 'linear-gradient(180deg,#f89e64,#d1662a)' : barOther }));
+    const visitsEmpty = st.visitRows !== null && vis.reduce((a, b) => a + b, 0) === 0;
+    const visitsLoading = st.visitRows === null && !st.statsOff;
+    const navMeta = [ { id: 'dash', icon: 'grid' }, { id: 'crm', icon: 'crm' }, { id: 'owners', icon: 'handshake' }, { id: 'props', icon: 'home' }, { id: 'projects', icon: 'building' }, { id: 'content', icon: 'pen' }, { id: 'users', icon: 'users' } ];
+    const navItems = navMeta.map(n => ({ id: n.id, label: t.navLabels[n.id],
+      iconEl: this._icon(n.icon, n.id === tab ? '#fff' : '#f68743', 18),
+      bg: n.id === tab ? '#f68743' : 'transparent', color: n.id === tab ? '#fff' : 'var(--body)',
+      shadow: n.id === tab ? '0 8px 20px rgba(246,135,67,.3)' : 'none',
+      go: () => this.setState({ tab: n.id }) }));
+    /* بطاقات الأرقام: كل رقم من قاعدة البيانات. الشرطة تعني "لم يصل بعد"
+       وهي أصدق من رقم يبدو حقيقياً وليس كذلك. */
+    const S = st.stats;
+    const dash = '—';
+    const num = (v) => (S && v != null ? Number(v).toLocaleString('en-US') : dash);
+    const usd = (v) => {
+      if (!S || v == null) return dash;
+      const n = Number(v) || 0;
+      return n >= 1000 ? '$' + Math.round(n / 1000) + 'K' : '$' + n.toLocaleString('en-US');
+    };
+    const pctDelta = () => {
+      if (!S) return '';
+      const now = Number(S.visitsMonth) || 0, prev = Number(S.visitsPrev) || 0;
+      if (!prev) return now ? t.deltaNoBase : t.deltaNone;
+      const d = Math.round((now - prev) / prev * 100);
+      return (d >= 0 ? '+' : '') + d + t.deltaVsPrev;
+    };
+    const kpiIcons = ['home', 'users', 'eye', 'dollar'];
+    const kpiVals = [num(S && S.properties), num(S && S.accounts), num(S && S.visitsMonth), usd(S && S.salesYear)];
+    const kpiDeltas = [
+      S ? t.deltaPublished(S.published) : '',
+      S ? t.deltaNewAccounts(S.accountsMonth) : '',
+      pctDelta(),
+      S ? t.deltaDeals(S.dealsYear) : '',
+    ];
+    const kpis = t.kpiLabels.map((label, i) => ({ label, iconEl: this._icon(kpiIcons[i], '#f68743', 17), val: kpiVals[i], delta: kpiDeltas[i], deltaColor: iconMuted }));
+
+    /* المصادر: محسوبة من مُحيل الزيارة الفعلي، لا نسباً مكتوبة يدوياً */
+    const srcMeta = { google: '#f68743', social: '#4aa8d8', direct: '#e0a800', referral: '#a06fe0' };
+    const sRows = st.sourceRows || [];
+    const srcTotal = sRows.reduce((a, r) => a + (Number(r.visits) || 0), 0);
+    const sources = sRows.map(r => ({
+      label: t.sourceNames[r.source] || r.source,
+      pct: Math.round((Number(r.visits) || 0) / (srcTotal || 1) * 100) + '%',
+      color: srcMeta[r.source] || '#a06fe0',
+    }));
+    const sourcesEmpty = st.sourceRows !== null && sRows.length === 0;
+    const sourcesLoading = st.sourceRows === null && !st.statsOff;
+
+    /* النشاطات: آخر ما وصل فعلاً من طلبات ورسائل وحجوزات */
+    const since = (ts) => {
+      const mins = Math.round((Date.now() - new Date(ts).getTime()) / 60000);
+      if (mins < 60) return t.agoMin(Math.max(1, mins));
+      const hrs = Math.round(mins / 60);
+      if (hrs < 24) return t.agoHour(hrs);
+      return t.agoDay(Math.round(hrs / 24));
+    };
+    const LR = st.leadRows;
+    const activity = !LR ? [] : []
+      .concat((LR.bookings || []).map(b => ({ kind: 'book', ts: b.created_at, txt: t.actBook(b.prop_name || b.name || '—') })))
+      .concat((LR.messages || []).map(m => ({ kind: 'msg', ts: m.created_at, txt: t.actMsg(m.name || '—') })))
+      .concat((LR.listings || []).map(l => ({ kind: 'list', ts: l.created_at, txt: t.actListing(l.name || '—', l.city || '') })))
+      .sort((a, b) => new Date(b.ts) - new Date(a.ts))
+      .slice(0, 5)
+      .map(a => ({
+        txt: a.txt, time: since(a.ts),
+        iconEl: this._icon({ book: 'msg', msg: 'msg', list: 'plus' }[a.kind], { book: '#2b86b8', msg: '#f68743', list: '#c2410c' }[a.kind], 16),
+        iconBg: { book: 'rgba(58,160,214,.14)', msg: 'rgba(246,135,67,.14)', list: 'rgba(255,209,102,.18)' }[a.kind],
+      }));
+    const activityEmpty = LR !== null && activity.length === 0;
+    const activityLoading = LR === null && !st.statsOff;
+
+    /* الأكثر مشاهدة: عدّ حقيقي لزيارات صفحات العقارات — زيارات عقار محذوف لا تُعرض */
+    const tRows = (st.topRows || []).filter(r => !P || P.propBy(r.property_id)).slice(0, 5);
+    const tvMax = Math.max(1, ...tRows.map(r => Number(r.views) || 0));
+    const topViews = tRows.map(r => {
+      const vp = P ? P.propBy(r.property_id) : null;
+      return {
+        name: vp ? vp.name[lang] : r.property_id,
+        views: (Number(r.views) || 0).toLocaleString(),
+        w: Math.round((Number(r.views) || 0) / tvMax * 100) + '%',
+      };
+    });
+    const topEmpty = st.topRows !== null && tRows.length === 0;
+    const topLoading = st.topRows === null && !st.statsOff;
+    const exportMeta = {
+      props: { label: t.expProps, file: 'palmas-properties', head: t.expHeadProps,
+        rows: props.map(p => [p.name, p.loc, p.catLabel, p.type, p.price, p.rooms || '', p.baths || '', p.area || '']) },
+      projects: { label: t.expProjects, file: 'palmas-projects', head: t.expHeadProjects,
+        rows: projectsList.map(p => [p.name, p.loc, p.kindLbl, p.stateLbl, p.progress, p.priceLbl]) },
+      users: { label: t.expUsers, file: 'palmas-users', head: t.expHeadUsers, rows: users.map(u => [u.name, u.email, u.phone || '']) },
+    };
+    /* إدارة صور العقار المفتوح للتعديل: الحذف يزيل الملف من المخزن أيضاً،
+       و"اجعلها الغلاف" ينقلها للمقدّمة — الأولى هي التي تظهر في البطاقات. */
+    /* بلا جسر السيرفر لا مخزن صور، فلا تُعرض أدوات لا تعمل */
+    const editing = (st.editId && P && P.Photos) ? P.propBy(st.editId) : null;
+    const photoList = (editing && editing.photos ? editing.photos.filter(Boolean) : []).map((url, i) => ({
+      url, isCover: i === 0, canCover: i !== 0,
+      border: i === 0 ? '#f68743' : 'var(--field-border)',
+      makeCover: () => {
+        const next = [url].concat(editing.photos.filter((u) => u && u !== url));
+        P.Photos.setPhotos('prop', editing.id, next)
+          .catch((e) => console.log('[Palmas] تعذّر تغيير الغلاف:', e && e.message));
+      },
+      del: () => {
+        P.Photos.remove(editing.id, url)
+          .catch((e) => console.log('[Palmas] تعذّر حذف الصورة:', e && e.message));
+      },
+    }));
+
+    const em = exportMeta[tab];
+    const adminName = (st.session && st.session.name) || t.adminFallback;
+    const pid = st.pendingId || 'tmp';
+    const addCountry = st.addCountry || 'ps';
+    const countryOpts = P ? P.COUNTRIES.map(c => ({ id: c.k, label: c[lang] })) : [];
+    const cityOpts = P ? P.citiesOf(addCountry).map(c => ({ id: c.k, label: c[lang] })) : [];
+    const pjid = st.pendingProjId || 'tmp';
+    const addProjCountry = st.addProjCountry || 'ps';
+    const projCityOpts = P ? P.citiesOf(addProjCountry).map(c => ({ id: c.k, label: c[lang] })) : [];
+    const offerOpts = P ? P.OFFERS.filter(k => k !== 'all' && k !== 'landOffer').map(k => ({ id: k, label: L.offer[k] })) : [];
+    const typeOpts = P ? P.TYPES.filter(k => k !== 'all').map(k => ({ id: k, label: L.type[k] })) : [];
+    const ownOpts = P ? P.OWNS.filter(k => k !== 'all').map(k => ({ id: k, label: L.own[k] })) : [];
+    const zoneOpts = P ? [{ id: '', label: t.cityNone }].concat(P.ZONES.filter(k => k !== 'all').map(k => ({ id: k, label: L.zone[k] }))) : [];
+    const currencyOpts = P ? P.Currency.list().map(c => ({ id: c.id, label: (lang === 'ar' ? c.shortAr : c.shortEn) + ' — ' + (lang === 'ar' ? c.ar : c.en) })) : [];
+    const curRates = st.curRates || (P ? P.Currency.rates() : { usd: 1, ils: 3.65, jod: 0.709 });
+    return {
+      t, lang, dir: lang === 'ar' ? 'rtl' : 'ltr', authed, denied, navItems,
+      adminName, adminInitial: (adminName || '?').toString().trim().charAt(0),
+      isDark: dark, isLight: !dark,
+      langLabel: lang === 'ar' ? 'EN' : 'ع',
+      themeTitle: lang === 'ar' ? (dark ? 'الوضع الفاتح' : 'الوضع الداكن') : (dark ? 'Light mode' : 'Dark mode'),
+      canExport: !!em && (em.rows || []).length > 0,
+      exportLabel: em ? em.label : '',
+      exportCsv: () => { if (em) this._downloadCsv(em.file, [em.head].concat(em.rows)); },
+      tabTitle: t.tabs[tab].title, tabSub: t.tabs[tab].sub,
+      isDash: tab === 'dash', isCRM: tab === 'crm', isOwners: tab === 'owners', isContent: tab === 'content', isProps: tab === 'props', isProjects: tab === 'projects', isUsers: tab === 'users',
+      kpis, months, sources, activity,
+      topViews, props, users, addedMsg: st.addedMsg,
+      /* حالات "لسا ما في بيانات" — أصدق من رقم مخترع، وتقول للمدير السبب */
+      visitsEmpty, visitsLoading, hasVisits: !visitsEmpty && !visitsLoading,
+      sourcesEmpty, sourcesLoading, hasSources: !sourcesEmpty && !sourcesLoading,
+      activityEmpty, activityLoading, hasActivity: !activityEmpty && !activityLoading,
+      topEmpty, topLoading, hasTop: !topEmpty && !topLoading,
+      usersEmpty, usersLoading, hasUsers: !usersEmpty && !usersLoading,
+      projectsList, addedProjMsg: st.addedProjMsg,
+      pNameArRef: this.pNameArRef, pNameEnRef: this.pNameEnRef, pLocArRef: this.pLocArRef, pLocEnRef: this.pLocEnRef,
+      pCityRef: this.pCityRef, pOfferRef: this.pOfferRef, pTypeRef: this.pTypeRef,
+      pPriceRef: this.pPriceRef, pCurrencyRef: this.pCurrencyRef, currencyOpts, pRoomsRef: this.pRoomsRef, pBathsRef: this.pBathsRef, pAreaRef: this.pAreaRef,
+      curIlsVal: curRates.ils, curJodVal: curRates.jod, curSaved: !!st.curSaved,
+      onCurIls: (e) => this.setState(s => ({ curRates: { ...(s.curRates || curRates), ils: e.target.value } })),
+      onCurJod: (e) => this.setState(s => ({ curRates: { ...(s.curRates || curRates), jod: e.target.value } })),
+      saveCurRates: () => {
+        if (!P) return;
+        P.Currency.setRate('ils', curRates.ils); P.Currency.setRate('jod', curRates.jod);
+        this.setState({ curRates: P.Currency.rates(), curSaved: true });
+        setTimeout(() => this.setState({ curSaved: false }), 2500);
+      },
+      resetCurRates: () => {
+        if (!P) return;
+        this.setState({ curRates: P.Currency.resetRates(), curSaved: true });
+        setTimeout(() => this.setState({ curSaved: false }), 2500);
+      },
+      pOwnRef: this.pOwnRef, pZoneRef: this.pZoneRef, pLatRef: this.pLatRef, pLngRef: this.pLngRef,
+      pFloorRef: this.pFloorRef, pYearRef: this.pYearRef, pParkRef: this.pParkRef,
+      pDescArRef: this.pDescArRef, pDescEnRef: this.pDescEnRef, pFeatArRef: this.pFeatArRef, pFeatEnRef: this.pFeatEnRef, pExcRef: this.pExcRef,
+      addOpen: !!st.addOpen, addCountry, onCountry: (e) => this.setState({ addCountry: e.target.value }),
+      countryOpts, cityOpts, offerOpts, typeOpts, ownOpts, zoneOpts,
+      addProjOpen: !!st.addProjOpen, addProjCountry, onProjCountry: (e) => this.setState({ addProjCountry: e.target.value }),
+      projCityOpts,
+      photoList, hasPhotos: photoList.length > 0,
+      /* نموذج واحد للإضافة والتعديل — العناوين وحدها تتبدّل */
+      propModalTitle: st.editId ? t.editTitle : t.addTitle,
+      propModalSub: st.editId ? t.editSub : t.addSub,
+      projModalTitle: st.editProjId ? t.editProjTitle : t.addProjTitle,
+      projModalSub: st.editProjId ? t.editProjSub : t.addProjSub,
+      saveLabel: ((st.addOpen && st.editId) || (st.addProjOpen && st.editProjId)) ? t.saveEdit : t.save,
+      /* مراجع نموذج المشروع. كانت ناقصة هنا، فكانت الحقول تُربط بـ undefined
+         وتُقرأ فارغة — فيتوقّف الحفظ بصمت ولا يُضاف أي مشروع. */
+      pjNameArRef: this.pjNameArRef, pjNameEnRef: this.pjNameEnRef,
+      pjLocArRef: this.pjLocArRef, pjLocEnRef: this.pjLocEnRef, pjCityRef: this.pjCityRef,
+      pjKindRef: this.pjKindRef, pjStateRef: this.pjStateRef, pjProgressRef: this.pjProgressRef,
+      pjPriceRef: this.pjPriceRef, pjCurrencyRef: this.pjCurrencyRef,
+      pjDescArRef: this.pjDescArRef, pjDescEnRef: this.pjDescEnRef,
+      pjS1NumRef: this.pjS1NumRef, pjS1ArRef: this.pjS1ArRef, pjS1EnRef: this.pjS1EnRef,
+      pjS2NumRef: this.pjS2NumRef, pjS2ArRef: this.pjS2ArRef, pjS2EnRef: this.pjS2EnRef,
+      pjS3NumRef: this.pjS3NumRef, pjS3ArRef: this.pjS3ArRef, pjS3EnRef: this.pjS3EnRef,
+      slotMain: 'pd-' + pid + '-main',
+      slotExtra: Array.from({ length: 9 }, (_, i) => ({ id: 'pd-' + pid + '-' + (i + 1), ph: (lang === 'ar' ? 'صورة ' : 'Photo ') + (i + 2) })),
+      projSlotMain: 'prjd-' + pjid + '-main',
+      projSlotExtra: Array.from({ length: 5 }, (_, i) => ({ id: 'prjd-' + pjid + '-' + (i + 1), ph: (lang === 'ar' ? 'صورة ' : 'Photo ') + (i + 2) })),
+      openAdd: () => this.setState({ addOpen: true, editId: null, pendingId: 'a' + Date.now(), addCountry: 'ps' }),
+      closeAdd: () => this.setState({ addOpen: false, editId: null }),
+      stopEv: (e) => e.stopPropagation(),
+      addProp: (e) => {
+        e.preventDefault();
+        if (!P) return;
+        const v = r => r.current ? String(r.current.value).trim() : '';
+        const num = r => { const n = parseFloat(v(r)); return isNaN(n) ? 0 : n; };
+        const nameAr = v(this.pNameArRef), nameEn = v(this.pNameEnRef), price = v(this.pPriceRef);
+        if (!nameAr || !price) return;
+        const id = st.pendingId || ('a' + Date.now());
+        const feats = (s) => s.split('\n').map(x => x.trim()).filter(Boolean);
+        const featsAr = feats(v(this.pFeatArRef)), featsEnRaw = feats(v(this.pFeatEnRef));
+        const country = st.addCountry || 'ps';
+        const cLoc = P.countryBy(country) || { center: [31.9, 35.2] };
+        /* نفس النموذج يخدم الإضافة والتعديل: الفرق دالة الحفظ وحدها */
+        const save = st.editId
+          ? (data) => P.PropsAdmin.update(st.editId, data)
+          : (data) => P.PropsAdmin.add(data);
+        save({
+          id, name: { ar: nameAr, en: nameEn || nameAr },
+          loc: { ar: v(this.pLocArRef) || '—', en: v(this.pLocEnRef) || v(this.pLocArRef) || '—' },
+          country, cityKey: (this.pCityRef.current && this.pCityRef.current.value) || '',
+          offer: (this.pOfferRef.current && this.pOfferRef.current.value) || 'sale',
+          type: (this.pTypeRef.current && this.pTypeRef.current.value) || 'apartment',
+          price: +price, currency: (this.pCurrencyRef.current && this.pCurrencyRef.current.value) || 'usd',
+          rooms: num(this.pRoomsRef), baths: num(this.pBathsRef), area: num(this.pAreaRef),
+          lat: num(this.pLatRef) || cLoc.center[0], lng: num(this.pLngRef) || cLoc.center[1],
+          floor: v(this.pFloorRef) ? num(this.pFloorRef) : null, year: v(this.pYearRef) ? num(this.pYearRef) : null, parking: v(this.pParkRef) ? num(this.pParkRef) : null,
+          ownership: (this.pOwnRef.current && this.pOwnRef.current.value) || 'tabu',
+          zone: (this.pZoneRef.current && this.pZoneRef.current.value) || '',
+          desc: { ar: v(this.pDescArRef), en: v(this.pDescEnRef) || v(this.pDescArRef) },
+          features: { ar: featsAr, en: featsEnRaw.length ? featsEnRaw : featsAr },
+          exc: !!(this.pExcRef.current && this.pExcRef.current.checked),
+          /* عند الإضافة: الصور رُفعت قبل وجود العقار فتُرفق الآن.
+             عند التعديل: لا تُرسَل إطلاقاً — صورها محفوظة على السيرفر أصلاً،
+             وإرسال قائمة فارغة كان سيمحوها. */
+          ...(st.editId ? {} : { photos: window.PalmasPhotos ? window.PalmasPhotos.collect('prop-' + id) : [] }),
+        });
+        if (!st.editId && window.PalmasPhotos) window.PalmasPhotos.clearPending('prop-' + id);
+        this.setState({ addOpen: false, editId: null, addedMsg: true });
+        setTimeout(() => this.setState({ addedMsg: false }), 3000);
+      },
+      openAddProj: () => this.setState({ addProjOpen: true, editProjId: null, pendingProjId: 'pr' + Date.now(), addProjCountry: 'ps' }),
+      closeAddProj: () => this.setState({ addProjOpen: false, editProjId: null }),
+      addProj: (e) => {
+        e.preventDefault();
+        if (!P) return;
+        const v = r => r.current ? String(r.current.value).trim() : '';
+        const num = r => { const n = parseFloat(v(r)); return isNaN(n) ? 0 : n; };
+        const nameAr = v(this.pjNameArRef), nameEn = v(this.pjNameEnRef), price = v(this.pjPriceRef);
+        if (!nameAr || !price) return;
+        const id = st.pendingProjId || ('pr' + Date.now());
+        const country = st.addProjCountry || 'ps';
+        const stat = (numRef, arRef, enRef) => {
+          const n = v(numRef), a = v(arRef), en = v(enRef);
+          return (n && (a || en)) ? { num: n, label: { ar: a || en, en: en || a } } : null;
+        };
+        const stats = [stat(this.pjS1NumRef, this.pjS1ArRef, this.pjS1EnRef), stat(this.pjS2NumRef, this.pjS2ArRef, this.pjS2EnRef), stat(this.pjS3NumRef, this.pjS3ArRef, this.pjS3EnRef)].filter(Boolean);
+        const saveProj = st.editProjId
+          ? (data) => P.ProjectsAdmin.update(st.editProjId, data)
+          : (data) => P.ProjectsAdmin.add(data);
+        saveProj({
+          id, name: { ar: nameAr, en: nameEn || nameAr },
+          loc: { ar: v(this.pjLocArRef) || '—', en: v(this.pjLocEnRef) || v(this.pjLocArRef) || '—' },
+          country, cityKey: (this.pjCityRef.current && this.pjCityRef.current.value) || '',
+          kind: (this.pjKindRef.current && this.pjKindRef.current.value) || 'residential',
+          state: (this.pjStateRef.current && this.pjStateRef.current.value) || 'ongoing',
+          progress: Math.max(0, Math.min(100, num(this.pjProgressRef))),
+          price: +price, currency: (this.pjCurrencyRef.current && this.pjCurrencyRef.current.value) || 'usd',
+          desc: { ar: v(this.pjDescArRef), en: v(this.pjDescEnRef) || v(this.pjDescArRef) },
+          stats,
+          ...(st.editProjId ? {} : { photos: window.PalmasPhotos ? window.PalmasPhotos.collect('proj-' + id) : [] }),
+        });
+        if (!st.editProjId && window.PalmasPhotos) window.PalmasPhotos.clearPending('proj-' + id);
+        this.setState({ addProjOpen: false, editProjId: null, addedProjMsg: true });
+        setTimeout(() => this.setState({ addedProjMsg: false }), 3000);
+      },
+      toggleTheme: () => { const nt = dark ? 'light' : 'dark'; try { localStorage.setItem('palmas_theme', nt); } catch (e) {} document.documentElement.setAttribute('data-theme', nt); this.setState({ theme: nt }); },
+      toggleLang: () => { const nl = lang === 'ar' ? 'en' : 'ar'; try { localStorage.setItem('palmas_lang', nl); } catch (e) {} document.documentElement.lang = nl; document.documentElement.dir = nl === 'en' ? 'ltr' : 'rtl'; this.setState({ lang: nl }); },
+      logout: () => { const P = window.Palmas; if (P) P.API.signOut(); else { try { localStorage.removeItem('palmas_session'); } catch (e) {} } location.href = 'Palmas Home.dc.html'; },
+      acctMenuOpen: st.acctMenuOpen, toggleAcctMenu: () => this.setState(s => ({ acctMenuOpen: !s.acctMenuOpen })),
+    };
+  }
+}
+</script>
+</body>
+</html>

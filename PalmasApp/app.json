@@ -1,0 +1,58 @@
+{
+  "expo": {
+    "name": "Palmas.ps",
+    "slug": "palmas-ps",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "palmas",
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ps.palmas.app",
+      "buildNumber": "1",
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true,
+        "NSLocationWhenInUseUsageDescription": "نستخدم موقعك لعرض العقارات القريبة منك على الخريطة."
+      }
+    },
+    "android": {
+      "package": "ps.palmas.app",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#f68743"
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-localization",
+      "expo-font",
+      "expo-apple-authentication",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/logo-dark.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#fdf6ef",
+          "dark": {
+            "image": "./assets/logo-light.png",
+            "backgroundColor": "#0d0d0f"
+          }
+        }
+      ],
+      "expo-status-bar",
+      "expo-web-browser"
+    ]
+  }
+}

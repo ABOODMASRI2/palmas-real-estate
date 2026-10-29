@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="uploads/palmas-icon.png">
+<title>Palmas.ps</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+html{scroll-behavior:smooth}
+*{box-sizing:border-box}
+:root{--page-bg:#edeef0;--heading:#141414;--body:#4b4b4d;--body-dim:rgba(20,20,22,.5);--panel:#ffffff;--panel-2:#e7e9ec;--panel-border:rgba(20,20,22,.1);--hairline:rgba(20,20,22,.1);--chip-bg:rgba(20,20,22,.045);--input-bg:#ffffff;--input-border:rgba(20,20,22,.16);--card:#ffffff;--card-fg:#181818;--accent-ink:#b53a0f;--elev:#ffffff}
+html[data-theme='dark']{--page-bg:#0d0d0f;--heading:#f7f7f5;--body:#d4d4d6;--body-dim:rgba(247,247,245,.55);--panel:rgba(255,255,255,.055);--panel-2:rgba(255,255,255,.03);--panel-border:rgba(255,255,255,.12);--hairline:rgba(255,255,255,.1);--chip-bg:rgba(255,255,255,.05);--input-bg:rgba(0,0,0,.3);--input-border:rgba(255,255,255,.16);--card:#ffffff;--card-fg:#181818;--accent-ink:#ffcdb0;--elev:#17171b}
+html,body{margin:0;padding:0;background:var(--page-bg);transition:background .5s ease}
+a{color:#f68743;text-decoration:none}
+a:hover{color:#ffab7a}
+::selection{background:#f68743;color:#fff}
+h1,h2,p{text-wrap:pretty}
+input::placeholder{color:var(--body-dim)}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes dropIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.no-sb::-webkit-scrollbar{height:0;width:0}
+@media (max-width:1100px){.plist-grid[data-view='grid']{grid-template-columns:repeat(2,1fr)!important}.plist-pad{padding-left:24px!important;padding-right:24px!important}}
+@media (max-width:700px){.plist-grid[data-view='grid']{grid-template-columns:1fr!important}}
+</style>
+<script src="image-slot.js"></script>
+<script src="palmas-photos.js"></script>
+<script src="palmas-core.js"></script>
+<script src="palmas-config.js"></script>
+<script src="palmas-backend.js"></script>
+</helmet>
+
+<div dir="{{ dir }}" style="position:relative;font-family:'Cairo',sans-serif;background:var(--page-bg);color:var(--body);min-height:100vh;display:flex;flex-direction:column;transition:background .5s ease,color .5s ease">
+
+<dc-import name="SiteHeader" dir="{{ dir }}" hint-size="100%,68px"></dc-import>
+
+<section class="plist-pad" style="position:relative;z-index:1;padding:56px 52px 22px">
+  <div style="max-width:min(1680px,94vw);margin:0 auto">
+    <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between">
+      <div>
+        <div style="color:#f68743;font-weight:800;font-size:14px;letter-spacing:1px;margin-bottom:6px">{{ t.kicker }}</div>
+        <h1 style="margin:0;font-size:clamp(28px,3vw,42px);font-weight:900;color:var(--heading)">{{ catName }}</h1>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--panel-border);border-radius:24px;padding:6px">
+        <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="5">
+          <button type="button" onClick="{{ tb.go }}" style="color:{{ tb.color }};background:{{ tb.bg }};font-family:'Cairo',sans-serif;font-size:14px;font-weight:800;padding:8px 18px;border-radius:18px;border:0;cursor:pointer;transition:background .3s ease,color .3s ease">{{ tb.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="plist-pad" style="position:relative;z-index:2;padding:0 52px">
+  <div style="max-width:min(1680px,94vw);margin:0 auto;display:flex;align-items:center;gap:12px">
+    <div style="flex:1;display:flex;align-items:center;gap:10px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:14px;padding:0 16px;height:52px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--body-dim)" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4-4"></path></svg>
+      <input value="{{ q }}" onChange="{{ onQ }}" placeholder="{{ t.searchPh }}" style="flex:1;border:0;background:transparent;outline:none;font-family:'Cairo',sans-serif;font-size:15px;color:var(--heading)">
+    </div>
+    <button type="button" onClick="{{ openSheet }}" aria-label="{{ t.filters }}" style="position:relative;width:52px;height:52px;border-radius:14px;border:1px solid var(--panel-border);background:var(--panel);color:var(--heading);display:grid;place-items:center;cursor:pointer;transition:border-color .3s ease" style-hover="border-color:#f68743">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>
+      <sc-if value="{{ hasFilters }}" hint-placeholder-val="{{ false }}">
+        <span style="position:absolute;top:-3px;inset-inline-end:-3px;width:12px;height:12px;border-radius:50%;background:#f68743;border:2px solid var(--page-bg)"></span>
+      </sc-if>
+    </button>
+  </div>
+</section>
+
+<sc-if value="{{ hasFilters }}" hint-placeholder-val="{{ false }}">
+<section class="plist-pad" style="position:relative;z-index:1;padding:14px 52px 0">
+  <div class="no-sb" style="max-width:min(1680px,94vw);margin:0 auto;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px">
+    <sc-for list="{{ chips }}" as="ch" hint-placeholder-count="2">
+      <button type="button" onClick="{{ ch.remove }}" style="display:inline-flex;align-items:center;gap:8px;white-space:nowrap;background:var(--panel);border:1px solid var(--panel-border);color:var(--heading);font-family:'Cairo',sans-serif;font-weight:700;font-size:12px;padding:7px 14px;border-radius:20px;cursor:pointer;transition:border-color .3s ease" style-hover="border-color:#f68743">
+        {{ ch.label }}<span style="font-size:14px;line-height:1;color:var(--body-dim)">×</span>
+      </button>
+    </sc-for>
+  </div>
+</section>
+</sc-if>
+
+<section class="plist-pad" style="position:relative;z-index:3;padding:18px 52px 0">
+  <div style="max-width:min(1680px,94vw);margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <div style="font-weight:800;font-size:15px;color:var(--heading)">{{ resultsText }}</div>
+    <sc-if value="{{ hasCmp }}" hint-placeholder-val="{{ false }}">
+      <div style="display:inline-flex;align-items:center;gap:4px;background:{{ cmpBoxBg }};border:1px solid {{ cmpBoxBorder }};border-radius:12px;padding:3px;animation:fadeIn .25s ease">
+        <a href="{{ cmpHref }}" style="display:inline-flex;align-items:center;gap:8px;color:{{ cmpBoxFg }};font-weight:800;font-size:13px;padding:6px 12px;border-radius:9px;pointer-events:{{ cmpEvents }}" style-hover="color:{{ cmpBoxFg }}">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 4v16M17 4v16M3 8h8M13 16h8"></path></svg>{{ cmpBtnLabel }}
+        </a>
+        <button type="button" onClick="{{ clearCmp }}" title="{{ cmpClearTitle }}" aria-label="{{ cmpClearTitle }}" style="width:28px;height:28px;border:none;border-radius:8px;background:transparent;color:{{ cmpBoxFg }};opacity:.7;font-size:17px;cursor:pointer;display:grid;place-items:center">×</button>
+      </div>
+    </sc-if>
+    <div style="position:relative;margin-inline-start:auto">
+      <button type="button" onClick="{{ toggleSort }}" style="display:inline-flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--panel-border);color:var(--heading);font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;padding:9px 16px;border-radius:12px;cursor:pointer">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h13M3 12h9M3 18h5M17 8l4-4 4 4"></path></svg>
+        {{ sortLabel }}
+      </button>
+      <sc-if value="{{ sortOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:calc(100% + 8px);inset-inline-end:0;min-width:210px;background:var(--elev);border:1px solid var(--panel-border);border-radius:14px;overflow:hidden;box-shadow:0 18px 44px rgba(20,20,30,.18);z-index:20;animation:dropIn .2s ease">
+          <sc-for list="{{ sortOpts }}" as="so" hint-placeholder-count="4">
+            <button type="button" onClick="{{ so.select }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;background:{{ so.bg }};color:{{ so.color }};border:0;border-bottom:1px solid var(--hairline);font-family:'Cairo',sans-serif;font-weight:700;font-size:13.5px;padding:13px 16px;cursor:pointer;text-align:start">
+              {{ so.label }}<span style="color:#f68743;font-weight:900">{{ so.check }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button type="button" onClick="{{ setViewGrid }}" aria-label="grid" style="width:40px;height:40px;border-radius:12px;border:1px solid var(--panel-border);background:{{ gridBtnBg }};color:{{ gridBtnColor }};display:grid;place-items:center;cursor:pointer;transition:background .3s ease,color .3s ease"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg></button>
+      <button type="button" onClick="{{ setViewList }}" aria-label="list" style="width:40px;height:40px;border-radius:12px;border:1px solid var(--panel-border);background:{{ listBtnBg }};color:{{ listBtnColor }};display:grid;place-items:center;cursor:pointer;transition:background .3s ease,color .3s ease"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+    </div>
+  </div>
+</section>
+
+<section class="plist-pad" style="position:relative;z-index:1;padding:24px 52px 90px">
+  <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:620px;margin:30px auto;text-align:center;background:var(--panel-2);border:1px dashed var(--panel-border);border-radius:20px;padding:52px 30px">
+      <div style="display:flex;justify-content:center;margin-bottom:16px"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="1.6" stroke-linecap="round"><path d="M3 10.5 12 3l9 7.5"></path><path d="M5 9.5V21h14V9.5"></path><path d="M9 21v-6h6v6"></path></svg></div>
+      <div style="font-weight:900;font-size:20px;color:var(--heading);margin-bottom:8px">{{ t.noResults }}</div>
+      <div style="color:var(--body-dim);font-size:14.5px;margin-bottom:22px;line-height:1.8">{{ t.noResultsSub }}</div>
+      <button type="button" onClick="{{ clearAll }}" style="background:#f68743;border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:14.5px;height:46px;padding:0 30px;border-radius:14px;cursor:pointer;transition:background .3s ease" style-hover="background:#ffab7a">{{ t.clear }}</button>
+    </div>
+  </sc-if>
+
+  <div class="plist-grid" data-view="{{ view }}" style="max-width:min(1680px,94vw);margin:0 auto;display:grid;grid-template-columns:repeat({{ gridCols }},1fr);gap:26px">
+    <sc-for list="{{ items }}" as="p" hint-placeholder-count="6">
+      <div style="background:var(--card);color:var(--card-fg);border:1px solid var(--panel-border);border-radius:20px;overflow:hidden;box-shadow:0 12px 32px rgba(20,20,30,.08);transition:transform .5s cubic-bezier(.25,.8,.35,1),box-shadow .5s ease" style-hover="transform:translateY(-6px);box-shadow:0 22px 50px rgba(20,20,30,.14)">
+        <div style="position:relative;height:{{ imgH }};overflow:hidden">
+          <image-slot id="{{ p.slot }}" shape="rect" placeholder="{{ p.ph }}"></image-slot>
+          <div style="position:absolute;top:14px;inset-inline-start:14px;display:flex;gap:6px;pointer-events:none">
+            <div style="background:#f68743;color:#fff;font-weight:800;font-size:12.5px;padding:4px 13px;border-radius:14px">{{ p.offerLabel }}</div>
+            <div style="background:rgba(20,20,22,.82);color:#fff;font-weight:800;font-size:12.5px;padding:4px 13px;border-radius:14px">{{ p.typeLabel }}</div>
+          </div>
+          <button type="button" onClick="{{ p.toggleFav }}" aria-label="wishlist" style="position:absolute;top:12px;inset-inline-end:12px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.94);display:grid;place-items:center;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.18);transition:transform .3s cubic-bezier(.25,.8,.35,1)" style-hover="transform:scale(1.12)">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="{{ p.heartFill }}" stroke="#f68743" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path></svg>
+          </button>
+          <button type="button" onClick="{{ p.toggleCmp }}" aria-pressed="{{ p.cmpOn }}" title="{{ p.cmpTitle }}" style="position:absolute;bottom:12px;inset-inline-end:12px;display:inline-flex;align-items:center;gap:6px;border:none;border-radius:14px;padding:6px 12px;font-family:'Cairo',sans-serif;font-weight:800;font-size:12.5px;cursor:pointer;background:{{ p.cmpBg }};color:{{ p.cmpFg }};box-shadow:0 3px 12px rgba(0,0,0,.18);transition:background .25s ease,color .25s ease">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 4v16M17 4v16M3 8h8M13 16h8"></path></svg>{{ p.cmpLabel }}
+          </button>
+        </div>
+        <div style="padding:20px 22px 22px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+            <a href="{{ p.href }}" style="font-weight:800;font-size:18.5px;color:#181818" style-hover="color:#f68743">{{ p.name }}</a>
+            <div style="color:#f68743;font-weight:900;font-size:17.5px;white-space:nowrap">{{ p.priceLabel }}</div>
+          </div>
+          <div style="color:#6c6c70;font-size:13.5px;margin:6px 0 14px;display:flex;align-items:center;gap:6px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+            {{ p.locLabel }}
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;border-top:1px solid #e4e5e8;padding-top:14px;font-size:13.5px;color:#6c6c70;font-weight:600">
+            <sc-for list="{{ p.specs }}" as="sp" hint-placeholder-count="3">
+              <span>{{ sp }}</span>
+            </sc-for>
+            <a href="{{ p.href }}" style="margin-inline-start:auto;background:rgba(246,135,67,.14);border:1px solid rgba(246,135,67,.4);color:#b53a0f;font-weight:800;font-size:12.5px;padding:6px 16px;border-radius:16px;white-space:nowrap;transition:background .3s ease,color .3s ease" style-hover="background:#f68743;color:#fff">{{ t.details }}</a>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<div style="margin-top:auto"><dc-import name="SiteFooter" dir="{{ dir }}" hint-size="100%,300px"></dc-import></div>
+
+<sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
+<div dir="{{ dir }}" style="position:fixed;inset:0;z-index:900;font-family:'Cairo',sans-serif">
+  <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(6,6,10,.5);animation:fadeIn .25s ease"></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;background:var(--page-bg);border-radius:24px 24px 0 0;padding:10px 20px 30px;max-height:84vh;overflow-y:auto;animation:sheetUp .32s cubic-bezier(.2,.8,.3,1);box-shadow:0 -20px 60px rgba(0,0,0,.28)">
+    <div style="display:flex;justify-content:center;padding:6px 0 14px"><span style="width:42px;height:5px;border-radius:4px;background:var(--input-border)"></span></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div style="font-weight:900;font-size:20px;color:var(--heading)">{{ t.filters }}</div>
+      <button type="button" onClick="{{ resetSheet }}" style="background:transparent;border:0;color:#f68743;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer">{{ t.reset }}</button>
+    </div>
+
+    <div style="max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:16px">
+      <sc-for list="{{ fields }}" as="fd" hint-placeholder-count="4">
+        <div>
+          <div style="font-weight:800;font-size:13.5px;color:var(--heading);margin-bottom:8px">{{ fd.label }}</div>
+          <button type="button" onClick="{{ fd.toggle }}" style="width:100%;height:52px;border-radius:14px;border:1px solid var(--input-border);background:var(--panel);color:var(--heading);font-family:'Cairo',sans-serif;font-weight:700;font-size:14.5px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+            {{ fd.valueLabel }}
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="transform:{{ fd.arrow }};transition:transform .22s ease"><path d="m6 9 6 6 6-6"></path></svg>
+          </button>
+          <sc-if value="{{ fd.open }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:8px;border-radius:14px;border:1px solid var(--panel-border);background:var(--elev);max-height:198px;overflow-y:auto;animation:fadeIn .2s ease">
+              <sc-for list="{{ fd.options }}" as="op" hint-placeholder-count="4">
+                <button type="button" onClick="{{ op.select }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;background:{{ op.bg }};color:{{ op.color }};border:0;border-bottom:1px solid var(--hairline);font-family:'Cairo',sans-serif;font-weight:700;font-size:14px;padding:13px 16px;cursor:pointer;text-align:start">
+                  {{ op.label }}<span style="font-weight:900">{{ op.check }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span style="font-weight:800;font-size:13.5px;color:var(--heading)">{{ t.priceRange }}</span>
+          <span style="font-weight:800;font-size:14px;color:#f68743">{{ priceRangeLabel }}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="number" inputmode="numeric" min="0" step="1000" value="{{ fMinPrice }}" onInput="{{ onMinPrice }}" placeholder="{{ t.priceFrom }}" class="field" style="flex:1;min-width:0;padding:12px 14px;font-size:14px">
+          <span style="color:var(--body-dim);font-weight:800">—</span>
+          <input type="number" inputmode="numeric" min="0" step="1000" value="{{ fMaxPriceInput }}" onInput="{{ onMaxPrice }}" placeholder="{{ t.priceTo }}" class="field" style="flex:1;min-width:0;padding:12px 14px;font-size:14px">
+        </div>
+        <div style="margin-top:7px;font-size:12px;color:var(--body-dim)">{{ t.priceHint }}</div>
+      </div>
+
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span style="font-weight:800;font-size:13.5px;color:var(--heading)">{{ t.minArea }}</span>
+          <span style="font-weight:800;font-size:14px;color:#f68743">{{ minAreaLabel }}</span>
+        </div>
+        <input type="range" min="{{ areaMin }}" max="{{ areaMax }}" step="{{ areaStep }}" value="{{ fMinArea }}" onChange="{{ onMinArea }}" style="width:100%;accent-color:#f68743;cursor:pointer">
+      </div>
+
+      <button type="button" onClick="{{ closeSheet }}" style="width:100%;height:54px;border-radius:14px;border:0;background:#f68743;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:15.5px;cursor:pointer;margin-top:6px;transition:background .3s ease" style-hover="background:#ffab7a">{{ applyLabel }}</button>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1320,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  constructor(p){
+    super(p);
+    this.state = {
+      lang: 'ar', theme: 'light', view: 'grid', sort: 'newest',
+      sheetOpen: false, sortOpen: false, openDrop: '', q: '',
+      f: null, favs: []
+    };
+  }
+
+  componentDidMount(){
+    try { const t = localStorage.getItem('palmas_theme'); const th = (t==='light'||t==='dark')?t:'light'; document.documentElement.setAttribute('data-theme', th); this.setState({ theme: th }); } catch(e){}
+    let lang = 'ar';
+    try { const l = localStorage.getItem('palmas_lang'); if (l==='ar'||l==='en') lang = l; } catch(e){}
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'en' ? 'ltr' : 'rtl';
+    this.setState({ lang });
+    this._boot();
+    this._off = null;
+  }
+
+  _boot(){
+    const P = window.Palmas;
+    if (!P) { setTimeout(() => this._boot(), 60); return; }
+    const f = P.defaultFilters();
+    const u = new URLSearchParams(location.search);
+    const cat = u.get('cat') || u.get('offer');
+    if (cat && P.OFFERS.indexOf(cat) !== -1) f.offer = cat;
+    const ty = u.get('type');
+    if (ty && P.TYPES.indexOf(ty) !== -1) f.type = ty;
+    const city = u.get('city');
+    if (city && P.cityBy(city)) { f.city = city; const c = P.cityBy(city); f.country = c.c; }
+    const country = u.get('country');
+    if (country && P.countryBy(country)) f.country = country;
+    this.setState({ f, q: u.get('q') || '', favs: P.API.favorites(), cmp: P.Compare.list() });
+    this._off = P.API.onAuthChange(() => this.setState({ favs: P.API.favorites() }));
+    this._onCmp = () => this.setState({ cmp: P.Compare.list() });
+    window.addEventListener('palmas:compare', this._onCmp);
+  }
+
+  componentWillUnmount(){ if (this._off) this._off(); if (this._onCmp) window.removeEventListener('palmas:compare', this._onCmp); }
+
+  _toggleCmp(id){
+    const P = window.Palmas;
+    P.Compare.toggleAndNotify(id, this.state.lang);
+  }
+
+  _setF(patch){ this.setState(s => ({ f: Object.assign({}, s.f, patch) })); }
+
+  /* The customer types prices in the currency they picked in the header; "auto" has no
+     single currency to type in, so it falls back to the platform's base (USD).
+     Filters are always stored in USD — conversion happens only at this edge. */
+  _typeCur(){
+    const P = window.Palmas;
+    return (P.Currency.viewCurrency && P.Currency.viewCurrency()) || 'usd';
+  }
+  _toView(usd){
+    const P = window.Palmas;
+    return Math.round(P.Currency.fromUsd(usd, this._typeCur()));
+  }
+  _toUsd(v){
+    const P = window.Palmas;
+    return P.Currency.toUsd(Number(v) || 0, this._typeCur());
+  }
+
+  /* reads back what the customer typed: a range, one open end, or "all" */
+  _priceLabel(f){
+    const P = window.Palmas;
+    const lang = this.state.lang || 'ar';
+    const ar = lang === 'ar';
+    const cur = this._typeCur();
+    const n = usd => P.Currency.format(this._toView(usd), cur, lang);
+    const hasMin = f.minPrice > 0;
+    const hasMax = isFinite(f.maxPrice);
+    if (hasMin && hasMax) return n(f.minPrice) + ' — ' + n(f.maxPrice);
+    if (hasMin) return (ar ? 'من ' : 'from ') + n(f.minPrice);
+    if (hasMax) return (ar ? 'حتى ' : 'up to ') + n(f.maxPrice);
+    return ar ? 'الكل' : 'All';
+  }
+
+  _toggleFav(id){
+    const P = window.Palmas;
+    P.API.toggleFavorite(id).then(res => {
+      this.setState({ favs: res.list });
+      P.toast(this.state.lang === 'en'
+        ? (res.added ? 'Added to wishlist' : 'Removed from wishlist')
+        : (res.added ? 'أُضيف للمفضلة' : 'أُزيل من المفضلة'));
+    }).catch(() => {
+      P.toast(this.state.lang === 'en' ? 'Sign in to save favourites' : 'سجّل الدخول لحفظ المفضلة');
+      setTimeout(() => { location.href = 'Auth.dc.html?next=' + encodeURIComponent(location.pathname + location.search); }, 900);
+    });
+  }
+
+  renderVals(){
+    const P = window.Palmas;
+    const lang = this.state.lang || 'ar';
+    const ar = lang !== 'en';
+    const dir = ar ? 'rtl' : 'ltr';
+    if (!P || !this.state.f) return { dir, t: {}, items: [], chips: [], fields: [], tabs: [] };
+
+    const L = P.LABELS[lang];
+    const f = this.state.f;
+    const lim = P.LIMITS;
+
+    const t = {
+      kicker: ar ? 'استكشف' : 'Explore',
+      searchPh: ar ? 'ابحث بالاسم أو الموقع...' : 'Search by name or location...',
+      filters: L.filters, reset: L.reset, clear: L.clear,
+      noResults: L.noResults, noResultsSub: L.noResultsSub,
+      details: ar ? 'التفاصيل ←' : 'Details →',
+      maxPrice: L.fields.maxPrice, minArea: L.fields.minArea,
+      priceRange: (ar ? 'السعر' : 'Price') + ' (' + (P.Currency.meta(this._typeCur()) || {})[ar ? 'ar' : 'en'] + ')',
+      priceFrom: ar ? 'من' : 'From',
+      priceTo: ar ? 'إلى' : 'To',
+      priceHint: ar ? 'اترك الخانة فاضية إذا ما بدك تحدد.' : 'Leave a box empty for no limit.'
+    };
+
+    /* ---- results ---- */
+    const base = P.filteredBy(f);
+    const searched = P.searchIn(base, this.state.q, lang);
+    const results = P.sortList(searched, this.state.sort);
+
+    const label = (map, k) => k === 'all' ? L.all : (map[k] || k);
+
+    const en = lang === 'en';
+    const items = results.map(x => {
+      const inCmp = (this.state.cmp || []).indexOf(x.id) !== -1;
+      return {
+      id: x.id, slot: x.slot, href: 'PropertyDetails.dc.html?id=' + x.id,
+      name: x.name[lang], locLabel: x.loc[lang], priceLabel: P.displayPrice(x, lang),
+      offerLabel: L.offer[x.offer] || '', typeLabel: L.type[x.type] || '',
+      ph: ar ? ('صورة ' + x.name.ar) : (x.name.en + ' photo'),
+      heartFill: this.state.favs.indexOf(x.id) !== -1 ? '#f68743' : 'none',
+      specs: [
+        x.rooms ? (x.rooms + ' ' + L.rooms) : null,
+        x.baths ? (x.baths + ' ' + L.bath) : null,
+        x.area ? (x.area + ' ' + L.sqm) : null
+      ].filter(Boolean),
+      toggleFav: () => this._toggleFav(x.id),
+      cmpOn: inCmp ? 'true' : 'false',
+      cmpLabel: inCmp ? (en ? 'In comparison' : 'في المقارنة') : (en ? 'Compare' : 'قارن'),
+      cmpTitle: inCmp ? (en ? 'Remove from comparison' : 'إزالة من المقارنة') : (en ? 'Add to comparison' : 'أضف للمقارنة'),
+      cmpBg: inCmp ? '#141414' : 'rgba(255,255,255,.94)', cmpFg: inCmp ? '#fff' : '#141414',
+      toggleCmp: () => this._toggleCmp(x.id),
+      };
+    });
+
+    /* ---- offer tabs ---- */
+    const tabs = P.OFFERS.map(k => ({
+      label: k === 'all' ? (ar ? 'الكل' : 'All') : L.offer[k],
+      bg: f.offer === k ? '#f68743' : 'transparent',
+      color: f.offer === k ? '#fff' : 'var(--body)',
+      go: () => this._setF({ offer: k })
+    }));
+
+    const catName = f.offer === 'all'
+      ? (ar ? 'كل العقارات' : 'All properties')
+      : L.offer[f.offer];
+
+    /* ---- filter sheet fields ---- */
+    const drop = (key, fieldLabel, opts, current, onPick) => ({
+      key, label: fieldLabel,
+      valueLabel: (opts.find(o => o.k === current) || opts[0]).label,
+      open: this.state.openDrop === key,
+      arrow: this.state.openDrop === key ? 'rotate(180deg)' : 'none',
+      toggle: () => this.setState(s => ({ openDrop: s.openDrop === key ? '' : key })),
+      options: opts.map(o => ({
+        label: o.label,
+        check: o.k === current ? '✓' : '',
+        bg: o.k === current ? 'var(--chip-bg)' : 'transparent',
+        color: o.k === current ? '#f68743' : 'var(--heading)',
+        select: () => { onPick(o.k); this.setState({ openDrop: '' }); }
+      }))
+    });
+
+    const countryOpts = [{ k: 'all', label: L.all }].concat(P.COUNTRIES.map(c => ({ k: c.k, label: c[lang] })));
+    const cityOpts = [{ k: 'all', label: L.all }].concat(P.citiesOf(f.country).map(c => ({ k: c.k, label: c[lang] })));
+    const offerOpts = P.OFFERS.map(k => ({ k, label: label(L.offer, k) }));
+    const typeOpts = P.TYPES.map(k => ({ k, label: label(L.type, k) }));
+    const bedOpts = P.BEDS.map(n => ({ k: n, label: n === 0 ? L.all : (n + '+') }));
+    const ownOpts = P.OWNS.map(k => ({ k, label: label(L.own, k) }));
+    const zoneOpts = P.ZONES.map(k => ({ k, label: label(L.zone, k) }));
+
+    const fields = [
+      drop('country', L.fields.country, countryOpts, f.country, v => this._setF({ country: v, city: 'all' }))
+    ];
+    // the city list only means something once a country is picked
+    if (P.showCity(f)) fields.push(drop('city', L.fields.city, cityOpts, f.city, v => this._setF({ city: v })));
+    fields.push(drop('offer', L.fields.offer, offerOpts, f.offer, v => this._setF({ offer: v })));
+    fields.push(drop('type', L.fields.type, typeOpts, f.type, v => this._setF({ type: v })));
+    if (P.showBeds(f)) {
+      fields.push(drop('beds', L.fields.beds, bedOpts, f.beds, v => this._setF({ beds: v })));
+      fields.push(drop('baths', L.fields.baths, bedOpts, f.baths, v => this._setF({ baths: v })));
+    }
+    if (P.showOwn(f)) fields.push(drop('own', L.fields.own, ownOpts, f.own, v => this._setF({ own: v })));
+    if (P.showZone(f)) fields.push(drop('zone', L.fields.zone, zoneOpts, f.zone, v => this._setF({ zone: v })));
+
+    /* ---- active chips ---- */
+    const chips = [];
+    const chip = (cond, text, undo) => { if (cond) chips.push({ label: text, remove: undo }); };
+    chip(f.country !== 'all', (P.countryBy(f.country) || {})[lang], () => this._setF({ country: 'all', city: 'all' }));
+    chip(f.city !== 'all', (P.cityBy(f.city) || {})[lang], () => this._setF({ city: 'all' }));
+    chip(f.offer !== 'all', L.offer[f.offer], () => this._setF({ offer: 'all' }));
+    chip(f.type !== 'all', L.type[f.type], () => this._setF({ type: 'all' }));
+    chip(f.own !== 'all', L.own[f.own], () => this._setF({ own: 'all' }));
+    chip(f.zone !== 'all', L.zone[f.zone], () => this._setF({ zone: 'all' }));
+    chip(f.beds > 0, f.beds + '+ ' + L.rooms, () => this._setF({ beds: 0 }));
+    chip(f.baths > 0, f.baths + '+ ' + L.bath, () => this._setF({ baths: 0 }));
+    chip(f.minPrice > 0, '≥ ' + P.Currency.format(this._toView(f.minPrice), this._typeCur(), lang), () => this._setF({ minPrice: 0 }));
+    chip(isFinite(f.maxPrice), '≤ ' + P.Currency.format(this._toView(f.maxPrice), this._typeCur(), lang), () => this._setF({ maxPrice: Infinity }));
+    chip(f.minArea > 0, f.minArea + ' ' + L.sqm + '+', () => this._setF({ minArea: 0 }));
+
+    const sortOpts = P.SORTS.map(k => ({
+      label: L.sort[k], check: this.state.sort === k ? '✓' : '',
+      bg: this.state.sort === k ? 'var(--chip-bg)' : 'transparent',
+      color: this.state.sort === k ? '#f68743' : 'var(--heading)',
+      select: () => this.setState({ sort: k, sortOpen: false })
+    }));
+
+    /* مدخل المقارنة: بجانب عدد النتائج، يظهر فقط حين يختار الزائر عقارات */
+    const cmpN = (this.state.cmp || []).length, cmpReady = cmpN >= 2;
+
+    return {
+      dir, t, tabs, catName, items, chips, fields, sortOpts,
+      q: this.state.q,
+      onQ: e => this.setState({ q: e.target.value }),
+      hasFilters: P.hasFilters(f, this.state.q),
+      resultsText: ar ? (results.length + ' عقار') : (results.length + ' ' + L.results),
+      hasCmp: cmpN > 0,
+      cmpHref: cmpReady ? 'Compare.dc.html' : null, cmpEvents: cmpReady ? 'auto' : 'none',
+      cmpBtnLabel: cmpReady ? (ar ? 'قارن الآن (' + cmpN + ')' : 'Compare now (' + cmpN + ')') : (ar ? 'اختر عقاراً آخر للمقارنة' : 'Pick one more to compare'),
+      cmpBoxBg: cmpReady ? '#f68743' : 'var(--panel)', cmpBoxBorder: cmpReady ? '#f68743' : 'var(--panel-border)', cmpBoxFg: cmpReady ? '#fff' : 'var(--heading)',
+      cmpClearTitle: ar ? 'مسح المقارنة' : 'Clear comparison',
+      clearCmp: () => P.Compare.clear(),
+
+      isEmpty: results.length === 0,
+      view: this.state.view,
+      gridCols: this.state.view === 'grid' ? 3 : 1,
+      imgH: this.state.view === 'grid' ? '220px' : '300px',
+      gridBtnBg: this.state.view === 'grid' ? '#f68743' : 'var(--panel)',
+      gridBtnColor: this.state.view === 'grid' ? '#fff' : 'var(--body-dim)',
+      listBtnBg: this.state.view === 'list' ? '#f68743' : 'var(--panel)',
+      listBtnColor: this.state.view === 'list' ? '#fff' : 'var(--body-dim)',
+      setViewGrid: () => this.setState({ view: 'grid' }),
+      setViewList: () => this.setState({ view: 'list' }),
+      sortOpen: this.state.sortOpen,
+      sortLabel: (L.sort[this.state.sort] || '').split(':')[0].split(' ')[0],
+      toggleSort: () => this.setState(s => ({ sortOpen: !s.sortOpen })),
+      sheetOpen: this.state.sheetOpen,
+      openSheet: () => this.setState({ sheetOpen: true, sortOpen: false }),
+      closeSheet: () => this.setState({ sheetOpen: false, openDrop: '' }),
+      resetSheet: () => this.setState({ f: P.defaultFilters(), openDrop: '' }),
+      clearAll: () => this.setState({ f: P.defaultFilters(), q: '', openDrop: '' }),
+      applyLabel: L.show + ' (' + results.length + ')',
+      areaMin: lim.AREA_MIN, areaMax: lim.AREA_MAX, areaStep: lim.AREA_STEP,
+      fMinArea: f.minArea,
+      minAreaLabel: f.minArea > 0 ? (f.minArea + ' ' + L.sqm + '+') : L.all,
+      onMinArea: e => this._setF({ minArea: +e.target.value }),
+
+      /* Typed in the customer's currency, stored in USD. Empty boxes mean no bound at
+         all — an empty ceiling is Infinity, not a hidden cap. */
+      fMinPrice: f.minPrice > 0 ? this._toView(f.minPrice) : '',
+      fMaxPriceInput: isFinite(f.maxPrice) ? this._toView(f.maxPrice) : '',
+      priceRangeLabel: this._priceLabel(f),
+      onMinPrice: e => {
+        const raw = e.target.value;
+        this._setF({ minPrice: raw === '' ? 0 : this._toUsd(Math.max(0, Math.floor(+raw || 0))) });
+      },
+      onMaxPrice: e => {
+        const raw = e.target.value;
+        this._setF({ maxPrice: raw === '' ? Infinity : this._toUsd(Math.max(0, Math.floor(+raw || 0))) });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="uploads/palmas-icon.png">
+<title>Palmas.ps</title>
+<script src="./support.js"></script>
+<style>@view-transition{navigation:auto}::view-transition-old(root),::view-transition-new(root){animation-duration:.34s;animation-timing-function:cubic-bezier(.4,0,.2,1)}</style>
+<script>try{var t=localStorage.getItem('palmas_theme');document.documentElement.setAttribute('data-theme',(t==='light'||t==='dark')?t:'light');var l=localStorage.getItem('palmas_lang');document.documentElement.lang=(l==='en')?'en':'ar';document.documentElement.dir=(l==='en')?'ltr':'rtl';}catch(e){}</script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<style>
+html{scroll-behavior:smooth}
+html[data-theme='dark'] .pd-map-tiles{filter:invert(1) hue-rotate(180deg) brightness(.93) contrast(.9)}
+.pd-slider{width:100%;accent-color:#f68743;cursor:pointer}
+:root{--page-bg:#edeef0;--heading:#141414;--body:#4b4b4d;--body-dim:rgba(20,20,22,.5);--panel:#ffffff;--panel-2:#e7e9ec;--panel-border:rgba(20,20,22,.1);--nav-text:#2a2a2c;--header-bg:rgba(237,238,240,.85);--hairline:rgba(20,20,22,.1);--chip-bg:rgba(20,20,22,.045);--input-bg:#ffffff;--input-border:rgba(20,20,22,.16);--card:#ffffff;--card-fg:#181818;--card-sub:#6c6c70;--card-line:#e4e5e8;--card-stat:#eceef1;--accent-ink:#b53a0f;--footer-base:#101013}
+html[data-theme='dark']{--page-bg:#0d0d0f;--heading:#f7f7f5;--body:#d4d4d6;--body-dim:rgba(247,247,245,.55);--panel:rgba(255,255,255,.055);--panel-2:rgba(255,255,255,.03);--panel-border:rgba(255,255,255,.12);--nav-text:#ededeb;--header-bg:rgba(13,13,15,.72);--hairline:rgba(255,255,255,.1);--chip-bg:rgba(255,255,255,.05);--input-bg:rgba(0,0,0,.3);--input-border:rgba(255,255,255,.16);--card:#ffffff;--card-fg:#181818;--card-sub:#6c6c70;--card-line:#e4e5e8;--card-stat:#f4f4f6;--accent-ink:#ffcdb0;--footer-base:#000000}
+html,body{margin:0;padding:0;background:var(--page-bg);transition:background .5s ease}
+*{box-sizing:border-box}
+.megapanel{opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s linear .3s}
+header:has(.megalink:hover) .megapanel,.megapanel:hover{opacity:1;visibility:visible;transition:opacity .25s ease,visibility 0s}
+a{color:#f68743;text-decoration:none}
+a:hover{color:#ffab7a}
+::selection{background:#f68743;color:#121212}
+@keyframes fadeUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+input::placeholder{color:var(--body-dim)}
+</style>
+<script src="image-slot.js"></script>
+<script src="palmas-photos.js"></script>
+<script src="palmas-core.js"></script>
+<script src="palmas-config.js"></script>
+<script src="palmas-backend.js"></script>
+</helmet>
+<div dir="{{ dir }}" style="position:relative;font-family:'Cairo',sans-serif;background:var(--page-bg);color:var(--body);min-height:100vh;display:flex;flex-direction:column;transition:background .5s ease,color .5s ease">
+
+<dc-import name="SiteHeader" dir="{{ dir }}" hint-size="100%,68px"></dc-import>
+<dc-import name="LoginGate" hint-size="0,0"></dc-import>
+
+<div style="position:relative;z-index:1;padding:26px clamp(16px,4vw,52px) 90px;max-width:min(1680px,94vw);margin:0 auto;width:100%">
+
+  <div style="position:relative;display:grid;grid-template-columns:2.2fr 1fr;gap:14px;margin-bottom:20px">
+    <div style="position:relative;height:440px;border-radius:20px;overflow:hidden;border:1px solid var(--panel-border)">
+      <image-slot id="pd-{{ p.id }}-main" shape="rect" placeholder="{{ t.mainPh }}"></image-slot>
+    </div>
+    <div style="display:grid;grid-template-rows:1fr 1fr 1fr;gap:14px;height:440px">
+      <div style="border-radius:16px;overflow:hidden;border:1px solid var(--panel-border)"><image-slot id="pd-{{ p.id }}-1" shape="rect" placeholder="{{ t.ph1 }}"></image-slot></div>
+      <div style="border-radius:16px;overflow:hidden;border:1px solid var(--panel-border)"><image-slot id="pd-{{ p.id }}-2" shape="rect" placeholder="{{ t.ph2 }}"></image-slot></div>
+      <div style="position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--panel-border)">
+        <image-slot id="pd-{{ p.id }}-3" shape="rect" placeholder="{{ t.ph3 }}"></image-slot>
+        <sc-if value="{{ showMore }}" hint-placeholder-val="{{ true }}">
+        <button type="button" onClick="{{ openGallery }}" style="position:absolute;inset:0;background:rgba(10,10,12,.55);border:none;cursor:pointer;display:grid;place-items:center;color:#fff;font-family:'Cairo',sans-serif;font-weight:900;font-size:19px;z-index:5">{{ moreCount }}</button>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--body-dim);font-weight:600;margin-bottom:18px">
+    <a href="Palmas Home.dc.html" style="color:var(--body-dim)" style-hover="color:#f68743">{{ t.crumbHome }}</a><span>/</span>
+    <a href="{{ crumbCatHref }}" style="color:var(--body-dim)" style-hover="color:#f68743">{{ crumbCat }}</a><span>/</span>
+    <span style="color:#f68743">{{ p.name }}</span>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:28px">
+    <div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <div style="background:{{ p.tagBg }};color:#121212;font-weight:800;font-size:12.5px;padding:4px 14px;border-radius:14px">{{ p.catTag }}</div>
+        <sc-if value="{{ p.exc }}" hint-placeholder-val="{{ false }}"><div style="background:#121212;color:#f68743;font-weight:800;font-size:12.5px;padding:4px 14px;border-radius:14px;border:1px solid rgba(246,135,67,.4)">{{ t.excl }}</div></sc-if>
+      </div>
+      <h1 style="margin:0;font-size:clamp(28px,4vw,42px);font-weight:800;color:var(--heading)">{{ p.name }}</h1>
+      <div style="color:var(--body-dim);font-size:15px;margin-top:6px;display:flex;align-items:center;gap:7px">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+        {{ p.loc }}
+      </div>
+    </div>
+    <div style="text-align:end;position:relative">
+      <div style="color:#ffab7a;font-weight:900;font-size:clamp(26px,3.4vw,36px);line-height:1.2">{{ p.price }}</div>
+      <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end">
+        <button onClick="{{ toggleWish }}" style="display:inline-flex;align-items:center;gap:8px;border:1.5px solid {{ wishBorder }};background:{{ wishBg }};color:{{ wishColor }};font-family:'Cairo',sans-serif;font-weight:700;font-size:13.5px;padding:8px 18px;border-radius:20px;cursor:pointer;transition:all .35s ease" style-hover="border-color:#f68743">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="{{ heartFill }}" stroke="{{ heartStroke }}" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path></svg>
+          {{ wishLabel }}
+        </button>
+        <button type="button" onClick="{{ shareProp }}" title="{{ t.shareBtn }}" style="width:40px;height:40px;flex-shrink:0;border:1.5px solid var(--panel-border);background:transparent;color:var(--heading);border-radius:50%;display:grid;place-items:center;cursor:pointer;transition:all .35s ease" style-hover="border-color:#f68743;color:#f68743">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"></line><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"></line></svg>
+        </button>
+      </div>
+      <sc-if value="{{ shared }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:calc(100% + 6px);inset-inline-end:0;background:#121212;color:#fff;font-weight:700;font-size:12px;padding:6px 13px;border-radius:11px;white-space:nowrap;z-index:5">{{ t.shareCopied }}</div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:28px">
+    <sc-for list="{{ specs }}" as="sp" hint-placeholder-count="6">
+      <div style="background:var(--panel);backdrop-filter:blur(16px);border:1px solid var(--panel-border);border-radius:16px;padding:16px 18px;text-align:center">
+        <div style="color:var(--body-dim);font-size:12.5px;font-weight:700;margin-bottom:4px">{{ sp.label }}</div>
+        <div style="color:var(--heading);font-weight:800;font-size:18px">{{ sp.value }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px">
+    <button type="button" onClick="{{ toggleCmp }}" aria-pressed="{{ cmpPressed }}" style="flex:1;min-width:220px;display:flex;align-items:center;justify-content:center;gap:9px;background:{{ cmpBg }};border:1px solid {{ cmpBorder }};color:{{ cmpFg }};font-family:'Cairo',sans-serif;font-weight:800;font-size:14.5px;padding:14px;border-radius:16px;cursor:pointer;transition:all .3s ease" style-hover="border-color:#f68743">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 4v16M17 4v16M3 8h8M13 16h8"></path></svg>
+      {{ cmpLabel }}
+    </button>
+    <sc-if value="{{ showGoCmp }}" hint-placeholder-val="{{ false }}">
+      <a href="Compare.dc.html" style="flex:1;min-width:220px;display:flex;align-items:center;justify-content:center;gap:9px;background:#f68743;border:1px solid #f68743;color:#fff;font-weight:800;font-size:14.5px;padding:14px;border-radius:16px" style-hover="background:#ffab7a;color:#fff">{{ goCmpLabel }}</a>
+    </sc-if>
+    <sc-if value="{{ hasSimilar }}" hint-placeholder-val="{{ true }}">
+      <button type="button" onClick="{{ compareSimilar }}" style="flex:1;min-width:220px;display:flex;align-items:center;justify-content:center;gap:9px;background:var(--panel);border:1px solid var(--panel-border);color:var(--heading);font-family:'Cairo',sans-serif;font-weight:800;font-size:14.5px;padding:14px;border-radius:16px;cursor:pointer;transition:all .3s ease" style-hover="border-color:#f68743;color:#f68743">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"></path><path d="M7 15l4-6 4 3 5-8"></path></svg>
+        {{ similarLabel }}
+      </button>
+    </sc-if>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1.7fr 1fr;gap:24px;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:24px;min-width:0">
+
+      <div style="background:var(--panel);backdrop-filter:blur(16px);border:1px solid var(--panel-border);border-radius:20px;padding:26px 28px">
+        <h2 style="margin:0 0 12px;font-size:22px;font-weight:800;color:var(--heading)">{{ t.descTitle }}</h2>
+        <p style="margin:0;color:var(--body-dim);font-size:15.5px;line-height:2.1;text-wrap:pretty">{{ p.desc }}</p>
+      </div>
+
+      <div style="background:var(--panel);backdrop-filter:blur(16px);border:1px solid var(--panel-border);border-radius:20px;padding:26px 28px">
+        <h2 style="margin:0 0 16px;font-size:22px;font-weight:800;color:var(--heading)">{{ t.featTitle }}</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+          <sc-for list="{{ features }}" as="f" hint-placeholder-count="6">
+            <div style="display:flex;align-items:center;gap:10px;color:var(--body);font-weight:600;font-size:14.5px">
+              <span style="width:22px;height:22px;min-width:22px;border-radius:50%;background:#f68743;color:#121212;display:grid;place-items:center;font-size:13px;font-weight:900">✓</span>
+              {{ f }}
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div id="booking" style="background:var(--panel);backdrop-filter:blur(16px);border:1px solid rgba(246,135,67,.3);border-radius:20px;padding:26px 28px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <h2 style="margin:0;font-size:22px;font-weight:800;color:var(--heading)">{{ t.bookTitle }}</h2>
+        </div>
+        <p style="margin:0 0 18px;color:var(--body-dim);font-size:14px">{{ t.bookSub }}</p>
+
+        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;max-width:240px">
+          <label style="font-size:12px;font-weight:700;color:var(--body-dim)">{{ t.bDate }}</label>
+          <input type="date" min="{{ minDate }}" value="{{ bookDate }}" onChange="{{ onBookDate }}" style="background:var(--input-bg);border:1px solid var(--input-border);border-radius:12px;padding:12px 14px;color:var(--heading);font-family:'Cairo',sans-serif;font-size:14px;outline:none;color-scheme:{{ colorScheme }};transition:border-color .3s ease" style-focus="border-color:#f68743">
+        </div>
+
+        <sc-if value="{{ dateFriday }}" hint-placeholder-val="{{ false }}">
+          <div style="color:#e0245e;font-size:13px;font-weight:700;margin-bottom:16px">{{ t.bFriday }}</div>
+        </sc-if>
+
+        <sc-if value="{{ dateValid }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12px;font-weight:700;color:var(--body-dim);margin-bottom:8px">{{ t.bTime }}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px">
+            <sc-for list="{{ timeSlots }}" as="ts" hint-placeholder-count="5">
+              <button type="button" onClick="{{ ts.onClick }}" title="{{ ts.title }}" style="direction:ltr;border:1.5px solid {{ ts.border }};background:{{ ts.bg }};color:{{ ts.color }};font-family:'Cairo',sans-serif;font-weight:800;font-size:13.5px;padding:11px 22px;border-radius:12px;cursor:{{ ts.cursor }};transition:all .25s ease" style-hover="filter:brightness(1.1)">{{ ts.label }}</button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin:10px 0 20px;font-size:12.5px;color:var(--body-dim);font-weight:600">
+          <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:14px;border-radius:4px;background:var(--hairline);border:1.5px solid var(--panel-border);display:inline-block"></span>{{ t.legendFree }}</span>
+          <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:14px;border-radius:4px;background:#f68743;display:inline-block"></span>{{ t.legendSel }}</span>
+          <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:14px;height:14px;border-radius:4px;background:rgba(224,36,94,.25);border:1.5px solid rgba(224,36,94,.5);display:inline-block"></span>{{ t.legendBooked }}</span>
+        </div>
+
+        <sc-if value="{{ notDone }}" hint-placeholder-val="{{ true }}">
+          <form onSubmit="{{ submitBooking }}" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;align-items:end">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:12px;font-weight:700;color:var(--body-dim)">{{ t.bName }}</label>
+              <input ref="{{ nameRef }}" placeholder="{{ t.bNamePh }}" style="background:var(--input-bg);border:1px solid var(--input-border);border-radius:12px;padding:12px 14px;color:var(--heading);font-family:'Cairo',sans-serif;font-size:14px;outline:none;transition:border-color .3s ease" style-focus="border-color:#f68743">
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:12px;font-weight:700;color:var(--body-dim)">{{ t.bPhone }}</label>
+              <input ref="{{ phoneRef }}" placeholder="{{ t.bPhonePh }}" style="background:var(--input-bg);border:1px solid var(--input-border);border-radius:12px;padding:12px 14px;color:var(--heading);font-family:'Cairo',sans-serif;font-size:14px;outline:none;transition:border-color .3s ease" style-focus="border-color:#f68743">
+            </div>
+            <div style="grid-column:1/-1;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+              <button type="submit" style="background:#f68743;border:none;color:#121212;font-family:'Cairo',sans-serif;font-weight:800;font-size:15px;padding:13px 34px;border-radius:24px;cursor:pointer;transition:all .35s ease" style-hover="background:#ffab7a;transform:translateY(-2px)">{{ t.bSubmit }}</button>
+              <div style="font-size:13.5px;font-weight:700;color:{{ hintColor }}">{{ selHint }}</div>
+            </div>
+          </form>
+        </sc-if>
+        <sc-if value="{{ done }}" hint-placeholder-val="{{ false }}">
+          <div style="background:rgba(246,135,67,.12);border:1px solid rgba(246,135,67,.4);border-radius:16px;padding:20px 22px;display:flex;align-items:center;gap:14px;animation:fadeUp .4s ease both">
+            <span style="width:38px;height:38px;min-width:38px;border-radius:50%;background:#f68743;color:#121212;display:grid;place-items:center;font-size:19px;font-weight:900">✓</span>
+            <div>
+              <div style="font-weight:800;font-size:16px;color:var(--heading)">{{ t.bDoneT }}</div>
+              <div style="color:var(--body-dim);font-size:13.5px">{{ doneMsg }}</div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasMyBookings }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:20px;border-top:1px solid var(--panel-border);padding-top:16px">
+            <div style="font-weight:800;font-size:15px;color:var(--heading);margin-bottom:10px">{{ t.myBookings }}</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ myBookings }}" as="b" hint-placeholder-count="1">
+                <div style="display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.25);border:1px solid var(--panel-border);border-radius:12px;padding:10px 16px;font-size:13.5px;font-weight:700">
+                  <span style="color:#f68743">{{ b.when }}</span>
+                  <span style="color:var(--body-dim)">{{ b.name }}</span>
+                  <button onClick="{{ b.cancel }}" style="margin-inline-start:auto;background:none;border:1px solid rgba(224,36,94,.5);color:#ff7ba1;font-family:'Cairo',sans-serif;font-weight:700;font-size:12.5px;padding:5px 14px;border-radius:14px;cursor:pointer;transition:all .3s ease" style-hover="background:rgba(224,36,94,.15)">{{ t.bCancel }}</button>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:20px;position:sticky;top:90px">
+      <div style="background:var(--panel);border:1px solid var(--panel-border);color:var(--heading);border-radius:20px;padding:24px 26px">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+          <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(140deg,#f68743,#d1662a);color:#fff;display:grid;place-items:center;font-weight:900;font-size:22px">{{ agent.initial }}</div>
+          <div style="line-height:1.4">
+            <div style="font-weight:800;font-size:16px">{{ agent.name }}</div>
+            <div style="color:var(--body-dim);font-size:12.5px">{{ agent.role }}</div>
+          </div>
+        </div>
+        <a href="{{ waLink }}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:9px;background:#25D366;color:#07130a;font-weight:800;font-size:14.5px;padding:12px;border-radius:14px;margin-bottom:10px;transition:all .35s ease" style-hover="background:#4ce383;transform:translateY(-2px)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="#07130a"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.1 14.1c-.2.6-1.2 1.1-1.7 1.2-.5 0-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6-.5.5c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.8 1.7.3.1.5.1.7-.1l1-1.2c.2-.3.4-.2.7-.1l2.1 1c.3.1.5.2.6.4 0 .1 0 .7-.2 1.3z"></path></svg>
+          {{ t.agentWa }}
+        </a>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <a href="{{ callWaLink }}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:7px;background:transparent;color:var(--heading);border:1.5px solid var(--panel-border);font-weight:800;font-size:13px;padding:11px 6px;border-radius:14px;transition:all .35s ease" style-hover="border-color:#f68743;transform:translateY(-2px)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z"></path></svg>
+            {{ t.agentCall }}
+          </a>
+          <a href="{{ askWaLink }}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:7px;background:transparent;color:var(--heading);border:1.5px solid var(--panel-border);font-weight:800;font-size:13px;padding:11px 6px;border-radius:14px;transition:all .35s ease" style-hover="border-color:#f68743;transform:translateY(-2px)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            {{ t.agentAsk }}
+          </a>
+        </div>
+      </div>
+
+      <div style="background:var(--panel);backdrop-filter:blur(16px);border:1px solid var(--panel-border);border-radius:20px;padding:24px 26px">
+        <div style="font-weight:800;font-size:16px;color:var(--heading);margin-bottom:14px">{{ t.quickTitle }}</div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <sc-for list="{{ quick }}" as="q" hint-placeholder-count="4">
+            <div style="display:flex;justify-content:space-between;gap:10px;font-size:14px;border-bottom:1px dashed var(--panel-border);padding-bottom:9px">
+              <span style="color:var(--body-dim);font-weight:600">{{ q.label }}</span>
+              <span style="color:var(--heading);font-weight:800">{{ q.value }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <a href="#booking" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;background:#f68743;color:#121212;font-weight:800;font-size:14.5px;padding:12px;border-radius:14px;transition:all .35s ease" style-hover="background:#ffab7a;transform:translateY(-2px)">{{ t.quickCta }}</a>
+      </div>
+
+      <sc-if value="{{ showCalc }}" hint-placeholder-val="{{ false }}">
+      <div style="background:var(--panel);backdrop-filter:blur(16px);border:1px solid var(--panel-border);border-radius:20px;padding:24px 26px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="12" x2="8.01" y2="12"></line><line x1="12" y1="12" x2="12.01" y2="12"></line><line x1="16" y1="12" x2="16.01" y2="12"></line><line x1="8" y1="16" x2="8.01" y2="16"></line><line x1="12" y1="16" x2="12.01" y2="16"></line><line x1="16" y1="16" x2="16.01" y2="16"></line></svg>
+          <div style="font-weight:800;font-size:16px;color:var(--heading)">{{ t.calcTitle }}</div>
+        </div>
+        <div style="color:var(--body-dim);font-size:12.5px;margin-bottom:16px">{{ t.calcSub }}</div>
+        <sc-if value="{{ calcConverted }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:6px;color:#f68743;font-size:11.5px;font-weight:700;background:rgba(246,135,67,.1);border-radius:10px;padding:7px 11px;margin-bottom:14px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            {{ t.calcConvertedNote }}
+          </div>
+        </sc-if>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;padding-bottom:14px;border-bottom:1px dashed var(--panel-border)">
+          <span style="color:var(--body-dim);font-size:13px;font-weight:700">{{ t.calcPrice }}</span>
+          <span style="color:var(--heading);font-weight:900;font-size:16px">{{ calcPriceLabel }}</span>
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:8px">
+            <span style="color:var(--heading)">{{ t.calcDown }}</span>
+            <span style="color:#f68743">{{ calcDownLabel }}</span>
+          </div>
+          <input class="pd-slider" type="range" min="0" max="90" step="5" value="{{ calcDown }}" onChange="{{ onCalcDown }}">
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:8px">
+            <span style="color:var(--heading)">{{ t.calcYears }}</span>
+            <span style="color:#f68743">{{ calcYearsLabel }}</span>
+          </div>
+          <input class="pd-slider" type="range" min="1" max="30" step="1" value="{{ calcYears }}" onChange="{{ onCalcYears }}">
+        </div>
+        <div style="margin-bottom:18px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:8px">
+            <span style="color:var(--heading)">{{ t.calcRate }}</span>
+            <span style="color:#f68743">{{ calcRateLabel }}</span>
+          </div>
+          <input class="pd-slider" type="range" min="0" max="15" step="0.25" value="{{ calcRate }}" onChange="{{ onCalcRate }}">
+        </div>
+        <div style="background:rgba(246,135,67,.12);border:1px solid rgba(246,135,67,.3);border-radius:16px;padding:16px;text-align:center;margin-bottom:14px">
+          <div style="color:var(--accent-ink);font-size:12.5px;font-weight:700;margin-bottom:4px">{{ t.calcMonthly }}</div>
+          <div style="color:#f68743;font-weight:900;font-size:26px">{{ calcMonthlyLabel }}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12.5px">
+          <div style="background:var(--panel-2);border-radius:12px;padding:11px">
+            <div style="color:var(--body-dim);font-weight:700;margin-bottom:3px">{{ t.calcInterest }}</div>
+            <div style="color:var(--heading);font-weight:800">{{ calcInterestLabel }}</div>
+          </div>
+          <div style="background:var(--panel-2);border-radius:12px;padding:11px">
+            <div style="color:var(--body-dim);font-weight:700;margin-bottom:3px">{{ t.calcLoan }}</div>
+            <div style="color:var(--heading);font-weight:800">{{ calcLoanLabel }}</div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ hasCoords }}" hint-placeholder-val="{{ false }}">
+      <div style="background:var(--panel);backdrop-filter:blur(16px);border:1px solid var(--panel-border);border-radius:20px;padding:20px 20px 22px;overflow:hidden">
+        <div style="font-weight:800;font-size:16px;color:var(--heading);margin-bottom:14px;padding:0 6px">{{ t.locationTitle }}</div>
+        <div ref="{{ mapRef }}" class="pd-map-tiles" style="height:220px;border-radius:14px;overflow:hidden"></div>
+      </div>
+      </sc-if>
+    </div>
+  </div>
+</div>
+
+<sc-if value="{{ galleryOpen }}" hint-placeholder-val="{{ false }}">
+<div dir="{{ dir }}" onClick="{{ closeGallery }}" style="position:fixed;inset:0;z-index:1200;background:rgba(8,8,12,.7);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:20px;font-family:'Cairo',sans-serif">
+  <div onClick="{{ stopEv }}" style="width:100%;max-width:960px;max-height:88vh;overflow:auto;background:var(--panel-2);border:1px solid var(--panel-border);border-radius:22px;box-shadow:0 40px 90px rgba(0,0,0,.5)">
+    <div style="position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:18px 22px;background:var(--panel-2);border-bottom:1px solid var(--panel-border)">
+      <div style="font-weight:900;font-size:18px;color:var(--heading)">{{ t.galleryTitle }}</div>
+      <button type="button" onClick="{{ closeGallery }}" style="width:34px;height:34px;border:1px solid var(--panel-border);background:var(--panel);border-radius:11px;color:var(--body-dim);cursor:pointer;display:grid;place-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;padding:20px 22px 26px">
+      <sc-for list="{{ galleryPhotos }}" as="g" hint-placeholder-count="10">
+        <div style="height:150px;border-radius:14px;overflow:hidden;border:1px solid var(--panel-border)"><image-slot id="{{ g.id }}" shape="rect" placeholder="{{ g.ph }}"></image-slot></div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<div style="margin-top:auto"><dc-import name="SiteFooter" dir="{{ dir }}" hint-size="100%,300px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultLang&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;ar&quot;, &quot;en&quot;], &quot;default&quot;: &quot;ar&quot;, &quot;tsType&quot;: &quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { lang: null, theme: null, pid: 's1', favs: [], bookings: [], bookDate: '', bookTime: '', done: false, err: false, session: null, ready: false,
+    calcDown: 20, calcYears: 15, calcRate: 6.5, cmp: [], galleryOpen: false, shared: false };
+  nameRef = React.createRef();
+  phoneRef = React.createRef();
+  mapRef = React.createRef();
+  componentDidMount() {
+    try{const tv=localStorage.getItem('palmas_theme'); const th=(tv==='light'||tv==='dark')?tv:'light'; document.documentElement.setAttribute('data-theme',th); this.setState({theme:th});}catch(e){} try{const lv=localStorage.getItem('palmas_lang'); if(lv==='ar'||lv==='en'){this.setState({lang:lv}); document.documentElement.lang=lv; document.documentElement.dir=lv==='en'?'ltr':'rtl';}}catch(e){}
+    const g = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || d); } catch (e) { return JSON.parse(d); } };
+    const sp = new URLSearchParams(location.search);
+    this.setState({
+      pid: sp.get('id') || 's1',
+      bookings: g('palmas_bookings', '[]'),
+    });
+    this._boot();
+    this._onKey = (e) => { if (e.key === 'Escape' && this.state.galleryOpen) this.setState({ galleryOpen: false }); };
+    window.addEventListener('keydown', this._onKey);
+  }
+  /* waits for palmas-core.js (window.Palmas) — the property (incl. admin add/edit/delete) and the
+     session (incl. "remember me") both come from the shared catalog, not a page-local copy. */
+  _boot() {
+    const P = window.Palmas;
+    if (!P) { setTimeout(() => this._boot(), 60); return; }
+    let pid = this.state.pid;
+    if (!P.propBy(pid)) { const all = P.allProperties(); if (all.length) pid = all[0].id; }
+    this.setState({ session: P.API.session(), pid, favs: P.API.favorites(), cmp: P.Compare.list(), ready: true });
+    if (!this._onCmp) { this._onCmp = () => this.setState({ cmp: P.Compare.list() }); window.addEventListener('palmas:compare', this._onCmp); }
+    if (!this._offAuth) this._offAuth = P.API.onAuthChange(() => this.setState({ session: P.API.session(), favs: P.API.favorites() }));
+  }
+  componentWillUnmount() { if (this._onCmp) window.removeEventListener('palmas:compare', this._onCmp); if (this._onKey) window.removeEventListener('keydown', this._onKey); if (this._offAuth) this._offAuth(); if (this._leafletMap) { this._leafletMap.remove(); this._leafletMap = null; } }
+  componentDidUpdate() { this._syncMap(); }
+  /* imperative Leaflet mini-map — the DC template only declares the host div; the map itself
+     is created/moved here once the property (and its lat/lng) are resolved. */
+  _syncMap() {
+    const P = window.Palmas;
+    if (!P || !this.state.ready || !this.mapRef.current || !window.L) return;
+    const prop = P.propBy(this.state.pid);
+    if (!prop || prop.lat == null || prop.lng == null) return;
+    if (!this._leafletMap) {
+      this._leafletMap = window.L.map(this.mapRef.current, { zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false, touchZoom: false, boxZoom: false, keyboard: false }).setView([prop.lat, prop.lng], 15);
+      window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(this._leafletMap);
+      const icon = window.L.divIcon({ className: '', iconSize: [26, 36], iconAnchor: [13, 36],
+        html: '<svg width="26" height="36" viewBox="0 0 30 42" style="filter:drop-shadow(0 3px 5px rgba(0,0,0,.35))"><path d="M15 0C6.7 0 0 6.7 0 15c0 10.5 15 27 15 27s15-16.5 15-27C30 6.7 23.3 0 15 0z" fill="#f68743"/><circle cx="15" cy="15" r="6" fill="#fff"/></svg>' });
+      this._leafletMarker = window.L.marker([prop.lat, prop.lng], { icon }).addTo(this._leafletMap);
+      this._lastMapPid = this.state.pid;
+      setTimeout(() => { if (this._leafletMap) this._leafletMap.invalidateSize(); }, 60);
+    } else if (this._lastMapPid !== this.state.pid) {
+      this._leafletMap.setView([prop.lat, prop.lng], 15);
+      this._leafletMarker.setLatLng([prop.lat, prop.lng]);
+      this._lastMapPid = this.state.pid;
+    }
+  }
+  _saveBookings(b) { try { localStorage.setItem('palmas_bookings', JSON.stringify(b)); } catch (e) {} }
+  ui() {
+    return {
+      ar: { tagline: 'عقارك .. مستقبلك', langBtn: 'EN', crumbHome: 'الرئيسية', excl: 'حصري',
+        mainPh: 'الصورة الرئيسية للعقار', ph1: 'صورة 2', ph2: 'صورة 3', ph3: 'صورة 4',
+        shareBtn: 'مشاركة العقار', shareCopied: 'تم نسخ الرابط ✓', galleryTitle: 'كل صور العقار',
+        descTitle: 'عن العقار', featTitle: 'المميزات',
+        bookTitle: 'احجز موعد معاينة', bookSub: 'اختر اليوم والوقت المناسبين ثم أدخل بياناتك — سيؤكد فريقنا الموعد عبر الهاتف.',
+        bDate: 'اختر اليوم', bTime: 'اختر الوقت', bFriday: 'عذراً، يوم الجمعة عطلة — اختر يوماً آخر.',
+        legendFree: 'متاح', legendSel: 'اختيارك', legendBooked: 'محجوز',
+        bName: 'الاسم الكامل', bNamePh: 'مثال: أحمد خليل', bPhone: 'رقم الهاتف', bPhonePh: '059 000 0000',
+        bSubmit: 'تأكيد الحجز', bCancel: 'إلغاء',
+        selNone: 'اختر موعداً من الجدول أعلاه', bErr: 'يرجى اختيار موعد وتعبئة الاسم ورقم الهاتف',
+        bDoneT: 'تم حجز موعدك بنجاح!', myBookings: 'مواعيدك لهذا العقار',
+        agentName: 'فريق بالماس العقاري', agentRole: 'مستشارك لهذا العقار', agentWa: 'واتساب', agentCall: 'اطلب مكالمة', agentAsk: 'استفسر',
+        quickTitle: 'ملخص سريع', quickCta: 'احجز معاينة ↓',
+        qType: 'النوع', qCat: 'العرض', qRooms: 'الغرف', qBaths: 'الحمّامات', qArea: 'المساحة', qFloor: 'الطابق', qYear: 'سنة البناء', qPark: 'مواقف', qCity: 'المدينة', qId: 'رقم العقار',
+        compareBtn: 'قارن مع عقارات مشابهة', compareTitle: 'مقارنة العقارات',
+        cName: 'العقار', cPrice: 'السعر', cType: 'النوع', cOffer: 'العرض', cRooms: 'الغرف', cBaths: 'الحمامات', cArea: 'المساحة', cCity: 'المدينة',
+        calcTitle: 'حاسبة الأقساط', calcSub: 'قدّر قسطك الشهري لهذا العقار', calcPrice: 'سعر العقار',
+        calcConvertedNote: 'الأرقام محوّلة تقريبياً لعملة العرض المختارة — العقد الفعلي بعملة العقار الأصلية.',
+        calcDown: 'الدفعة الأولى', calcYears: 'مدة التمويل', calcRate: 'نسبة الفائدة السنوية',
+        calcMonthly: 'القسط الشهري التقديري', calcInterest: 'إجمالي الفوائد', calcLoan: 'مبلغ التمويل',
+        yearsU: 'سنة', locationTitle: 'الموقع',
+        dows: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
+        sqm: 'م²',
+        wishAdd: 'أضف للرغبات', wishSaved: 'محفوظ',
+        navLinks: [
+          { label: 'الرئيسية', href: 'Palmas Home.dc.html' }, { label: 'العقارات', href: 'PropertyList.dc.html', active: true },
+          { label: 'المشاريع', href: 'Projects.dc.html' }, { label: 'خدماتنا', href: 'Services.dc.html' },
+          { label: 'من نحن', href: 'About.dc.html' }, { label: 'تواصل معنا', href: 'Contact.dc.html' },
+        ] },
+      en: { tagline: 'YOUR HOME, YOUR FUTURE', langBtn: 'عربي', crumbHome: 'Home', excl: 'EXCLUSIVE',
+        mainPh: 'Main property photo', ph1: 'Photo 2', ph2: 'Photo 3', ph3: 'Photo 4',
+        shareBtn: 'Share property', shareCopied: 'Link copied ✓', galleryTitle: 'All property photos',
+        descTitle: 'About this property', featTitle: 'Features',
+        bookTitle: 'Book a viewing', bookSub: 'Pick a convenient day and time, enter your details — our team will confirm by phone.',
+        bDate: 'Pick a day', bTime: 'Pick a time', bFriday: 'Sorry, Friday is a day off — please pick another day.',
+        legendFree: 'Available', legendSel: 'Your pick', legendBooked: 'Booked',
+        bName: 'Full name', bNamePh: 'e.g. Ahmad Khalil', bPhone: 'Phone number', bPhonePh: '059 000 0000',
+        bSubmit: 'Confirm booking', bCancel: 'Cancel',
+        selNone: 'Pick a slot from the table above', bErr: 'Please pick a slot and fill in your name and phone',
+        bDoneT: 'Your viewing is booked!', myBookings: 'Your bookings for this property',
+        agentName: 'Palmas Property Team', agentRole: 'Your consultant for this listing', agentWa: 'WhatsApp', agentCall: 'Request a call', agentAsk: 'Inquire',
+        quickTitle: 'Quick summary', quickCta: 'Book a viewing ↓',
+        qType: 'Type', qCat: 'Offer', qRooms: 'Bedrooms', qBaths: 'Bathrooms', qArea: 'Area', qFloor: 'Floor', qYear: 'Built', qPark: 'Parking', qCity: 'City', qId: 'Listing ID',
+        compareBtn: 'Compare with similar properties', compareTitle: 'Compare properties',
+        cName: 'Property', cPrice: 'Price', cType: 'Type', cOffer: 'Offer', cRooms: 'Rooms', cBaths: 'Baths', cArea: 'Area', cCity: 'City',
+        calcTitle: 'Mortgage calculator', calcSub: 'Estimate your monthly installment for this property', calcPrice: 'Property price',
+        calcConvertedNote: 'Figures are approximately converted to your chosen display currency — the actual contract is in the property\'s original currency.',
+        calcDown: 'Down payment', calcYears: 'Financing term', calcRate: 'Annual interest rate',
+        calcMonthly: 'Estimated monthly installment', calcInterest: 'Total interest', calcLoan: 'Financing amount',
+        yearsU: 'yr', locationTitle: 'Location',
+        dows: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        sqm: 'm²',
+        wishAdd: 'Add to wishlist', wishSaved: 'Saved',
+        navLinks: [
+          { label: 'Home', href: 'Palmas Home.dc.html' }, { label: 'Properties', href: 'PropertyList.dc.html', active: true },
+          { label: 'Projects', href: 'Projects.dc.html' }, { label: 'Services', href: 'Services.dc.html' },
+          { label: 'About', href: 'About.dc.html' }, { label: 'Contact', href: 'Contact.dc.html' },
+        ] },
+    };
+  }
+  _requireLogin() { try { localStorage.setItem('palmas_return', (location.href.split('/').pop()) || 'Palmas Home.dc.html'); } catch(e) {} try { window.dispatchEvent(new CustomEvent('palmas:require-login')); } catch(e) {} }
+  renderVals() {
+    const P = window.Palmas;
+    const lang = this.state.lang || this.props.defaultLang || 'ar';
+    const t = this.ui()[lang];
+    if (!P || !this.state.ready) {
+      return { t, dir: lang === 'ar' ? 'rtl' : 'ltr', navLinks: [], p: { id: '', name: '', loc: '', price: '', catTag: '', tagBg: '#f68743', exc: false },
+        specs: [], features: [], quick: [], crumbCat: '', crumbCatHref: 'PropertyList.dc.html',
+        minDate: '', bookDate: '', colorScheme: 'light', onBookDate: () => {}, dateFriday: false, dateValid: false, timeSlots: [],
+        nameRef: this.nameRef, phoneRef: this.phoneRef, notDone: true, done: false, doneMsg: '', selHint: '', hintColor: 'var(--body-dim)',
+        hasMyBookings: false, myBookings: [], heartFill: 'none', heartStroke: '#fff', wishLabel: t.wishAdd, wishBg: 'var(--hairline)', wishColor: '#fff', wishBorder: 'rgba(255,255,255,.3)',
+        toggleWish: () => {}, waLink: '#', callWaLink: '#', askWaLink: '#', agent: { initial: 'P', name: t.agentName, role: t.agentRole },
+        showCalc: false, hasCoords: false, mapRef: this.mapRef,
+        cmpPressed: 'false', cmpLabel: '', cmpBg: 'var(--panel)', cmpFg: 'var(--heading)', cmpBorder: 'var(--panel-border)', toggleCmp: () => {}, showGoCmp: false, goCmpLabel: '', hasSimilar: false, similarLabel: '', compareSimilar: () => {}, stopEv: (e) => e.stopPropagation(),
+        shareProp: () => {}, shared: false, moreCount: '+9',
+        galleryOpen: false, galleryPhotos: [], openGallery: () => {}, closeGallery: () => {},
+        submitBooking: (e) => { e.preventDefault(); } };
+    }
+    const L = P.LABELS[lang];
+    const pid = this.state.pid;
+    const prop = P.propBy(pid) || { id: pid, name: { ar: '', en: '' }, loc: { ar: '', en: '' }, type: '', offer: 'sale', price: 0, rooms: 0, baths: 0, area: 0, cityKey: '', ownership: '', zone: '', desc: { ar: '', en: '' }, features: { ar: [], en: [] }, exc: false };
+    const isLand = prop.type === 'land';
+    const offerKey = isLand ? 'landOffer' : prop.offer;
+    const CAT_COLOR = { sale: '#f68743', rent: '#5fb0e6', residential: '#e0a92e', land: '#a97fe0' };
+    const catTag = isLand ? L.offer.landOffer : (L.offer[prop.offer] || '');
+    const tagBg = CAT_COLOR[isLand ? 'land' : prop.offer] || '#f68743';
+    const city = P.cityBy(prop.cityKey);
+    const p = { id: prop.id, name: prop.name[lang] || '', loc: prop.loc[lang] || '', price: P.displayPrice(prop, lang), desc: (prop.desc && prop.desc[lang]) || '', catTag, tagBg, exc: !!prop.exc };
+    const features = (prop.features && prop.features[lang]) || [];
+    const specs = [];
+    if (prop.rooms) specs.push({ label: t.qRooms, value: prop.rooms });
+    if (prop.baths) specs.push({ label: t.qBaths, value: prop.baths });
+    if (prop.area) specs.push({ label: t.qArea, value: prop.area.toLocaleString() + ' ' + t.sqm });
+    if (prop.floor != null) specs.push({ label: t.qFloor, value: prop.floor });
+    if (prop.year != null) specs.push({ label: t.qYear, value: prop.year });
+    /* قاعدة البيانات تخزّن الموقف نعم/لا، والبذرة القديمة كانت عدداً — نعرض الحالتين */
+    if (prop.parking != null && prop.parking !== false) {
+      specs.push({ label: t.qPark, value: prop.parking === true ? (lang === 'ar' ? 'متوفر' : 'Yes') : prop.parking });
+    }
+    if (city) specs.push({ label: t.qCity, value: city[lang] });
+    if (isLand) {
+      if (prop.ownership) specs.push({ label: L.fields.own, value: L.own[prop.ownership] });
+      if (prop.zone) specs.push({ label: L.fields.zone, value: L.zone[prop.zone] });
+    }
+    const quick = [{ label: t.qId, value: String(prop.id).toUpperCase() }, { label: t.qCat, value: catTag }].concat(specs.slice(0, 4));
+    const crumbCat = catTag, crumbCatHref = 'PropertyList.dc.html?cat=' + offerKey;
+
+    /* agent card — a real member of the shared staff directory (palmas-core.js), deterministically
+       picked per property so the same listing always shows the same consultant */
+    const agentsList = P.StaffAdmin.agents();
+    let agentIdx = 0;
+    if (agentsList.length) { let h = 0; for (const ch of String(prop.id)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; agentIdx = h % agentsList.length; }
+    const agentPerson = agentsList[agentIdx] || null;
+    const agent = agentPerson
+      ? { initial: (agentPerson.name[lang] || '?').charAt(0), name: agentPerson.name[lang], role: agentPerson.role[lang] }
+      : { initial: 'P', name: t.agentName, role: t.agentRole };
+    const callWaLink = 'https://wa.me/972595377421?text=' + encodeURIComponent((lang === 'ar' ? 'أرجو التواصل معي هاتفياً بخصوص: ' : 'Please call me about: ') + p.name);
+    const askWaLink = 'https://wa.me/972595377421?text=' + encodeURIComponent((lang === 'ar' ? 'لدي استفسار حول: ' : 'I have a question about: ') + p.name);
+
+    /* mortgage/installment calculator — sale & residential listings only */
+    const showCalc = prop.offer !== 'rent' && prop.price > 0;
+    const calcDown = this.state.calcDown, calcYears = this.state.calcYears, calcRate = this.state.calcRate;
+    const downAmt = Math.round(prop.price * calcDown / 100);
+    const loanAmt = Math.max(0, prop.price - downAmt);
+    const nMonths = calcYears * 12;
+    const mRate = calcRate / 100 / 12;
+    const monthlyPay = mRate > 0 ? Math.round(loanAmt * mRate * Math.pow(1 + mRate, nMonths) / (Math.pow(1 + mRate, nMonths) - 1)) : Math.round(loanAmt / nMonths);
+    const totalPaid = monthlyPay * nMonths;
+    const totalInterest = Math.max(0, totalPaid - loanAmt);
+    /* the calculator pays out in whatever currency the visitor picked from the header
+       (falls back to the property's own native listing currency if they haven't picked one) */
+    const dispCur = P.Currency.viewCurrency() || (prop.currency || 'usd');
+    const calcConverted = dispCur !== (prop.currency || 'usd');
+    const usd = n => P.Currency.format(Math.round(P.Currency.convert(n, prop.currency || 'usd', dispCur)), dispCur, lang);
+
+    /* mini map */
+    const hasCoords = prop.lat != null && prop.lng != null;
+
+    /* المعرض: للأدمن 10 أماكن ثابتة (الرئيسية + 9) ليرفع فيها. الزائر يرى صوره
+       الحقيقية فقط، والعدّاد على آخر صورة مصغّرة هو الباقي فعلاً — كان "+6" ثابتاً
+       مهما كان عدد الصور. */
+    const isAdmin = !!(this.state.session && this.state.session.role === 'admin');
+    const realPhotos = (prop.photos || []).filter(Boolean).length;
+    const slotCount = isAdmin ? 10 : Math.max(1, realPhotos);
+    const galleryPhotos = [{ id: 'pd-' + prop.id + '-main', ph: t.mainPh }]
+      .concat(Array.from({ length: slotCount - 1 }, (_, i) => ({ id: 'pd-' + prop.id + '-' + (i + 1), ph: (lang === 'ar' ? 'صورة ' : 'Photo ') + (i + 2) })));
+    const moreCount = realPhotos > 4 ? ('+' + (realPhotos - 4)) : (isAdmin ? (lang === 'ar' ? 'كل الصور' : 'All photos') : '');
+    const showMore = realPhotos > 4 || isAdmin;
+    const shareProp = () => {
+      const shareData = { title: p.name, text: p.name + ' — ' + p.loc, url: location.href };
+      if (navigator.share) { navigator.share(shareData).catch(() => {}); return; }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(location.href).then(() => { this.setState({ shared: true }); setTimeout(() => this.setState({ shared: false }), 2000); }).catch(() => {});
+      }
+    };
+
+    /* compare with similar properties — same type+offer, closest price, up to 3 */
+    const allProps = P.allProperties();
+    const similar = allProps.filter(x => x.id !== prop.id && x.type === prop.type && x.offer === prop.offer)
+      .sort((a, b) => Math.abs(a.price - prop.price) - Math.abs(b.price - prop.price)).slice(0, 3);
+    /* المقارنة: صفحة واحدة لكل الموقع (Compare.dc.html). هذا الزر يضيف العقار أو
+       يزيله، و"المشابهة" تضعه مع أقرب العقارات سعراً من نفس النوع وتفتح الصفحة. */
+    const inCmp = (this.state.cmp || []).indexOf(prop.id) !== -1;
+    const en = lang === 'en';
+    const cmpVals = {
+      cmpPressed: inCmp ? 'true' : 'false',
+      cmpLabel: inCmp ? (en ? '✓ In comparison — remove' : '✓ في المقارنة — إزالة') : (en ? 'Add to comparison' : 'أضف للمقارنة'),
+      cmpBg: inCmp ? '#141414' : 'var(--panel)', cmpFg: inCmp ? '#fff' : 'var(--heading)', cmpBorder: inCmp ? '#141414' : 'var(--panel-border)',
+      toggleCmp: () => {
+        P.Compare.toggleAndNotify(prop.id, lang);
+      },
+      showGoCmp: (this.state.cmp || []).length >= 2,
+      goCmpLabel: (en ? 'View comparison' : 'اعرض المقارنة') + ' (' + (this.state.cmp || []).length + ')',
+      hasSimilar: similar.length > 0,
+      similarLabel: (en ? 'Compare with similar' : 'قارن مع عقارات مشابهة') + ' (' + similar.length + ')',
+      compareSimilar: () => {
+        P.Compare.set([prop.id].concat(similar.map(x => x.id)));
+        location.href = 'Compare.dc.html';
+      },
+    };
+    /* booking date/time — free date+month picker (native <input type=date>) instead of a fixed
+       6-day window, plus a toggleable time-slot row (clicking the picked slot again clears it) */
+    const times = ['10:00', '11:30', '13:00', '15:00', '16:30'];
+    const bookings = this.state.bookings || [];
+    const isBookedAt = (dateKey, time) => bookings.some(b => b.pid === pid && b.date === dateKey && b.time === time && b.status !== 'cancelled');
+    const tmr = new Date(); tmr.setDate(tmr.getDate() + 1);
+    const minDate = tmr.toISOString().slice(0, 10);
+    const bookDate = this.state.bookDate || '';
+    const bookTime = this.state.bookTime || '';
+    const dateObj = bookDate ? new Date(bookDate + 'T00:00:00') : null;
+    const dateFriday = !!dateObj && dateObj.getDay() === 5;
+    const dateValid = !!bookDate && !dateFriday;
+    const dow = dateObj ? t.dows[dateObj.getDay()] : '';
+    const dateNum = dateObj ? (dateObj.getDate() + '/' + (dateObj.getMonth() + 1)) : '';
+    const colorScheme = (this.state.theme || 'light') === 'dark' ? 'dark' : 'light';
+    const timeSlots = times.map(time => {
+      const bookedSlot = dateValid && isBookedAt(bookDate, time);
+      const isSel = bookTime === time;
+      let bg = 'var(--panel)', color = 'var(--body-dim)', border = 'var(--panel-border)', cursor = 'pointer', title = t.legendFree;
+      if (bookedSlot) { bg = 'rgba(224,36,94,.14)'; color = '#ff9ab5'; border = 'rgba(224,36,94,.4)'; cursor = 'default'; title = t.legendBooked; }
+      else if (isSel) { bg = '#f68743'; color = '#121212'; border = '#f68743'; title = t.legendSel; }
+      return { label: time, bg, color, border, cursor, title,
+        onClick: bookedSlot ? (() => {}) : (() => this.setState(s => ({ bookTime: s.bookTime === time ? '' : time, done: false, err: false }))) };
+    });
+    const sel = (dateValid && bookTime) ? { date: bookDate, time: bookTime, dow, dateNum } : null;
+    const wished = this.state.favs.indexOf(pid) !== -1;
+    const myKey = this.state.session?.email || 'guest';
+    const myBookings = bookings.filter(b => b.pid === pid && b.by === myKey && b.status !== 'cancelled').map(b => ({
+      when: (lang === 'ar' ? '' : '') + b.dow + ' ' + b.dateNum + ' — ' + b.time, name: b.name,
+      cancel: () => this.setState(s => { const nb = s.bookings.map(x => (x.id ? x.id === b.id : (x.pid === b.pid && x.date === b.date && x.time === b.time && x.by === b.by)) ? { ...x, status: 'cancelled' } : x); this._saveBookings(nb); return { bookings: nb, done: false }; }),
+    }));
+    return { t, dir: lang === 'ar' ? 'rtl' : 'ltr',
+      navLinks: t.navLinks.map(l => ({ ...l, color: l.active ? '#121212' : 'var(--nav-text)', bg: l.active ? '#f68743' : 'transparent' })),
+      p, specs, features, quick,
+      crumbCat, crumbCatHref,
+      minDate, bookDate, colorScheme, onBookDate: e => this.setState({ bookDate: e.target.value, bookTime: '' }),
+      dateFriday, dateValid, timeSlots,
+      nameRef: this.nameRef, phoneRef: this.phoneRef,
+      notDone: !this.state.done, done: this.state.done,
+      doneMsg: this.state.doneMsg || '',
+      selHint: this.state.err ? t.bErr : (sel ? (sel.dow + ' ' + sel.dateNum + ' — ' + sel.time) : t.selNone),
+      hintColor: this.state.err ? '#ff7ba1' : (sel ? '#f68743' : 'rgba(255,255,255,.45)'),
+      hasMyBookings: myBookings.length > 0, myBookings,
+      heartFill: wished ? '#f68743' : 'none', heartStroke: wished ? '#f68743' : '#fff',
+      wishLabel: wished ? t.wishSaved : t.wishAdd,
+      wishBg: wished ? 'rgba(246,135,67,.15)' : 'var(--hairline)', wishColor: wished ? '#f68743' : '#fff',
+      wishBorder: wished ? '#f68743' : 'rgba(255,255,255,.3)',
+      toggleWish: () => { if (!this.state.session) { this._requireLogin(); return; } window.Palmas.API.toggleFavorite(pid).then(res => { this.setState({ favs: res.list }); window.Palmas.toast(wished ? (lang === 'ar' ? 'أُزيل من المفضلة' : 'Removed from wishlist') : (lang === 'ar' ? 'أُضيف للمفضلة' : 'Added to wishlist')); }).catch(() => { this._requireLogin(); }); },
+      waLink: 'https://wa.me/972595377421?text=' + encodeURIComponent((lang === 'ar' ? 'مرحباً، أستفسر عن: ' : 'Hello, I am asking about: ') + p.name),
+      agent, callWaLink, askWaLink,
+      showCalc, calcConverted, calcPriceLabel: usd(prop.price),
+      calcDown, calcDownLabel: calcDown + '%', calcYears, calcYearsLabel: calcYears + ' ' + t.yearsU, calcRate, calcRateLabel: calcRate + '%',
+      calcMonthlyLabel: usd(monthlyPay), calcInterestLabel: usd(totalInterest), calcLoanLabel: usd(loanAmt),
+      onCalcDown: e => this.setState({ calcDown: +e.target.value }), onCalcYears: e => this.setState({ calcYears: +e.target.value }), onCalcRate: e => this.setState({ calcRate: +e.target.value }),
+      hasCoords, mapRef: this.mapRef,
+      ...cmpVals, stopEv: (e) => e.stopPropagation(),
+      shareProp, shared: this.state.shared, moreCount, showMore,
+      galleryOpen: this.state.galleryOpen, galleryPhotos,
+      openGallery: () => this.setState({ galleryOpen: true }), closeGallery: () => this.setState({ galleryOpen: false }),
+      submitBooking: (e) => {
+        e.preventDefault();
+        const name = this.nameRef.current?.value.trim() || '';
+        const phone = this.phoneRef.current?.value.trim() || '';
+        if (!sel || !name || !phone) { this.setState({ err: true }); return; }
+        const nb = bookings.concat([{ id: 'bk' + Date.now(), status: 'pending', pid, pname: p.name, date: sel.date, dow: sel.dow, dateNum: sel.dateNum, time: sel.time, name, phone, by: myKey, created: new Date().toISOString() }]);
+        this._saveBookings(nb);
+        this.setState({ bookings: nb, bookDate: '', bookTime: '', done: true, err: false, doneMsg: p.name + ' — ' + sel.dow + ' ' + sel.dateNum + ', ' + sel.time });
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

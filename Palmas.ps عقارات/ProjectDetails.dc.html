@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="uploads/palmas-icon.png">
+<title>Palmas.ps</title>
+<script src="./support.js"></script>
+<style>@view-transition{navigation:auto}::view-transition-old(root),::view-transition-new(root){animation-duration:.34s;animation-timing-function:cubic-bezier(.4,0,.2,1)}</style>
+<script>try{var t=localStorage.getItem('palmas_theme');document.documentElement.setAttribute('data-theme',(t==='light'||t==='dark')?t:'light');var l=localStorage.getItem('palmas_lang');document.documentElement.lang=(l==='en')?'en':'ar';document.documentElement.dir=(l==='en')?'ltr':'rtl';}catch(e){}</script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<style>
+html{scroll-behavior:smooth}
+html[data-theme='dark'] .prjd-map-tiles{filter:invert(1) hue-rotate(180deg) brightness(.93) contrast(.9)}
+:root{--page-bg:#edeef0;--heading:#141414;--body:#4b4b4d;--body-dim:rgba(20,20,22,.5);--panel:#ffffff;--panel-2:#e7e9ec;--panel-border:rgba(20,20,22,.1);--nav-text:#2a2a2c;--hairline:rgba(20,20,22,.1);--chip-bg:rgba(20,20,22,.045);--card:#ffffff;--card-fg:#181818;--card-sub:#6c6c70;--card-line:#e4e5e8;--card-stat:#eceef1;--accent-ink:#b53a0f;--footer-base:#101013}
+html[data-theme='dark']{--page-bg:#0d0d0f;--heading:#f7f7f5;--body:#d4d4d6;--body-dim:rgba(247,247,245,.55);--panel:rgba(255,255,255,.055);--panel-2:rgba(255,255,255,.03);--panel-border:rgba(255,255,255,.12);--nav-text:#ededeb;--hairline:rgba(255,255,255,.1);--chip-bg:rgba(255,255,255,.05);--card:#ffffff;--card-fg:#181818;--card-sub:#6c6c70;--card-line:#e4e5e8;--card-stat:#f4f4f6;--accent-ink:#ffcdb0;--footer-base:#000000}
+html,body{margin:0;padding:0;background:var(--page-bg);transition:background .5s ease}
+*{box-sizing:border-box}
+a{color:#f68743;text-decoration:none}
+a:hover{color:#ffab7a}
+::selection{background:#f68743;color:#121212}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+</style>
+<script src="image-slot.js"></script>
+<script src="palmas-photos.js"></script>
+<script src="palmas-core.js"></script>
+<script src="palmas-config.js"></script>
+<script src="palmas-backend.js"></script>
+</helmet>
+<div dir="{{ dir }}" style="position:relative;font-family:'Cairo',sans-serif;background:var(--page-bg);color:var(--body);min-height:100vh;display:flex;flex-direction:column;transition:background .5s ease,color .5s ease">
+
+<dc-import name="SiteHeader" dir="{{ dir }}" hint-size="100%,68px"></dc-import>
+<dc-import name="LoginGate" hint-size="0,0"></dc-import>
+
+<sc-if value="{{ notFound }}" hint-placeholder-val="{{ false }}">
+  <section style="flex:1;display:grid;place-items:center;padding:80px 24px;text-align:center">
+    <div>
+      <div style="font-weight:900;font-size:26px;color:var(--heading);margin-bottom:10px">{{ t.notFoundTitle }}</div>
+      <div style="color:var(--body-dim);font-size:15px;margin-bottom:22px">{{ t.notFoundBody }}</div>
+      <a href="Projects.dc.html" style="display:inline-block;background:#f68743;color:#121212;font-weight:800;font-size:14.5px;padding:12px 30px;border-radius:22px">{{ t.backToProjects }}</a>
+    </div>
+  </section>
+</sc-if>
+
+<sc-if value="{{ ready }}" hint-placeholder-val="{{ false }}">
+<main style="flex:1;padding:20px clamp(16px,4vw,52px) 70px">
+  <div style="max-width:1180px;margin:0 auto">
+
+    <div style="display:flex;align-items:center;gap:8px;color:var(--body-dim);font-size:13px;font-weight:700;margin-bottom:18px;flex-wrap:wrap">
+      <a href="Palmas Home.dc.html" style="color:var(--body-dim)">{{ t.home }}</a><span>/</span>
+      <a href="Projects.dc.html" style="color:var(--body-dim)">{{ t.kicker }}</a><span>/</span>
+      <span style="color:var(--heading)">{{ p.name }}</span>
+    </div>
+
+    <!-- gallery -->
+    <div data-reveal="" style="display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:26px;height:min(56vw,420px)">
+      <div style="border-radius:20px;overflow:hidden"><image-slot id="{{ mainSlot }}" shape="rect" placeholder="{{ p.name }}"></image-slot></div>
+      <div style="display:grid;grid-template-rows:repeat(2,1fr);gap:12px;min-height:0">
+        <sc-for list="{{ galleryExtra }}" as="g" hint-placeholder-count="2">
+          <div style="border-radius:16px;overflow:hidden;position:relative">
+            <image-slot id="{{ g.id }}" shape="rect" placeholder="{{ g.ph }}"></image-slot>
+            <sc-if value="{{ g.overlay }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ openGallery }}" style="position:absolute;inset:0;background:rgba(12,12,12,.55);border:none;color:#fff;font-weight:900;font-size:22px;cursor:pointer">{{ g.overlayLabel }}</button>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <sc-if value="{{ galleryOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeGallery }}" style="position:fixed;inset:0;z-index:400;background:rgba(8,8,12,.86);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px">
+        <div onClick="{{ stopEv }}" style="width:100%;max-width:960px;max-height:90vh;overflow:auto;background:var(--card);border-radius:20px;padding:20px">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button onClick="{{ closeGallery }}" style="width:36px;height:36px;border:none;border-radius:50%;background:var(--panel-2);color:var(--card-fg);cursor:pointer;font-size:18px">✕</button></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+            <sc-for list="{{ allPhotos }}" as="ap" hint-placeholder-count="6">
+              <div style="height:180px;border-radius:14px;overflow:hidden"><image-slot id="{{ ap.id }}" shape="rect" placeholder="{{ ap.ph }}"></image-slot></div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- title / badges / price -->
+    <div data-reveal="" style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:22px">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+          <span style="display:inline-flex;align-items:center;gap:6px;background:{{ p.badgeBg }};color:{{ p.badgeColor }};font-weight:800;font-size:12.5px;padding:5px 14px;border-radius:14px"><span style="width:7px;height:7px;border-radius:50%;background:{{ p.dotColor }}"></span>{{ p.status }}</span>
+          <span style="background:var(--chip-bg);color:var(--body);font-weight:800;font-size:12.5px;padding:5px 14px;border-radius:14px">{{ p.kindLbl }}</span>
+        </div>
+        <h1 style="margin:0;font-size:clamp(24px,3.2vw,34px);font-weight:900;color:var(--heading)">{{ p.name }}</h1>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:8px;color:var(--body-dim);font-size:14.5px;font-weight:700">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>{{ p.loc }}
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onClick="{{ toggleWish }}" style="display:inline-flex;align-items:center;gap:8px;border:1.5px solid {{ wishBorder }};background:{{ wishBg }};color:{{ wishColor }};font-family:'Cairo',sans-serif;font-weight:700;font-size:13.5px;padding:10px 18px;border-radius:20px;cursor:pointer;transition:all .35s ease">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="{{ heartFill }}" stroke="{{ heartStroke }}" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path></svg>{{ wishLabel }}
+        </button>
+        <button onClick="{{ shareProj }}" title="{{ t.share }}" style="width:40px;height:40px;border-radius:50%;border:1.5px solid var(--panel-border);background:var(--panel);color:var(--heading);cursor:pointer;display:grid;place-items:center">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"></line><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"></line></svg>
+        </button>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:26px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:20px;min-width:0">
+        <!-- progress + stats -->
+        <div data-reveal="" style="background:var(--card);color:var(--card-fg);border:1px solid var(--card-line);border-radius:20px;padding:24px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:8px"><span style="color:var(--card-sub)">{{ t.progress }}</span><span style="color:{{ p.progTextColor }}">{{ p.progText }}</span></div>
+          <div style="height:8px;border-radius:5px;background:var(--card-line);overflow:hidden;margin-bottom:20px"><div style="height:100%;width:{{ p.progW }};background:{{ p.progBar }};border-radius:5px;transition:width .8s ease"></div></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+            <sc-for list="{{ p.stats }}" as="st" hint-placeholder-count="3">
+              <div style="background:var(--card-stat);border-radius:14px;padding:14px 8px;text-align:center">
+                <div style="color:#d1662a;font-weight:900;font-size:19px">{{ st.num }}</div>
+                <div style="color:var(--card-sub);font-size:12px;margin-top:3px">{{ st.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- description -->
+        <div data-reveal="" style="background:var(--card);color:var(--card-fg);border:1px solid var(--card-line);border-radius:20px;padding:24px">
+          <div style="font-weight:800;font-size:17px;margin-bottom:10px">{{ t.about }}</div>
+          <p style="margin:0;font-size:14.5px;line-height:2;color:var(--card-sub)">{{ p.desc }}</p>
+        </div>
+
+        <!-- mini map -->
+        <sc-if value="{{ hasCoords }}" hint-placeholder-val="{{ false }}">
+          <div data-reveal="" style="background:var(--card);color:var(--card-fg);border:1px solid var(--card-line);border-radius:20px;padding:20px 20px 22px;overflow:hidden">
+            <div style="font-weight:800;font-size:17px;margin-bottom:14px">{{ t.locationTitle }}</div>
+            <div ref="{{ mapRef }}" class="prjd-map-tiles" style="height:220px;border-radius:14px;overflow:hidden"></div>
+          </div>
+        </sc-if>
+      </div>
+
+      <!-- price / inquire card -->
+      <div data-reveal="" style="position:sticky;top:90px;background:var(--card);color:var(--card-fg);border:1px solid var(--card-line);border-radius:20px;padding:24px">
+        <div style="color:var(--card-sub);font-size:12.5px;font-weight:700">{{ t.priceFrom }}</div>
+        <div style="color:var(--card-fg);font-weight:900;font-size:26px;margin-top:4px">{{ p.price }}</div>
+        <div style="height:1px;background:var(--card-line);margin:18px 0"></div>
+        <a href="{{ waLink }}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:9px;background:#25D366;color:#07130a;font-weight:800;font-size:14.5px;padding:13px;border-radius:16px;margin-bottom:10px;transition:transform .4s cubic-bezier(.25,.8,.35,1)" style-hover="transform:translateY(-2px)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#07130a"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.1 14.1c-.2.6-1.2 1.1-1.7 1.2-.5 0-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6-.5.5c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.8 1.7.3.1.5.1.7-.1l1-1.2c.2-.3.4-.2.7-.1l2.1 1c.3.1.5.2.6.4 0 .1 0 .7-.2 1.3z"></path></svg>{{ t.waBtn }}
+        </a>
+        <a href="{{ contactHref }}" style="display:flex;align-items:center;justify-content:center;background:transparent;border:1.5px solid var(--panel-border);color:var(--heading);font-weight:800;font-size:14.5px;padding:12px;border-radius:16px;transition:border-color .35s ease,color .35s ease" style-hover="border-color:#f68743;color:#f68743">{{ t.inquire }}</a>
+      </div>
+    </div>
+  </div>
+</main>
+</sc-if>
+
+<div style="margin-top:auto"><dc-import name="SiteFooter" dir="{{ dir }}" hint-size="100%,300px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { lang: null, theme: null, pid: null, ready: false, session: null, favs: [], shared: false, galleryOpen: false };
+  mapRef = React.createRef();
+  componentDidMount() {
+    try { const tv = localStorage.getItem('palmas_theme'); const th = (tv === 'light' || tv === 'dark') ? tv : 'light'; document.documentElement.setAttribute('data-theme', th); this.setState({ theme: th }); } catch (e) {}
+    try { const lv = localStorage.getItem('palmas_lang'); if (lv === 'ar' || lv === 'en') { this.setState({ lang: lv }); document.documentElement.lang = lv; document.documentElement.dir = lv === 'en' ? 'ltr' : 'rtl'; } } catch (e) {}
+    const sp = new URLSearchParams(location.search);
+    this.setState({ pid: sp.get('id') || '' });
+    this._boot();
+  }
+  _boot() {
+    const P = window.Palmas;
+    if (!P) { setTimeout(() => this._boot(), 60); return; }
+    this.setState({ session: P.API.session(), favs: P.API.projectFavorites(), ready: true });
+    if (!this._offAuth) this._offAuth = P.API.onAuthChange(() => this.setState({ session: P.API.session(), favs: P.API.projectFavorites() }));
+  }
+  componentDidUpdate() { this._syncMap(); }
+  componentWillUnmount() { if (this._offAuth) this._offAuth(); if (this._leafletMap) { this._leafletMap.remove(); this._leafletMap = null; } }
+  /* imperative Leaflet mini-map — same pattern as PropertyDetails.dc.html */
+  _syncMap() {
+    const P = window.Palmas;
+    if (!P || !this.state.ready || !this.mapRef.current || !window.L) return;
+    const proj = P.projectBy(this.state.pid);
+    if (!proj || proj.lat == null || proj.lng == null) return;
+    if (!this._leafletMap) {
+      this._leafletMap = window.L.map(this.mapRef.current, { zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false, touchZoom: false, boxZoom: false, keyboard: false }).setView([proj.lat, proj.lng], 14);
+      window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(this._leafletMap);
+      const icon = window.L.divIcon({ className: '', iconSize: [26, 36], iconAnchor: [13, 36],
+        html: '<svg width="26" height="36" viewBox="0 0 30 42" style="filter:drop-shadow(0 3px 5px rgba(0,0,0,.35))"><path d="M15 0C6.7 0 0 6.7 0 15c0 10.5 15 27 15 27s15-16.5 15-27C30 6.7 23.3 0 15 0z" fill="#f68743"/><circle cx="15" cy="15" r="6" fill="#fff"/></svg>' });
+      this._leafletMarker = window.L.marker([proj.lat, proj.lng], { icon }).addTo(this._leafletMap);
+      this._lastMapPid = this.state.pid;
+      setTimeout(() => { if (this._leafletMap) this._leafletMap.invalidateSize(); }, 60);
+    } else if (this._lastMapPid !== this.state.pid) {
+      this._leafletMap.setView([proj.lat, proj.lng], 14);
+      this._leafletMarker.setLatLng([proj.lat, proj.lng]);
+      this._lastMapPid = this.state.pid;
+    }
+  }
+  _requireLogin() { try { localStorage.setItem('palmas_return', (location.href.split('/').pop()) || 'Palmas Home.dc.html'); } catch (e) {} try { window.dispatchEvent(new CustomEvent('palmas:require-login')); } catch (e) {} }
+  renderVals() {
+    const lang = this.state.lang || 'ar';
+    const ar = lang !== 'en';
+    const P = window.Palmas;
+    const t = ar ? {
+      home: 'الرئيسية', kicker: 'المشاريع', progress: 'نسبة الإنجاز', done: 'مكتمل', about: 'عن المشروع',
+      priceFrom: 'تبدأ الأسعار من', inquire: 'تواصل معنا', waBtn: 'واتساب', share: 'مشاركة',
+      wishAdd: 'أضف لقائمة الرغبات', wishSaved: 'مُضاف', shared: 'تم نسخ الرابط',
+      locationTitle: 'الموقع على الخريطة',
+      notFoundTitle: 'المشروع غير موجود', notFoundBody: 'قد يكون هذا المشروع أُزيل أو الرابط غير صحيح.', backToProjects: 'العودة لكل المشاريع',
+    } : {
+      home: 'Home', kicker: 'Projects', progress: 'Progress', done: 'Completed', about: 'About the project',
+      priceFrom: 'Starting from', inquire: 'Contact us', waBtn: 'WhatsApp', share: 'Share',
+      wishAdd: 'Add to wishlist', wishSaved: 'Saved', shared: 'Link copied',
+      locationTitle: 'Location on the map',
+      notFoundTitle: 'Project not found', notFoundBody: 'This project may have been removed, or the link is incorrect.', backToProjects: 'Back to all projects',
+    };
+    if (!this.state.ready || !P) return { t, dir: ar ? 'rtl' : 'ltr', ready: false, notFound: false };
+    const proj = P.projectBy(this.state.pid);
+    if (!proj) return { t, dir: ar ? 'rtl' : 'ltr', ready: false, notFound: true };
+
+    const done = proj.state === 'done';
+    const kindLbl = ar ? (proj.kind === 'commercial' ? 'تجاري' : 'سكني') : (proj.kind === 'commercial' ? 'Commercial' : 'Residential');
+    const p = {
+      id: proj.id, name: proj.name[lang] || proj.name.ar, loc: proj.loc[lang] || proj.loc.ar,
+      desc: (proj.desc && (proj.desc[lang] || proj.desc.ar)) || '',
+      price: P.Currency.format(proj.price, proj.currency, lang),
+      status: done ? t.done : (ar ? 'قيد الإنشاء' : 'Under construction'), kindLbl,
+      badgeBg: done ? '#1f9d5c' : '#f68743', badgeColor: '#ffffff', dotColor: done ? '#bff0d3' : '#fde3cf',
+      progW: (proj.progress || 0) + '%', progText: done ? t.done : (proj.progress || 0) + '%',
+      progTextColor: done ? '#1f9d5c' : '#d1662a', progBar: done ? '#1f9d5c' : 'linear-gradient(90deg,#f68743,#ffab7a)',
+      stats: (proj.stats || []).map(s => ({ num: s.num, label: (s.label && (s.label[lang] || s.label.ar)) || '' })),
+    };
+
+    const mainSlot = 'prjd-' + proj.id + '-main';
+    /* الأدمن يرى 6 أماكن ثابتة ليرفع فيها؛ الزائر يرى صور المشروع الحقيقية فقط،
+       والعدّاد هو الباقي فعلاً (كان "+4" ثابتاً مهما كان عدد الصور). */
+    const isAdmin = !!(this.state.session && this.state.session.role === 'admin');
+    const realPhotos = (proj.photos || []).filter(Boolean).length;
+    const extraIds = Array.from({ length: isAdmin ? 5 : Math.max(0, realPhotos - 1) }, (_, i) => 'prjd-' + proj.id + '-' + (i + 1));
+    const overlayLabel = realPhotos > 3 ? '+' + (realPhotos - 3) : (ar ? 'كل الصور' : 'All photos');
+    const galleryExtra = [1, 2].map((n, i) => ({
+      id: 'prjd-' + proj.id + '-' + n, ph: (ar ? 'صورة ' : 'Photo ') + (n + 1),
+      overlay: i === 1 && (isAdmin || realPhotos > 3), overlayLabel,
+    }));
+    const allPhotos = [{ id: mainSlot, ph: p.name }].concat(extraIds.map((id, i) => ({ id, ph: (ar ? 'صورة ' : 'Photo ') + (i + 2) })));
+
+    const wished = this.state.favs.indexOf(proj.id) !== -1;
+    const waLink = 'https://wa.me/972595377421?text=' + encodeURIComponent((ar ? 'مرحباً، أستفسر عن مشروع: ' : 'Hello, I am asking about the project: ') + p.name);
+    /* carries the project into the contact form so the resulting CRM message lead
+       records which project the inquiry was about, not just a generic message */
+    const contactHref = 'Contact.dc.html?subject=' + encodeURIComponent((ar ? 'استفسار عن مشروع: ' : 'Inquiry about project: ') + p.name);
+
+    return {
+      t, dir: ar ? 'rtl' : 'ltr', ready: true, notFound: false, p,
+      mainSlot, galleryExtra, allPhotos, galleryOpen: this.state.galleryOpen,
+      openGallery: () => this.setState({ galleryOpen: true }), closeGallery: () => this.setState({ galleryOpen: false }),
+      stopEv: (e) => e.stopPropagation(),
+      hasCoords: proj.lat != null && proj.lng != null, mapRef: this.mapRef,
+      heartFill: wished ? '#f68743' : 'none', heartStroke: wished ? '#f68743' : 'var(--body)',
+      wishLabel: wished ? t.wishSaved : t.wishAdd,
+      wishBg: wished ? 'rgba(246,135,67,.15)' : 'transparent', wishColor: wished ? '#f68743' : 'var(--heading)',
+      wishBorder: wished ? '#f68743' : 'var(--panel-border)',
+      toggleWish: () => {
+        if (!this.state.session) { this._requireLogin(); return; }
+        window.Palmas.API.toggleProjectFavorite(proj.id).then(res => this.setState({ favs: res.list })).catch(() => this._requireLogin());
+      },
+      waLink, contactHref,
+      shareProj: () => {
+        const shareData = { title: p.name, text: p.name + ' — ' + p.loc, url: location.href };
+        if (navigator.share) { navigator.share(shareData).catch(() => {}); return; }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(location.href).then(() => { if (window.Palmas) window.Palmas.toast(t.shared); }).catch(() => {});
+        }
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

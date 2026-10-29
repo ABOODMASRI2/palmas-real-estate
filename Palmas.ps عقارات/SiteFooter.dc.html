@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+.pf-a{color:var(--body,#4b4b4d);font-size:13px;transition:color .3s ease,transform .3s ease;width:fit-content}
+.pf-a:hover{color:var(--accent,#f68743);transform:translateX(-4px)}
+.pf-logo-dark{display:block}
+.pf-logo-light{display:none}
+html[data-theme='dark'] .pf-logo-dark{display:none}
+html[data-theme='dark'] .pf-logo-light{display:block}
+</style>
+</helmet>
+<footer dir="{{ dir }}" style="position:relative;z-index:2;background:var(--soft,#e7e9ec);border-top:1px solid var(--line,rgba(20,20,22,.08));padding:66px clamp(16px,4vw,52px) 24px;font-family:'Cairo',sans-serif;color:var(--body,#4b4b4d);view-transition-name:site-footer">
+  <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#ff9a55,#f68743 45%,#d1662a)"></div>
+  <div style="max-width:min(1680px,94vw);margin:0 auto">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:30px 28px;padding-bottom:24px;border-bottom:1px solid var(--line,rgba(20,20,22,.08))">
+      <div style="min-width:0">
+        <a href="Palmas Home.dc.html" style="display:inline-flex;align-items:center;gap:10px;margin-bottom:15px">
+          <img class="pf-logo-dark" src="uploads/palmas-logo-dark.png" alt="PALMAS.ps" loading="eager" fetchpriority="high" decoding="sync" style="height:48px;width:auto"><img class="pf-logo-light" src="uploads/palmas-logo.png" alt="PALMAS.ps" loading="eager" decoding="sync" style="height:48px;width:auto">
+        </a>
+        <div style="color:var(--csub,#6c6c70);font-size:12.5px;line-height:1.85;max-width:260px">{{ about }}</div>
+      </div>
+      <div>
+        <div style="color:var(--ink,#141414);font-weight:800;font-size:14px;margin-bottom:12px">{{ quickT }}</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ nav }}" as="l" hint-placeholder-count="6">
+            <a class="pf-a" href="{{ l.href }}">{{ l.label }}</a>
+          </sc-for>
+        </div>
+      </div>
+      <div>
+        <div style="color:var(--ink,#141414);font-weight:800;font-size:14px;margin-bottom:12px">{{ propsT }}</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ propLinks }}" as="l" hint-placeholder-count="4">
+            <a class="pf-a" href="{{ l.href }}">{{ l.label }}</a>
+          </sc-for>
+        </div>
+      </div>
+      <div>
+        <div style="color:var(--ink,#141414);font-weight:800;font-size:14px;margin-bottom:12px">{{ contactT }}</div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <a class="pf-a" href="{{ telHref }}" style="display:flex;align-items:center;gap:9px;font-weight:600">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2" style="flex-shrink:0"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z"></path></svg>
+            <span dir="ltr" style="unicode-bidi:plaintext">{{ phone }}</span>
+          </a>
+          <a class="pf-a" href="{{ mailHref }}" style="display:flex;align-items:center;gap:9px;font-weight:600">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2" style="flex-shrink:0"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m2 6 10 7L22 6"></path></svg>
+            <span dir="ltr" style="unicode-bidi:plaintext">{{ email }}</span>
+          </a>
+          <div style="display:flex;align-items:center;gap:9px;color:var(--csub,#6c6c70);font-size:13px">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2" style="flex-shrink:0"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+            <span>{{ addr }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div dir="ltr" style="padding-top:16px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;color:var(--dim,rgba(20,20,22,.5));font-size:12px">
+      <sc-if value="{{ hasSocials }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-weight:700;color:var(--csub,#6c6c70)">{{ followT }}</span>
+        <div style="display:flex;gap:8px">
+          <sc-for list="{{ socials }}" as="s" hint-placeholder-count="4">
+            <a href="{{ s.href }}" target="_blank" title="{{ s.name }}" style="width:31px;height:31px;border-radius:50%;border:1px solid var(--line,rgba(20,20,22,.08));display:grid;place-items:center;color:var(--csub,#6c6c70);font-weight:800;font-size:11px;transition:all .4s cubic-bezier(.25,.8,.35,1)" style-hover="background:var(--accent,#f68743);color:#fff;border-color:var(--accent,#f68743);transform:translateY(-3px)">{{ s.label }}</a>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <span>{{ rights }}</span>
+        <span style="opacity:.6">{{ credit }}</span>
+      </div>
+    </div>
+  </div>
+</footer>
+<dc-import name="ChatWidget" dir="{{ dir }}" hint-size="0,0"></dc-import></x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1280, &quot;height&quot;: 400}, &quot;dir&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;rtl&quot;, &quot;ltr&quot;], &quot;default&quot;: &quot;rtl&quot;, &quot;tsType&quot;: &quot;string&quot;}}">
+class Component extends DCLogic {
+  /* روابط التواصل تأتي من "محتوى الموقع" على السيرفر، وقد تصل بعد أول رسم */
+  componentDidMount() {
+    const wait = () => {
+      const P = window.Palmas;
+      if (!P || !P.API) { this._t = setTimeout(wait, 120); return; }
+      this.forceUpdate();
+      if (P.API.onAuthChange) this._off = P.API.onAuthChange(() => this.forceUpdate());
+    };
+    wait();
+  }
+  componentWillUnmount() { clearTimeout(this._t); if (this._off) this._off(); }
+
+  renderVals() {
+    const ar = (this.props.dir || 'rtl') !== 'ltr';
+    const nav = ar ? [
+      { label: 'الرئيسية', href: 'Palmas Home.dc.html' }, { label: 'العقارات', href: 'PropertyList.dc.html' },
+      { label: 'الخريطة', href: 'Map.html' }, { label: 'المشاريع', href: 'Projects.dc.html' }, { label: 'خدماتنا', href: 'Services.dc.html' },
+      { label: 'من نحن', href: 'About.dc.html' }, { label: 'تواصل معنا', href: 'Contact.dc.html' },
+    ] : [
+      { label: 'Home', href: 'Palmas Home.dc.html' }, { label: 'Properties', href: 'PropertyList.dc.html' },
+      { label: 'Map', href: 'Map.html' }, { label: 'Projects', href: 'Projects.dc.html' }, { label: 'Services', href: 'Services.dc.html' },
+      { label: 'About', href: 'About.dc.html' }, { label: 'Contact', href: 'Contact.dc.html' },
+    ];
+    /* قيم cat يجب أن تطابق Palmas.OFFERS — land/resid لم تكن منها فكانت تفتح كل العقارات */
+    const propLinks = ar ? [
+      { label: 'للبيع', href: 'PropertyList.dc.html?cat=sale' }, { label: 'للإيجار', href: 'PropertyList.dc.html?cat=rent' },
+      { label: 'أراضٍ', href: 'PropertyList.dc.html?cat=landOffer' }, { label: 'سكنات', href: 'PropertyList.dc.html?cat=residential' },
+    ] : [
+      { label: 'For sale', href: 'PropertyList.dc.html?cat=sale' }, { label: 'For rent', href: 'PropertyList.dc.html?cat=rent' },
+      { label: 'Lands', href: 'PropertyList.dc.html?cat=landOffer' }, { label: 'Residences', href: 'PropertyList.dc.html?cat=residential' },
+    ];
+    const account = ar ? [
+      { label: 'المفضلة', href: 'Wishlist.dc.html' }, { label: 'تسجيل الدخول', href: 'Auth.dc.html' },
+    ] : [
+      { label: 'Wishlist', href: 'Wishlist.dc.html' }, { label: 'Sign in', href: 'Auth.dc.html' },
+    ];
+    /* فقط الحسابات التي أدخلها الأدمن — أيقونة بلا رابط حقيقي كانت تقود إلى "#" */
+    const P = window.Palmas;
+    const links = (P && P.Site) ? P.Site.get().social : {};
+    const socials = [
+      { k: 'facebook', label: 'f', name: 'Facebook' }, { k: 'instagram', label: 'IG', name: 'Instagram' },
+      { k: 'tiktok', label: 'TT', name: 'TikTok' }, { k: 'youtube', label: 'YT', name: 'YouTube' },
+      { k: 'x', label: 'X', name: 'X' }, { k: 'linkedin', label: 'in', name: 'LinkedIn' },
+    ].filter((s) => links[s.k]).map((s) => ({ label: s.label, name: s.name, href: links[s.k] }));
+    return {
+      dir: this.props.dir || 'rtl', nav, propLinks, account, socials,
+      about: ar ? 'منصة عقارية فلسطينية رائدة تربط الباحثين عن العقار بأفضل الفرص السكنية والاستثمارية.' : 'A leading Palestinian real estate platform connecting people with the best residential and investment opportunities.',
+      quickT: ar ? 'روابط سريعة' : 'Quick links',
+      propsT: ar ? 'العقارات' : 'Properties',
+      contactT: ar ? 'معلومات الاتصال' : 'Contact info',
+      followT: ar ? 'تابعنا' : 'Follow us',
+      phone: '+972 59 537 7421', telHref: 'tel:+972595377421',
+      email: 'info@palmas.ps', mailHref: 'mailto:info@palmas.ps',
+      addr: ar ? 'رام الله، فلسطين' : 'Ramallah, Palestine',
+      rights: '© ' + new Date().getFullYear() + (ar ? ' Palmas.ps — جميع الحقوق محفوظة' : ' Palmas.ps — All rights reserved'),
+      hasSocials: socials.length > 0,
+      credit: ar ? 'صُمم وطُوّر بواسطة فريق Palmas.ps' : 'Designed & developed by the Palmas.ps team',
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+@keyframes pmChatIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes pmPop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+@keyframes pmDot{0%,70%,100%{transform:translateY(0);opacity:.35}35%{transform:translateY(-4px);opacity:1}}
+@keyframes pmPulse{0%{box-shadow:0 0 0 0 rgba(246,135,67,.5)}70%{box-shadow:0 0 0 14px rgba(246,135,67,0)}100%{box-shadow:0 0 0 0 rgba(246,135,67,0)}}
+.pm-scroll::-webkit-scrollbar{width:6px}
+.pm-scroll::-webkit-scrollbar-thumb{background:rgba(20,20,22,.16);border-radius:6px}
+.pm-in::placeholder{color:#9a9a9e}
+</style>
+</helmet>
+<div dir="{{ dir }}" style="font-family:'Cairo',sans-serif;line-height:1.6">
+
+<sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;bottom:94px;inset-inline-end:22px;z-index:2147483000;width:min(384px,calc(100vw - 30px));height:min(568px,calc(100vh - 128px));background:#ffffff;border:1px solid rgba(20,20,22,.09);border-radius:22px;box-shadow:0 30px 80px rgba(15,15,25,.32);display:flex;flex-direction:column;overflow:hidden;animation:pmChatIn .3s cubic-bezier(.25,.8,.35,1) both">
+
+  <div style="display:flex;align-items:center;gap:12px;padding:15px 18px;background:linear-gradient(135deg,#f68743,#d1662a);color:#fff;flex-shrink:0">
+    <div style="position:relative;width:42px;height:42px;border-radius:13px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-weight:900;font-size:19px;flex-shrink:0">P
+      <span style="position:absolute;bottom:-1px;inset-inline-end:-1px;width:12px;height:12px;border-radius:50%;background:#3ddc84;border:2px solid #e0742f"></span>
+    </div>
+    <div style="line-height:1.3;min-width:0">
+      <div style="font-weight:800;font-size:15.5px">{{ t.title }}</div>
+      <div style="font-size:12px;opacity:.9">{{ t.online }}</div>
+    </div>
+    <button onClick="{{ toggleOpen }}" title="{{ t.close }}" style="margin-inline-start:auto;width:34px;height:34px;border:none;border-radius:11px;background:rgba(255,255,255,.16);color:#fff;cursor:pointer;display:grid;place-items:center;transition:background .3s ease" style-hover="background:rgba(255,255,255,.3)">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+  </div>
+
+  <sc-if value="{{ isIntro }}" hint-placeholder-val="{{ true }}">
+  <div class="pm-scroll" style="flex:1;overflow-y:auto;padding:26px 22px;display:flex;flex-direction:column;gap:16px;background:#faf9f8">
+    <div style="text-align:center">
+      <div style="width:58px;height:58px;margin:0 auto 14px;border-radius:18px;background:rgba(246,135,67,.14);display:grid;place-items:center">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      </div>
+      <div style="font-weight:800;font-size:18px;color:#1c1c1e">{{ t.introTitle }}</div>
+      <div style="font-size:13.5px;color:#6c6c70;margin-top:6px;max-width:280px;margin-inline:auto">{{ t.introSub }}</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+      <input ref="{{ nameRef }}" class="pm-in" placeholder="{{ t.namePh }}" style="border:1.5px solid #e3e3e6;border-radius:13px;padding:13px 15px;font-family:'Cairo',sans-serif;font-size:14.5px;color:#1c1c1e;outline:none;background:#fff;transition:border-color .3s ease" style-focus="border-color:#f68743">
+      <input ref="{{ phoneRef }}" class="pm-in" dir="ltr" placeholder="{{ t.phonePh }}" style="border:1.5px solid #e3e3e6;border-radius:13px;padding:13px 15px;font-family:'Cairo',sans-serif;font-size:14.5px;color:#1c1c1e;outline:none;background:#fff;text-align:start;transition:border-color .3s ease" style-focus="border-color:#f68743">
+      <button onClick="{{ startChat }}" style="background:#f68743;border:none;border-radius:13px;padding:14px;font-family:'Cairo',sans-serif;font-weight:800;font-size:15px;color:#fff;cursor:pointer;box-shadow:0 10px 24px rgba(246,135,67,.3);transition:all .3s ease" style-hover="background:#d1662a;transform:translateY(-2px)">{{ t.startBtn }}</button>
+    </div>
+    <div style="font-size:11.5px;color:#a0a0a4;text-align:center">{{ t.introNote }}</div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isChat }}" hint-placeholder-val="{{ false }}">
+  <div ref="{{ scrollRef }}" class="pm-scroll" style="flex:1;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;gap:11px;background:#faf9f8">
+    <sc-for list="{{ msgsV }}" as="m" hint-placeholder-count="2">
+      <div style="display:flex;flex-direction:column;align-items:{{ m.align }};max-width:100%">
+        <sc-if value="{{ m.showSub }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:10.5px;font-weight:800;color:{{ m.subColor }};margin:0 6px 3px">{{ m.sub }}</div>
+        </sc-if>
+        <div style="max-width:80%;padding:10px 14px;border-radius:{{ m.radius }};background:{{ m.bg }};color:{{ m.color }};font-size:14px;white-space:pre-wrap;word-break:break-word;box-shadow:0 1px 2px rgba(20,20,22,.06)">{{ m.text }}</div>
+      </div>
+    </sc-for>
+    <sc-if value="{{ sending }}" hint-placeholder-val="{{ false }}">
+      <div style="align-self:flex-start;display:flex;gap:4px;padding:12px 16px;border-radius:16px 16px 16px 5px;background:#f1f2f4">
+        <span style="width:7px;height:7px;border-radius:50%;background:#b0b0b4;animation:pmDot 1.1s infinite"></span>
+        <span style="width:7px;height:7px;border-radius:50%;background:#b0b0b4;animation:pmDot 1.1s infinite .18s"></span>
+        <span style="width:7px;height:7px;border-radius:50%;background:#b0b0b4;animation:pmDot 1.1s infinite .36s"></span>
+      </div>
+    </sc-if>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:7px;padding:0 14px 10px;background:#faf9f8;flex-shrink:0">
+    <sc-for list="{{ quicks }}" as="q" hint-placeholder-count="3">
+      <button onClick="{{ q.send }}" style="background:rgba(246,135,67,.1);border:1px solid rgba(246,135,67,.32);color:#c2410c;font-family:'Cairo',sans-serif;font-weight:700;font-size:12px;padding:6px 12px;border-radius:14px;cursor:pointer;transition:all .25s ease" style-hover="background:#f68743;color:#fff">{{ q.label }}</button>
+    </sc-for>
+  </div>
+  <div style="display:flex;align-items:center;gap:9px;padding:12px 14px;border-top:1px solid rgba(20,20,22,.08);background:#fff;flex-shrink:0">
+    <input ref="{{ inputRef }}" onKeyDown="{{ onKey }}" class="pm-in" placeholder="{{ t.inputPh }}" style="flex:1;min-width:0;border:1.5px solid #e3e3e6;border-radius:22px;padding:11px 16px;font-family:'Cairo',sans-serif;font-size:14.5px;color:#1c1c1e;outline:none;background:#faf9f8;transition:border-color .3s ease" style-focus="border-color:#f68743">
+    <button onClick="{{ send }}" title="{{ t.send }}" style="width:44px;height:44px;flex-shrink:0;border:none;border-radius:50%;background:#f68743;color:#fff;cursor:pointer;display:grid;place-items:center;transition:all .3s ease" style-hover="background:#d1662a">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="transform:{{ sendFlip }}"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+    </button>
+  </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<button onClick="{{ toggleOpen }}" title="{{ t.title }}" style="position:fixed;bottom:22px;inset-inline-end:22px;z-index:2147483000;width:60px;height:60px;border:none;border-radius:50%;background:linear-gradient(135deg,#f68743,#d1662a);color:#fff;cursor:pointer;display:grid;place-items:center;box-shadow:0 14px 34px rgba(246,135,67,.42);animation:pmPulse 2.6s infinite;transition:transform .35s cubic-bezier(.25,.8,.35,1)" style-hover="transform:scale(1.08)">
+  <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+  </sc-if>
+  <sc-if value="{{ closed }}" hint-placeholder-val="{{ true }}">
+    <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+  </sc-if>
+  <sc-if value="{{ hasUnread }}" hint-placeholder-val="{{ false }}">
+    <span style="position:absolute;top:-3px;inset-inline-end:-3px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#e0245e;color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;border:2px solid #fff;animation:pmPop .3s ease both">{{ unread }}</span>
+  </sc-if>
+</button>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 420, &quot;height&quot;: 620}, &quot;dir&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;rtl&quot;, &quot;ltr&quot;], &quot;default&quot;: &quot;rtl&quot;, &quot;tsType&quot;: &quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { open: false, view: 'intro', name: '', phone: '', msgs: [], sending: false, chatId: null, lang: null, dark: false, lastSeen: 0 };
+  nameRef = React.createRef();
+  phoneRef = React.createRef();
+  inputRef = React.createRef();
+  scrollRef = React.createRef();
+  componentDidMount() {
+    try { const lv = localStorage.getItem('palmas_lang'); this.setState({ lang: (lv === 'en') ? 'en' : 'ar' }); } catch (e) {}
+    try { const tv = localStorage.getItem('palmas_theme'); this.setState({ dark: tv === 'dark' }); } catch (e) {}
+    try {
+      const id = localStorage.getItem('palmas_crm_active_chat');
+      if (id) {
+        const all = JSON.parse(localStorage.getItem('palmas_crm_chats') || '[]');
+        const mine = (all || []).find(c => c.id === id);
+        if (mine) {
+          /* محادثة سابقة: بدايتها ورسائلها أُرسلت للسيرفر في زيارة سابقة،
+             فنستأنف من حيث انتهت بدل إعادة إرسالها كلها. */
+          this._chatOpened = true;
+          this._sentUpTo = (mine.messages || []).length;
+          this.setState({ chatId: id, name: mine.name || '', phone: mine.phone || '', msgs: mine.messages || [], view: 'chat', lastSeen: Date.now() });
+        }
+      }
+    } catch (e) {}
+    this._onStorage = (e) => {
+      if (e.key === 'palmas_lang') this.setState({ lang: (e.newValue === 'en') ? 'en' : 'ar' });
+      if (e.key === 'palmas_theme') this.setState({ dark: e.newValue === 'dark' });
+      if (e.key === 'palmas_crm_chats' && this.state.chatId) {
+        try { const all = JSON.parse(e.newValue || '[]'); const mine = (all || []).find(c => c.id === this.state.chatId); if (mine && Array.isArray(mine.messages)) this.setState({ msgs: mine.messages }); } catch (err) {}
+      }
+    };
+    window.addEventListener('storage', this._onStorage);
+  }
+  componentWillUnmount() { if (this._onStorage) window.removeEventListener('storage', this._onStorage); }
+  /* support.js passes only prevProps to componentDidUpdate, never prevState — keep our own snapshot */
+  componentDidUpdate() {
+    const ps = this._ps || { msgs: [] };
+    this._ps = this.state;
+    if (this.scrollRef.current && ((ps.msgs || []).length !== this.state.msgs.length || ps.sending !== this.state.sending || ps.view !== this.state.view || ps.open !== this.state.open)) {
+      const el = this.scrollRef.current; el.scrollTop = el.scrollHeight;
+    }
+  }
+  _ar() { return (this.state.lang || 'ar') !== 'en'; }
+  /* النسخة المحلية تخدم الزائر على جهازه، وهذه ترسل المحادثة للسيرفر لتصل
+     لوحة التحكم مهما كان الجهاز. بدونها يسأل زائر ويترك رقمه ولا يراه أحد.
+     إضافة فقط: كل رسالة تُرسل مرة واحدة عند ظهورها. */
+  _sync(msgs) {
+    const P = window.Palmas;
+    if (!P || !P.Leads || !P.Leads.chatSay) return;
+    const fail = (e) => console.log('[Palmas] تعذّر إرسال الشات:', e && e.message);
+
+    /* كم رسالة من هذه المحادثة وصلت السيرفر — محفوظ على الجهاز، وإلا أعاد كل
+       انتقال لصفحة جديدة إرسال المحادثة كاملة فتتكرّر في لوحة التحكم. */
+    const sentKey = 'palmas_chat_sent_' + this.state.chatId;
+    if (!this._chatOpened) {
+      this._chatOpened = true;
+      try { this._sentUpTo = Number(localStorage.getItem(sentKey)) || 0; } catch (e) { this._sentUpTo = 0; }
+      if (this._sentUpTo === 0) {
+        Promise.resolve(P.Leads.chatStart({ id: this.state.chatId, name: this.state.name, phone: this.state.phone, lang: this.state.lang || 'ar' }))
+          .catch(fail);
+      }
+    }
+    for (let i = this._sentUpTo || 0; i < msgs.length; i++) {
+      Promise.resolve(P.Leads.chatSay(this.state.chatId, msgs[i].role === 'user' ? 'user' : 'bot', msgs[i].text)).catch(fail);
+    }
+    this._sentUpTo = msgs.length;
+    try { localStorage.setItem(sentKey, String(msgs.length)); } catch (e) {}
+  }
+  _persist(msgs) {
+    this._sync(msgs);
+    try {
+      const all = JSON.parse(localStorage.getItem('palmas_crm_chats') || '[]');
+      const now = Date.now();
+      const idx = all.findIndex(c => c.id === this.state.chatId);
+      const rec = { id: this.state.chatId, name: this.state.name || '', phone: this.state.phone || '', lang: this.state.lang || 'ar', createdAt: (idx >= 0 ? all[idx].createdAt : now), updatedAt: now, messages: msgs };
+      if (idx >= 0) all[idx] = rec; else all.push(rec);
+      localStorage.setItem('palmas_crm_chats', JSON.stringify(all));
+      localStorage.setItem('palmas_crm_active_chat', this.state.chatId);
+    } catch (e) {}
+  }
+  _systemPrompt() {
+    const ar = this._ar();
+    return (ar
+      ? 'أنت "مساعد بالماس"، مساعد ذكي لطيف واحترافي لشركة Palmas.ps للعقارات في فلسطين. الشركة تقدّم: بيع وشراء العقارات، الإيجار، الأراضي، المشاريع السكنية، الاستشارات العقارية والتسويق. لدينا عقارات في رام الله، البيرة، نابلس، روابي، بيتونيا، بيرزيت وترمسعيا (فلل، شقق، أراضٍ، مكاتب، مشاريع). أجب بالعربية بإيجاز (٢-٤ جمل)، بلهجة ودّية ومحترمة. ساعد الزائر واقترح عليه حجز معاينة أو ترك رقمه ليتواصل معه مستشار. لا تخترع أسعاراً دقيقة؛ إن سُئلت عن سعر محدد اطلب تفاصيل أكثر واقترح التواصل. رقم واتساب الشركة: +970595377421.'
+      : 'You are "Palmas Assistant", a warm, professional AI assistant for Palmas.ps, a real-estate company in Palestine. Services: buying & selling property, rentals, land, residential projects, real-estate consulting and marketing. We have listings in Ramallah, Al-Bireh, Nablus, Rawabi, Betunia, Birzeit and Turmus Ayya (villas, apartments, land, offices, projects). Reply in English, concise (2-4 sentences), friendly and helpful. Encourage the visitor to book a viewing or leave their phone number for a consultant to reach them. Do not invent exact prices; if asked, request more details and suggest getting in touch. Company WhatsApp: +970595377421.')
+      + (this.state.name ? (ar ? (' اسم الزائر: ' + this.state.name + '.') : (' Visitor name: ' + this.state.name + '.')) : '');
+  }
+  /* الرد التلقائي على الموقع المنشور. الذكاء الاصطناعي (window.claude) موجود
+     فقط داخل أداة التصميم، فكان الزائر يرى "تعذّر جلب الرد" مع كل رسالة.
+     الرسالة نفسها تصل CRM ويرد عليها الفريق — فنؤكّد ذلك بصدق ونطلب الرقم
+     إن لم يتركه، لأن الطلب بلا رقم لا يمكن متابعته. */
+  _fallback(msgs) {
+    const ar = this._ar();
+    const userMsgs = (msgs || []).filter((m) => m.role === 'user');
+    const last = (userMsgs[userMsgs.length - 1] || {}).text || '';
+    const hasPhone = !!(this.state.phone || '').trim() || userMsgs.some((m) => /(\+?\d[\d\s-]{7,})/.test(m.text));
+    const name = (this.state.name || '').trim();
+    const wa = '+972 59 537 7421';
+    if (!hasPhone) {
+      return ar
+        ? 'شكراً' + (name ? ' ' + name : '') + '! وصلت رسالتك لفريق بالماس ✅ عشان يقدر مستشار عقاري يرجعلك، ابعتلي رقم هاتفك 📞'
+        : 'Thanks' + (name ? ' ' + name : '') + '! Your message reached the Palmas team ✅ So an advisor can get back to you, please send your phone number 📞';
+    }
+    if (userMsgs.length <= 1 || /(\+?\d[\d\s-]{7,})/.test(last)) {
+      return ar
+        ? 'شكراً' + (name ? ' ' + name : '') + '! وصلت رسالتك لفريق بالماس ✅ رح يتواصل معك مستشار عقاري بأقرب وقت. إذا مستعجل، راسلنا واتساب ' + wa
+        : 'Thanks' + (name ? ' ' + name : '') + '! Your message reached the Palmas team ✅ An advisor will contact you shortly. In a hurry? WhatsApp us on ' + wa;
+    }
+    return ar
+      ? 'تمام، أضفتها لطلبك ✅ إذا حابب، احكيلي المنطقة والميزانية ونوع العقار يلي بدك ياه، عشان يجهّزلك المستشار خيارات مناسبة.'
+      : 'Got it, added to your request ✅ If you like, tell me the area, budget and property type you are after so the advisor can prepare suitable options.';
+  }
+  _greeting() {
+    const ar = this._ar();
+    const nm = this.state.name ? (ar ? ('أهلاً ' + this.state.name + '! ') : ('Hi ' + this.state.name + '! ')) : (ar ? 'أهلاً وسهلاً! ' : 'Welcome! ');
+    return nm + (ar ? 'أنا مساعد بالماس العقاري 🏡 كيف بقدر أساعدك اليوم؟ بتدوّر على عقار للبيع، للإيجار، أرض، أو استشارة؟' : 'I am the Palmas real-estate assistant 🏡 How can I help today? Looking to buy, rent, find land, or get advice?');
+  }
+  toggleOpen() {
+    this.setState(s => {
+      const open = !s.open;
+      return { open, lastSeen: open ? Date.now() : s.lastSeen };
+    });
+    setTimeout(() => { if (this.state.view === 'chat' && this.inputRef.current) this.inputRef.current.focus(); }, 120);
+  }
+  startChat() {
+    const name = (this.nameRef.current && this.nameRef.current.value.trim()) || '';
+    const phone = (this.phoneRef.current && this.phoneRef.current.value.trim()) || '';
+    const chatId = 'c' + Date.now();
+    this.setState({ chatId, name, phone, view: 'chat' }, () => {
+      const greet = { role: 'ai', text: this._greeting(), ts: Date.now() };
+      this.setState({ msgs: [greet] }, () => this._persist([greet]));
+      setTimeout(() => { if (this.inputRef.current) this.inputRef.current.focus(); }, 100);
+    });
+  }
+  _pushAndReply(text) {
+    if (!text || !text.trim() || this.state.sending) return;
+    const userMsg = { role: 'user', text: text.trim(), ts: Date.now() };
+    const msgs = this.state.msgs.concat(userMsg);
+    if (this.inputRef.current) this.inputRef.current.value = '';
+    this.setState({ msgs, sending: true }, () => this._persist(msgs));
+    this._callAI(msgs);
+  }
+  async _callAI(msgs) {
+    let reply = '';
+    try {
+      if (window.claude && window.claude.complete) {
+        const history = msgs.slice(-12).map(m => ({ role: (m.role === 'user' ? 'user' : 'assistant'), content: m.text }));
+        reply = await window.claude.complete({ system: this._systemPrompt(), messages: history, max_tokens: 500 });
+      }
+    } catch (e) { reply = ''; }
+    if (!reply || !reply.trim()) reply = this._fallback(msgs);
+    const aiMsg = { role: 'ai', text: reply.trim(), ts: Date.now() };
+    this.setState(s => { const m = s.msgs.concat(aiMsg); this._persist(m); return { msgs: m, sending: false }; });
+  }
+  send() { this._pushAndReply(this.inputRef.current ? this.inputRef.current.value : ''); }
+  onKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.send(); } }
+  renderVals() {
+    const ar = this._ar();
+    const t = ar ? {
+      title: 'مساعد بالماس', online: 'متصل الآن · يرد فوراً', close: 'إغلاق',
+      introTitle: 'كيف بنقدر نساعدك؟', introSub: 'اترك اسمك ونبدأ نساعدك مباشرة — مساعدنا الذكي جاهز للرد على استفساراتك العقارية.',
+      namePh: 'اسمك', phonePh: 'رقم الهاتف (اختياري)', startBtn: 'ابدأ المحادثة',
+      introNote: 'مدعوم بالذكاء الاصطناعي · ردود فورية على مدار الساعة',
+      inputPh: 'اكتب رسالتك...', send: 'إرسال',
+      q1: 'بدي عقار للبيع', q2: 'شو المتوفر للإيجار؟', q3: 'أراضٍ للبيع', q4: 'أبغى أحجز معاينة',
+    } : {
+      title: 'Palmas Assistant', online: 'Online now · instant replies', close: 'Close',
+      introTitle: 'How can we help?', introSub: 'Leave your name and we will start right away — our smart assistant is ready for your real-estate questions.',
+      namePh: 'Your name', phonePh: 'Phone number (optional)', startBtn: 'Start chatting',
+      introNote: 'AI-powered · instant replies around the clock',
+      inputPh: 'Type your message...', send: 'Send',
+      q1: 'Property for sale', q2: "What's for rent?", q3: 'Land for sale', q4: 'Book a viewing',
+    };
+    const subColorFor = (role) => role === 'agent' ? '#1f9d5c' : '#c2410c';
+    const msgsV = this.state.msgs.map((m, i) => ({
+      key: i, text: m.text,
+      align: m.role === 'user' ? 'flex-end' : 'flex-start',
+      bg: m.role === 'user' ? '#f68743' : (m.role === 'agent' ? '#e9f6ee' : '#f1f2f4'),
+      color: m.role === 'user' ? '#fff' : '#1c1c1e',
+      radius: m.role === 'user' ? '16px 16px 5px 16px' : '16px 16px 16px 5px',
+      showSub: m.role !== 'user',
+      sub: m.role === 'agent' ? (ar ? 'وكيل بالماس' : 'Palmas agent') : (ar ? 'مساعد آلي' : 'AI assistant'),
+      subColor: subColorFor(m.role),
+    }));
+    const quickLabels = [t.q1, t.q2, t.q3, t.q4];
+    const quicks = quickLabels.map((label, i) => ({ key: i, label, send: () => this._pushAndReply(label) }));
+    const unreadCount = this.state.msgs.filter(m => m.role === 'agent' && m.ts > this.state.lastSeen).length;
+    return {
+      dir: ar ? 'rtl' : 'ltr', t,
+      open: this.state.open, closed: !this.state.open,
+      isIntro: this.state.view === 'intro', isChat: this.state.view === 'chat',
+      msgsV, quicks, sending: this.state.sending,
+      sendFlip: ar ? 'scaleX(-1)' : 'none',
+      hasUnread: !this.state.open && unreadCount > 0, unread: unreadCount > 9 ? '9+' : String(unreadCount),
+      nameRef: this.nameRef, phoneRef: this.phoneRef, inputRef: this.inputRef, scrollRef: this.scrollRef,
+      toggleOpen: () => this.toggleOpen(), startChat: () => this.startChat(), send: () => this.send(), onKey: (e) => this.onKey(e),
+    };
+  }
+}
+</script>
+</body>
+</html>

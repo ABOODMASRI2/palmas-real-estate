@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="uploads/palmas-icon.png">
+<title>Palmas.ps</title>
+<script src="./support.js"></script>
+<style>@view-transition{navigation:auto}::view-transition-old(root),::view-transition-new(root){animation-duration:.34s;animation-timing-function:cubic-bezier(.4,0,.2,1)}</style>
+<script>try{var t=localStorage.getItem('palmas_theme');document.documentElement.setAttribute('data-theme',(t==='light'||t==='dark')?t:'light');var l=localStorage.getItem('palmas_lang');document.documentElement.lang=(l==='en')?'en':'ar';document.documentElement.dir=(l==='en')?'ltr':'rtl';}catch(e){}</script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="image-slot.js"></script>
+<script src="palmas-photos.js"></script>
+<script src="palmas-core.js"></script>
+<script src="palmas-config.js"></script>
+<script src="palmas-backend.js"></script>
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" }}</script>
+<script type="module">import * as THREE from 'three'; window.THREE = THREE; window.__threeReady = true; window.dispatchEvent(new CustomEvent('three-ready'));</script>
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{--page:#edeef0;--ink:#141414;--body:#4b4b4d;--dim:rgba(20,20,22,.5);--card:#fff;--cink:#181818;--csub:#6c6c70;--line:rgba(20,20,22,.08);--soft:#e7e9ec;--glass:rgba(237,238,240,.82);--accent:#f68743;--accent-2:#ffb07f;--accent-d:#d1662a;--footer-base:#101013}
+html[data-theme='dark']{--page:#0d0d0f;--ink:#f7f7f5;--body:#d4d4d6;--dim:rgba(247,247,245,.55);--card:#17171b;--cink:#f5f5f3;--csub:#a2a2a8;--line:rgba(255,255,255,.1);--soft:rgba(255,255,255,.05);--glass:rgba(13,13,15,.72);--footer-base:#000000}
+html,body{margin:0;padding:0;background:var(--page);color:var(--body);font-family:'Cairo',sans-serif;transition:background .5s ease,color .5s ease}
+a{text-decoration:none;color:var(--accent)}
+a:hover{color:var(--accent-2)}
+::selection{background:var(--accent);color:#fff}
+@keyframes fadeUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes orbFloat{0%,100%{transform:translateY(0) scale(1);opacity:.75}50%{transform:translateY(-16px) scale(1.3);opacity:1}}
+.globe-orb{animation:orbFloat 5.5s ease-in-out infinite;pointer-events:none;border-radius:50%}
+[data-reveal]{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.25,.8,.35,1),transform .8s cubic-bezier(.25,.8,.35,1)}
+[data-reveal].rv-in{opacity:1;transform:none}
+.rd-cta{transition:transform .35s cubic-bezier(.25,.8,.35,1),box-shadow .35s ease,background .35s ease}
+.rd-cta:hover{transform:translateY(-3px)}
+.rd-card{transition:transform .5s cubic-bezier(.25,.8,.35,1),box-shadow .5s ease,border-color .3s ease}
+.rd-card:hover{transform:translateY(-8px)}
+.xcard:hover .xcard-img{transform:scale(1.06)}
+.xcard:hover .xcard-heart{transform:scale(1.18) rotate(-8deg)}
+.xcard:hover .xcard-badge{animation:badgeWiggle .5s ease}
+@keyframes exclPopA{0%{transform:scale(1);opacity:1}38%{transform:scale(.82);opacity:.45}72%{transform:scale(1.07);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes exclPopB{0%{transform:scale(1);opacity:1}38%{transform:scale(.82);opacity:.45}72%{transform:scale(1.07);opacity:1}100%{transform:scale(1);opacity:1}}
+.xcard-pop{animation-duration:.65s;animation-timing-function:cubic-bezier(.4,0,.2,1);animation-fill-mode:both}
+@keyframes badgeWiggle{0%,100%{transform:scale(1) rotate(0)}30%{transform:scale(1.1) rotate(-4deg)}60%{transform:scale(1.05) rotate(3deg)}}
+h1,h2,p{text-wrap:pretty}
+@media (max-width:1200px){
+.hero-grid{grid-template-columns:1fr!important;min-height:0!important}
+.hero-art{min-height:380px!important}
+.excl-grid{grid-template-columns:1fr!important;align-items:stretch!important}
+.xc-media{height:min(320px,40vw)!important;margin:13px!important}
+.cards-3,.cards-4{grid-template-columns:repeat(2,1fr)!important}
+.split-grid{grid-template-columns:1fr!important;gap:32px!important}
+.cta-grid{grid-template-columns:1fr!important}
+.stats-grid{grid-template-columns:repeat(2,1fr)!important;gap:14px!important}
+}
+@media (max-width:720px){
+.cards-3,.cards-4{grid-template-columns:1fr!important}
+.sec-pad{padding-left:22px!important;padding-right:22px!important}
+}
+#stats > div > div:last-child{border-inline-end:0}
+.nlink{color:var(--body);font-size:15px;font-weight:600;transition:color .3s ease}
+.nlink:hover{color:var(--accent)}
+.chip{animation:floaty 6s ease-in-out infinite}
+.iconbtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;cursor:pointer;transition:transform .3s ease,border-color .3s ease}
+.iconbtn:hover{transform:translateY(-2px);border-color:var(--accent)}
+.field{width:100%;border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;font-size:15px;font-family:'Cairo',sans-serif;background:var(--card);color:var(--ink);outline:none;transition:border-color .3s ease}
+.field:focus{border-color:var(--accent)}
+.field::placeholder{color:var(--dim)}
+.nav-logo-dark{display:block}
+.nav-logo-light{display:none}
+html[data-theme='dark'] .nav-logo-dark{display:none}
+html[data-theme='dark'] .nav-logo-light{display:block}
+</style>
+</helmet>
+
+<dc-import name="Splash" hint-size="1px,1px"></dc-import>
+<dc-import name="SiteHeader" dir="{{ dir }}" hint-size="100%,68px"></dc-import>
+
+<section dir="{{ dir }}" style="position:relative;overflow:hidden">
+  <div class="hero-grid sec-pad" style="max-width:min(1680px,94vw);margin:0 auto;display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:center;padding:72px 40px 44px;min-height:600px">
+    <div style="animation:fadeUp .9s ease both">
+      <div style="display:inline-flex;align-items:center;gap:10px;color:var(--accent);font-weight:800;font-size:14px;letter-spacing:1.5px;margin-bottom:20px"><span style="width:30px;height:2px;background:var(--accent)"></span>{{ t.heroKicker }}</div>
+      <h1 style="margin:0;font-size:clamp(38px,4.8vw,70px);line-height:1.08;font-weight:900;letter-spacing:-1.5px;color:var(--ink)">{{ t.heroTitle1 }}<br>{{ t.heroTitle2 }} <span style="position:relative;color:var(--accent)">{{ t.heroTitleAccent }}<span style="position:absolute;left:0;right:0;bottom:7px;height:13px;background:rgba(246,135,67,.16);z-index:-1"></span></span></h1>
+      <p style="margin:24px 0 0;max-width:470px;font-size:17px;line-height:1.9;color:var(--body)">{{ t.heroSub }}</p>
+      <form onSubmit="{{ doSearch }}" style="margin-top:34px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:10px;display:flex;align-items:center;gap:8px;box-shadow:0 20px 50px rgba(20,20,30,.10);max-width:540px">
+        <div style="flex:1;display:flex;align-items:center;gap:10px;padding:0 14px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--dim)" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4-4"></path></svg>
+          <input ref="{{ searchRef }}" class="field" placeholder="{{ t.searchPh }}" style="border:none;padding:12px 0;box-shadow:none;background:transparent">
+        </div>
+        <button type="submit" class="rd-cta" style="background:var(--accent);color:#fff;font-weight:800;font-size:15px;padding:14px 30px;border-radius:14px;border:none;cursor:pointer;font-family:'Cairo',sans-serif">{{ t.searchBtn }}</button>
+      </form>
+      <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:13px;color:var(--dim);font-weight:600">{{ t.popular }}</span>
+        <sc-for list="{{ popular }}" as="p" hint-placeholder-count="3">
+          <a href="{{ p.href }}" style="font-size:13px;color:var(--body);background:var(--card);border:1px solid var(--line);padding:5px 13px;border-radius:16px;transition:border-color .3s,color .3s" style-hover="border-color:var(--accent);color:var(--accent)">{{ p.label }}</a>
+        </sc-for>
+      </div>
+    </div>
+    <div class="hero-art" style="position:relative;display:flex;align-items:center;justify-content:center;min-height:500px">
+      <div style="position:absolute;width:min(440px,92vw);height:min(440px,92vw);border-radius:50%;background:radial-gradient(circle,rgba(246,135,67,.12),transparent 68%)"></div>
+      <canvas ref="{{ globeRef }}" style="position:relative;width:min(460px,82vw);height:min(460px,82vw);z-index:2"></canvas>
+      <div class="globe-orb" style="position:absolute;top:44px;inset-inline-end:38px;z-index:3;width:13px;height:13px;background:radial-gradient(circle,#f68743,rgba(246,135,67,.1) 72%);box-shadow:0 0 20px 5px rgba(246,135,67,.4);animation-delay:.2s;animation-duration:5.2s"></div>
+      <div class="globe-orb" style="position:absolute;bottom:88px;inset-inline-start:30px;z-index:3;width:9px;height:9px;background:radial-gradient(circle,#f68743,rgba(246,135,67,.1) 72%);box-shadow:0 0 16px 4px rgba(246,135,67,.38);animation-delay:1.6s;animation-duration:6.4s"></div>
+      <div class="globe-orb" style="position:absolute;top:190px;inset-inline-start:8px;z-index:3;width:7px;height:7px;background:radial-gradient(circle,#7fd3ff,rgba(127,211,255,.1) 72%);box-shadow:0 0 12px 3px rgba(127,211,255,.35);animation-delay:2.8s;animation-duration:4.6s"></div>
+    </div>
+  </div>
+</section>
+
+<sc-if value="{{ showStats }}" hint-placeholder-val="{{ true }}">
+<section dir="{{ dir }}" id="stats" data-reveal="" style="max-width:min(1680px,94vw);margin:0 auto;padding:0 40px 56px">
+  <div class="stats-grid" style="display:grid;grid-template-columns:{{ statsCols }};gap:20px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:32px 20px;box-shadow:0 14px 40px rgba(20,20,30,.07)">
+    <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+      <div style="text-align:center;border-inline-end:1px solid var(--line)">
+        <div style="font-size:34px;font-weight:900;color:var(--accent)">{{ s.n }}</div>
+        <div style="font-size:14px;color:var(--csub);margin-top:4px">{{ s.l }}</div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+</sc-if>
+
+<sc-if value="{{ hasExclusive }}" hint-placeholder-val="{{ true }}">
+<section dir="{{ dir }}" id="exclusive" style="background:var(--soft);border-block:1px solid var(--line)">
+  <div style="max-width:min(1680px,94vw);margin:0 auto;padding:72px 40px">
+  <div data-reveal="" style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:36px;gap:20px;flex-wrap:wrap">
+    <div>
+      <div style="color:var(--accent);font-weight:800;font-size:14px;letter-spacing:1.5px;margin-bottom:8px">{{ t.exclKicker }}</div>
+      <h2 style="margin:0;font-size:clamp(27px,2.6vw,38px);font-weight:900;color:var(--ink)">{{ t.exclTitle }}</h2>
+    </div>
+  </div>
+
+  <div class="excl-grid" style="display:grid;grid-template-columns:{{ exclCols }};gap:24px;align-items:end">
+    <a href="{{ exclBig.href }}" data-reveal="" class="xcard xcard-pop" style="animation-name:{{ exclAnimName }};background:var(--card);border:1px solid var(--line);border-radius:24px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(20,20,30,.06);transition:transform .4s cubic-bezier(.2,.8,.3,1),box-shadow .4s ease" style-hover="transform:translateY(-8px) scale(1.015);box-shadow:0 18px 40px rgba(20,20,30,.1)">
+      <div class="xc-media" style="position:relative;margin:14px;height:min(320px,32vw);border-radius:16px;overflow:hidden;background:var(--soft)">
+        <div class="xcard-img" style="position:absolute;inset:0;transition:transform .9s cubic-bezier(.2,.8,.3,1)">
+          <image-slot id="{{ exclBig.slot }}" shape="rect" placeholder="{{ exclBig.ph }}"></image-slot>
+        </div>
+        <span style="position:absolute;top:12px;inset-inline-start:12px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.95);display:grid;place-items:center;color:var(--accent);box-shadow:0 4px 12px rgba(0,0,0,.12);transition:transform .35s cubic-bezier(.2,.8,.3,1);cursor:pointer" onClick="{{ exclBig.toggleFav }}" title="{{ exclBig.favTitle }}" class="xcard-heart">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="{{ exclBig.heartFill }}" stroke="currentColor" stroke-width="2"><path d="M12 21s-7.5-4.9-9.3-9A5.2 5.2 0 0 1 12 6.5 5.2 5.2 0 0 1 21.3 12c-1.8 4.1-9.3 9-9.3 9z"></path></svg>
+        </span>
+        <span class="xcard-badge" style="position:absolute;top:12px;inset-inline-end:12px;background:var(--accent);color:#fff;font-weight:800;font-size:13px;padding:6px 16px;border-radius:20px;box-shadow:0 6px 16px rgba(246,135,67,.35)">{{ exclBig.tag }}</span>
+      </div>
+      <div style="padding:6px 24px 26px;flex:1;display:flex;flex-direction:column">
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--csub);margin-bottom:10px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+          {{ exclBig.loc }}
+        </div>
+        <div style="font-size:23px;font-weight:900;line-height:1.25;color:var(--ink);margin-bottom:6px">{{ exclBig.name }}</div>
+        <div style="font-size:20px;font-weight:900;color:var(--accent);margin-bottom:14px">{{ exclBig.price }}</div>
+        <div style="display:flex;align-items:center;gap:16px;font-size:13.5px;font-weight:700;color:var(--csub);margin-top:auto">
+          <span style="display:inline-flex;align-items:center;gap:6px">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4M3 17h18M3 17v3M21 17v3M6 11V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3"></path></svg>
+            {{ exclBig.beds }}
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:6px">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-3zM7 12V6a2 2 0 0 1 4 0"></path></svg>
+            {{ exclBig.baths }}
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:6px">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4zM9 4v16M4 9h16"></path></svg>
+            {{ exclBig.area }}
+          </span>
+        </div>
+      </div>
+    </a>
+
+    <sc-if value="{{ hasExclMed }}" hint-placeholder-val="{{ true }}">
+    <a href="{{ exclMed.href }}" data-reveal="" class="xcard xcard-pop" style="animation-name:{{ exclAnimName }};animation-delay:.1s;background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(20,20,30,.06);transition:transform .4s cubic-bezier(.2,.8,.3,1),box-shadow .4s ease" style-hover="transform:translateY(-8px) scale(1.015);box-shadow:0 18px 40px rgba(20,20,30,.1)">
+      <div class="xc-media" style="position:relative;margin:13px;height:min(220px,24vw);border-radius:15px;overflow:hidden;background:var(--soft)">
+        <div class="xcard-img" style="position:absolute;inset:0;transition:transform .9s cubic-bezier(.2,.8,.3,1)">
+          <image-slot id="{{ exclMed.slot }}" shape="rect" placeholder="{{ exclMed.ph }}"></image-slot>
+        </div>
+        <span style="position:absolute;top:10px;inset-inline-start:10px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.95);display:grid;place-items:center;color:var(--accent);box-shadow:0 4px 10px rgba(0,0,0,.12);transition:transform .35s cubic-bezier(.2,.8,.3,1);cursor:pointer" onClick="{{ exclMed.toggleFav }}" title="{{ exclMed.favTitle }}" class="xcard-heart">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="{{ exclMed.heartFill }}" stroke="currentColor" stroke-width="2"><path d="M12 21s-7.5-4.9-9.3-9A5.2 5.2 0 0 1 12 6.5 5.2 5.2 0 0 1 21.3 12c-1.8 4.1-9.3 9-9.3 9z"></path></svg>
+        </span>
+        <span class="xcard-badge" style="position:absolute;top:10px;inset-inline-end:10px;background:var(--accent);color:#fff;font-weight:800;font-size:12px;padding:5px 14px;border-radius:20px;box-shadow:0 4px 14px rgba(246,135,67,.35)">{{ exclMed.tag }}</span>
+      </div>
+      <div style="padding:3px 20px 20px;flex:1;display:flex;flex-direction:column">
+        <div style="display:flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:var(--csub);margin-bottom:7px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+          {{ exclMed.loc }}
+        </div>
+        <div style="font-size:18.5px;font-weight:900;line-height:1.25;color:var(--ink);margin-bottom:5px">{{ exclMed.name }}</div>
+        <div style="font-size:16.5px;font-weight:900;color:var(--accent);margin-top:auto">{{ exclMed.price }}</div>
+      </div>
+    </a>
+    </sc-if>
+
+    <sc-if value="{{ hasExclSm }}" hint-placeholder-val="{{ true }}">
+    <a href="{{ exclSm.href }}" data-reveal="" class="xcard xcard-pop" style="animation-name:{{ exclAnimName }};animation-delay:.2s;background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(20,20,30,.06);transition:transform .4s cubic-bezier(.2,.8,.3,1),box-shadow .4s ease" style-hover="transform:translateY(-8px) scale(1.015);box-shadow:0 18px 40px rgba(20,20,30,.1)">
+      <div class="xc-media" style="position:relative;margin:11px;height:min(150px,17vw);border-radius:13px;overflow:hidden;background:var(--soft)">
+        <div class="xcard-img" style="position:absolute;inset:0;transition:transform .9s cubic-bezier(.2,.8,.3,1)">
+          <image-slot id="{{ exclSm.slot }}" shape="rect" placeholder="{{ exclSm.ph }}"></image-slot>
+        </div>
+        <span style="position:absolute;top:8px;inset-inline-start:8px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.95);display:grid;place-items:center;color:var(--accent);box-shadow:0 4px 10px rgba(0,0,0,.12);transition:transform .35s cubic-bezier(.2,.8,.3,1);cursor:pointer" onClick="{{ exclSm.toggleFav }}" title="{{ exclSm.favTitle }}" class="xcard-heart">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="{{ exclSm.heartFill }}" stroke="currentColor" stroke-width="2"><path d="M12 21s-7.5-4.9-9.3-9A5.2 5.2 0 0 1 12 6.5 5.2 5.2 0 0 1 21.3 12c-1.8 4.1-9.3 9-9.3 9z"></path></svg>
+        </span>
+        <span class="xcard-badge" style="position:absolute;top:8px;inset-inline-end:8px;background:var(--accent);color:#fff;font-weight:800;font-size:10.5px;padding:4px 11px;border-radius:20px;box-shadow:0 4px 12px rgba(246,135,67,.35)">{{ exclSm.tag }}</span>
+      </div>
+      <div style="padding:2px 16px 16px;flex:1;display:flex;flex-direction:column">
+        <div style="display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:var(--csub);margin-bottom:5px">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+          {{ exclSm.loc }}
+        </div>
+        <div style="font-size:15.5px;font-weight:900;line-height:1.25;color:var(--ink);margin-bottom:4px">{{ exclSm.name }}</div>
+        <div style="font-size:14px;font-weight:900;color:var(--accent);margin-top:auto">{{ exclSm.price }}</div>
+      </div>
+    </a>
+    </sc-if>
+  </div>
+
+  <sc-if value="{{ exclHasNav }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:26px">
+    <button type="button" onClick="{{ exclPrev }}" aria-label="prev" style="width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;cursor:pointer;transition:background .3s ease,color .3s ease,border-color .3s ease,transform .15s ease" style-hover="background:var(--accent);color:#fff;border-color:var(--accent)" style-active="transform:scale(.9)">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 5 8 12l7 7"></path></svg>
+    </button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <sc-for list="{{ exclDots }}" as="d" hint-placeholder-count="2">
+        <button type="button" onClick="{{ d.go }}" aria-label="slide" style="width:{{ d.w }};height:8px;border-radius:20px;border:0;padding:0;cursor:pointer;background:{{ d.bg }};transition:width .35s ease,background .35s ease"></button>
+      </sc-for>
+    </div>
+    <button type="button" onClick="{{ exclNext }}" aria-label="next" style="width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);display:grid;place-items:center;cursor:pointer;transition:background .3s ease,color .3s ease,border-color .3s ease,transform .15s ease" style-hover="background:var(--accent);color:#fff;border-color:var(--accent)" style-active="transform:scale(.9)">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 5 7 7-7 7"></path></svg>
+    </button>
+  </div>
+  </sc-if>
+</section>
+</sc-if>
+
+<sc-if value="{{ hasFeatured }}" hint-placeholder-val="{{ true }}">
+<section dir="{{ dir }}" id="featured" style="max-width:min(1680px,94vw);margin:0 auto;padding:72px 40px">
+  <div data-reveal="" style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:36px;gap:20px;flex-wrap:wrap">
+    <div>
+      <div style="color:var(--accent);font-weight:800;font-size:14px;letter-spacing:1.5px;margin-bottom:8px">{{ t.featKicker }}</div>
+      <h2 style="margin:0;font-size:clamp(27px,2.6vw,38px);font-weight:900;color:var(--ink)">{{ t.featTitle }}</h2>
+    </div>
+    <a href="PropertyList.dc.html" style="color:var(--accent);font-weight:800;font-size:15px;border-bottom:2px solid var(--accent);padding-bottom:3px">{{ t.viewAll }}</a>
+  </div>
+  <div class="cards-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:26px">
+    <sc-for list="{{ featured }}" as="f" hint-placeholder-count="3">
+      <a href="{{ f.href }}" data-reveal="" class="rd-card" style="background:var(--card);color:var(--cink);border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:0 14px 36px rgba(20,20,30,.08);display:block">
+        <div style="height:210px;position:relative">
+          <image-slot id="{{ f.slot }}" shape="rect" placeholder="{{ f.ph }}"></image-slot>
+          <span style="position:absolute;top:13px;inset-inline-start:13px;background:var(--accent);color:#fff;font-weight:800;font-size:12px;padding:4px 13px;border-radius:20px">{{ f.tag }}</span>
+        </div>
+        <div style="padding:20px 22px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+            <div style="font-weight:800;font-size:19px">{{ f.name }}</div>
+            <div style="color:var(--accent);font-weight:900;font-size:18px;white-space:nowrap">{{ f.price }}</div>
+          </div>
+          <div style="color:var(--csub);font-size:13.5px;margin:6px 0 14px;display:flex;align-items:center;gap:6px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+            {{ f.loc }}
+          </div>
+          <div style="border-top:1px solid var(--line);padding-top:13px;color:var(--csub);font-size:13.5px;font-weight:600">{{ f.specs }}</div>
+        </div>
+      </a>
+    </sc-for>
+  </div>
+</section>
+</sc-if>
+
+<sc-if value="{{ hasProjects }}" hint-placeholder-val="{{ true }}">
+<section dir="{{ dir }}" id="projects" style="background:var(--soft);border-block:1px solid var(--line)">
+  <div style="max-width:min(1680px,94vw);margin:0 auto;padding:72px 40px">
+    <div data-reveal="" style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:36px;gap:20px;flex-wrap:wrap">
+      <div>
+        <div style="color:var(--accent);font-weight:800;font-size:14px;letter-spacing:1.5px;margin-bottom:8px">{{ t.projKicker }}</div>
+        <h2 style="margin:0;font-size:clamp(27px,2.6vw,38px);font-weight:900;color:var(--ink)">{{ t.projTitle }}</h2>
+      </div>
+      <a href="Projects.dc.html" style="color:var(--accent);font-weight:800;font-size:15px;border-bottom:2px solid var(--accent);padding-bottom:3px">{{ t.viewAll }}</a>
+    </div>
+    <div class="cards-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:26px">
+      <sc-for list="{{ projects }}" as="pr" hint-placeholder-count="3">
+        <a href="{{ pr.href }}" data-reveal="" class="rd-card" style="display:block;background:var(--card);border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:0 14px 36px rgba(20,20,30,.08)">
+          <div style="height:210px;position:relative">
+            <image-slot id="{{ pr.slot }}" shape="rect" placeholder="{{ pr.ph }}"></image-slot>
+            <span style="position:absolute;top:13px;inset-inline-start:13px;background:{{ pr.statusBg }};color:#fff;font-weight:800;font-size:12px;padding:4px 13px;border-radius:20px">{{ pr.status }}</span>
+          </div>
+          <div style="padding:20px 22px">
+            <div style="font-weight:800;font-size:19px;color:var(--cink)">{{ pr.name }}</div>
+            <div style="color:var(--csub);font-size:13.5px;margin:5px 0 16px">{{ pr.meta }}</div>
+            <div style="height:7px;border-radius:6px;background:var(--soft);overflow:hidden">
+              <div style="height:100%;width:{{ pr.pct }};border-radius:6px;background:{{ pr.barBg }}"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12.5px;font-weight:700;color:var(--csub)">
+              <span>{{ pr.progLabel }}</span><span style="color:var(--accent)">{{ pr.pct }}</span>
+            </div>
+          </div>
+        </a>
+      </sc-for>
+    </div>
+  </div>
+</section>
+</sc-if>
+
+<section dir="{{ dir }}" id="services" style="max-width:min(1680px,94vw);margin:0 auto;padding:72px 40px">
+  <div data-reveal="" style="text-align:center;margin-bottom:44px">
+    <div style="color:var(--accent);font-weight:800;font-size:14px;letter-spacing:1.5px;margin-bottom:8px">{{ t.servKicker }}</div>
+    <h2 style="margin:0;font-size:clamp(27px,2.6vw,38px);font-weight:900;color:var(--ink)">{{ t.servTitle }}</h2>
+  </div>
+  <div class="cards-4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px">
+    <sc-for list="{{ services }}" as="sv" hint-placeholder-count="4">
+      <div data-reveal="" class="rd-card" style="background:var(--card);border-radius:20px;padding:30px 26px;border:1px solid var(--line);box-shadow:0 14px 36px rgba(20,20,30,.07)">
+        <div style="width:56px;height:56px;border-radius:16px;background:rgba(246,135,67,.12);display:grid;place-items:center;margin-bottom:18px;color:var(--accent)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="{{ sv.svgPath }}"></path></svg></div>
+        <div style="font-weight:800;font-size:18px;margin-bottom:8px;color:var(--cink)">{{ sv.name }}</div>
+        <div style="color:var(--csub);font-size:14px;line-height:1.8">{{ sv.desc }}</div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section dir="{{ dir }}" id="about" style="background:var(--soft);border-block:1px solid var(--line)">
+  <div style="max-width:min(1680px,94vw);margin:0 auto;display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:center;padding:72px 40px" class="split-grid sec-pad">
+    <div data-reveal="" style="height:440px;border-radius:24px;overflow:hidden;box-shadow:0 24px 60px rgba(20,20,30,.14)">
+      <image-slot id="hp-about" shape="rect" placeholder="صورة من مشاريع Palmas.ps"></image-slot>
+    </div>
+    <div data-reveal="">
+      <div style="color:var(--accent);font-weight:800;font-size:14px;letter-spacing:1.5px;margin-bottom:10px">{{ t.aboutKicker }}</div>
+      <h2 style="margin:0 0 18px;font-size:clamp(27px,2.6vw,38px);font-weight:900;color:var(--ink);line-height:1.2">{{ t.aboutTitle }}</h2>
+      <p style="margin:0 0 26px;font-size:16px;line-height:2;color:var(--body);max-width:560px">{{ t.aboutBody }}</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <sc-for list="{{ values }}" as="v" hint-placeholder-count="4">
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <span style="width:34px;height:34px;min-width:34px;border-radius:10px;background:rgba(246,135,67,.12);display:grid;place-items:center;color:var(--accent)">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"></path></svg>
+            </span>
+            <div>
+              <div style="font-weight:800;font-size:15.5px;color:var(--ink)">{{ v.t }}</div>
+              <div style="color:var(--csub);font-size:13px;line-height:1.7;margin-top:2px">{{ v.d }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</section>
+
+<sc-if value="{{ hasTestimonials }}" hint-placeholder-val="{{ true }}">
+<section dir="{{ dir }}" style="max-width:min(1680px,94vw);margin:0 auto;padding:72px 40px">
+  <div data-reveal="" style="text-align:center;margin-bottom:44px">
+    <div style="color:var(--accent);font-weight:800;font-size:14px;letter-spacing:1.5px;margin-bottom:8px">{{ t.testKicker }}</div>
+    <h2 style="margin:0;font-size:clamp(27px,2.6vw,38px);font-weight:900;color:var(--ink)">{{ t.testTitle }}</h2>
+  </div>
+  <div class="cards-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:26px">
+    <sc-for list="{{ testimonials }}" as="ts" hint-placeholder-count="3">
+      <div data-reveal="" style="background:var(--card);border-radius:20px;padding:30px 28px;border:1px solid var(--line);box-shadow:0 14px 36px rgba(20,20,30,.07);display:flex;flex-direction:column;gap:16px">
+        <div style="color:var(--accent);font-size:16px;letter-spacing:2px">{{ ts.stars }}</div>
+        <p style="margin:0;font-size:15.5px;line-height:1.9;color:var(--body)">“{{ ts.quote }}”</p>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:auto">
+          <span style="width:44px;height:44px;border-radius:50%;background:rgba(246,135,67,.14);color:var(--accent);display:grid;place-items:center;font-weight:900;font-size:17px">{{ ts.initial }}</span>
+          <div>
+            <div style="font-weight:800;font-size:15px;color:var(--ink)">{{ ts.name }}</div>
+            <div style="color:var(--csub);font-size:12.5px">{{ ts.role }}</div>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+</sc-if>
+
+<sc-if value="{{ showAppCta }}" hint-placeholder-val="{{ true }}">
+<section dir="{{ dir }}" style="max-width:min(1680px,94vw);margin:0 auto;padding:0 40px 72px">
+  <div data-reveal="" style="position:relative;overflow:hidden;border-radius:28px;background:radial-gradient(120% 140% at 88% -20%,#ff9a55,#f68743 40%,#d1662a 80%,#8a3a17);color:#fff;display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:center;padding:56px 52px" class="cta-grid">
+    <div style="position:relative;z-index:2">
+      <div style="display:inline-flex;align-items:center;gap:9px;font-weight:800;font-size:13.5px;letter-spacing:1.5px;margin-bottom:16px;opacity:.92"><span style="width:26px;height:2px;background:#fff"></span>PALMAS.ps</div>
+      <h2 style="margin:0;font-size:clamp(26px,2.5vw,38px);font-weight:900;line-height:1.2">{{ t.appTitle }}</h2>
+      <p style="margin:16px 0 28px;font-size:16px;line-height:1.85;color:rgba(255,255,255,.9);max-width:440px">{{ t.appBody }}</p>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <a href="{{ appIosHref }}" target="_blank" rel="noopener" class="rd-cta" style="display:flex;align-items:center;gap:10px;background:#141414;color:#fff;padding:13px 22px;border-radius:16px;{{ appIosStyle }}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M17.05 12.04c-.02-2.02 1.65-2.99 1.72-3.04-.94-1.37-2.4-1.56-2.92-1.58-1.24-.13-2.42.73-3.05.73-.63 0-1.6-.71-2.63-.69-1.35.02-2.6.79-3.29 2-1.4 2.44-.36 6.05 1 8.03.67.97 1.46 2.05 2.5 2.01 1-.04 1.38-.65 2.6-.65 1.21 0 1.55.65 2.6.63 1.08-.02 1.76-.99 2.42-1.96.76-1.12 1.08-2.2 1.09-2.26-.02-.01-2.09-.8-2.11-3.18zM15.1 6.3c.55-.67.93-1.6.82-2.53-.8.03-1.77.53-2.34 1.2-.51.59-.96 1.54-.84 2.44.89.07 1.8-.45 2.36-1.11z"></path></svg>
+          <div style="text-align:start;line-height:1.1"><div style="font-size:10px;opacity:.75">{{ t.appStoreTop }}</div><div style="font-size:15px;font-weight:800">App Store</div></div>
+        </a>
+        <a href="{{ appAndroidHref }}" target="_blank" rel="noopener" class="rd-cta" style="display:flex;align-items:center;gap:10px;background:#141414;color:#fff;padding:13px 22px;border-radius:16px;{{ appAndroidStyle }}">
+          <svg width="20" height="20" viewBox="0 0 24 24"><path d="M3.6 2.4 13 12 3.6 21.6c-.36-.2-.6-.6-.6-1.1V3.5c0-.5.24-.9.6-1.1z" fill="#00e0ff"></path><path d="M16.5 8.5 13 12l3.5 3.5 3.4-1.95c.8-.46.8-1.64 0-2.1L16.5 8.5z" fill="#ffce00"></path><path d="M3.6 2.4c.28-.16.62-.18.95.02L17 8.9 13 12 3.6 2.4z" fill="#00f076"></path><path d="M13 12l4 3.1-12.45 6.5c-.33.2-.67.18-.95.02L13 12z" fill="#ff3d44"></path></svg>
+          <div style="text-align:start;line-height:1.1"><div style="font-size:10px;opacity:.75">{{ t.appPlayTop }}</div><div style="font-size:15px;font-weight:800">Google Play</div></div>
+        </a>
+      </div>
+    </div>
+    <div style="position:relative;z-index:2;height:260px">
+      <div style="position:absolute;inset:0;border-radius:20px;overflow:hidden;border:6px solid rgba(255,255,255,.25);box-shadow:0 30px 70px rgba(0,0,0,.35)">
+        <image-slot id="hp-app" shape="rect" placeholder="لقطة من التطبيق"></image-slot>
+      </div>
+    </div>
+  </div>
+</section>
+</sc-if>
+
+<section dir="{{ dir }}" id="contact" style="background:var(--soft);border-top:1px solid var(--line)">
+  <div style="max-width:min(1680px,94vw);margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;padding:72px 40px" class="split-grid sec-pad">
+    <div data-reveal="">
+      <div style="color:var(--accent);font-weight:800;font-size:14px;letter-spacing:1.5px;margin-bottom:10px">{{ t.contactKicker }}</div>
+      <h2 style="margin:0 0 16px;font-size:clamp(27px,2.6vw,38px);font-weight:900;color:var(--ink);line-height:1.2">{{ t.contactTitle }}</h2>
+      <p style="margin:0 0 30px;font-size:16px;line-height:1.9;color:var(--body);max-width:440px">{{ t.contactBody }}</p>
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <sc-for list="{{ contactRows }}" as="c" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:14px">
+            <span style="width:46px;height:46px;border-radius:14px;background:rgba(246,135,67,.12);color:var(--accent);display:grid;place-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="{{ c.svgPath }}"></path></svg></span>
+            <div>
+              <div style="font-size:12.5px;color:var(--csub)">{{ c.label }}</div>
+              <div style="font-weight:800;font-size:15.5px;color:var(--ink)" dir="ltr">{{ c.value }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <form data-reveal="" onSubmit="{{ sendWhats }}" style="background:var(--card);border:1px solid var(--line);border-radius:22px;padding:34px;box-shadow:0 20px 50px rgba(20,20,30,.10);display:flex;flex-direction:column;gap:16px">
+      <input ref="{{ nameRef }}" class="field" placeholder="{{ t.fName }}">
+      <input ref="{{ phoneRef }}" class="field" type="tel" placeholder="{{ t.fPhone }}" dir="ltr">
+      <textarea ref="{{ msgRef }}" class="field" placeholder="{{ t.fMsg }}" rows="4" style="resize:vertical"></textarea>
+      <sc-if value="{{ formErrOn }}" hint-placeholder-val="{{ false }}">
+        <div style="color:#e0245e;font-size:13.5px;font-weight:700">{{ t.formErr }}</div>
+      </sc-if>
+      <button type="submit" class="rd-cta" style="background:var(--accent);color:#fff;font-weight:800;font-size:16px;padding:15px;border-radius:14px;border:none;cursor:pointer;font-family:'Cairo',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.8.9.9-2.7-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.1-.2 0-.4.1-.5l.4-.5c.1-.2.1-.3 0-.5l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.4.1-.6.3a3.4 3.4 0 0 0-1 2.5c0 1.5 1 2.9 1.2 3.1.1.2 2.1 3.2 5 4.4 1.8.6 1.8.4 2.1.4.4 0 1.4-.5 1.6-1.1.2-.6.2-1 .1-1.1z"></path></svg>
+        {{ t.fSend }}
+      </button>
+      <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:10px;background:rgba(246,135,67,.1);border:1px solid rgba(246,135,67,.35);border-radius:14px;padding:12px 16px;color:var(--accent-d);font-size:14px;font-weight:700">
+          <span style="width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:13px">✓</span>{{ t.sentMsg }}
+        </div>
+      </sc-if>
+    </form>
+  </div>
+</section>
+
+<dc-import name="SiteFooter" dir="{{ dir }}" hint-size="100%,320px"></dc-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1320,&quot;height&quot;:900},&quot;showStats&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sections&quot;},&quot;showAppCta&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sections&quot;},&quot;enableMotion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Motion&quot;}}">
+class Component extends DCLogic {
+  constructor(p){
+    super(p);
+    this.state = { theme: null, lang: 'ar', sent: false, exclIdx: 0 };
+    this.globeRef = React.createRef();
+    this.searchRef = React.createRef();
+    this.exclMax = 0;
+    this.exclPrev = () => this.setState(s => ({ exclIdx: Math.max(0, (s.exclIdx || 0) - 1), exclFlip: !s.exclFlip }));
+    this.exclNext = () => this.setState(s => ({ exclIdx: Math.min(this.exclMax, (s.exclIdx || 0) + 1), exclFlip: !s.exclFlip }));
+    this.nameRef = React.createRef();
+    this.phoneRef = React.createRef();
+    this.msgRef = React.createRef();
+  }
+  componentDidMount(){
+    let th = 'light';
+    try { const tv = localStorage.getItem('palmas_theme'); if (tv === 'light' || tv === 'dark') th = tv; } catch(e) {}
+    document.documentElement.setAttribute('data-theme', th);
+    let lang = 'ar';
+    try { const l = localStorage.getItem('palmas_lang'); if (l === 'ar' || l === 'en') lang = l; } catch(e) {}
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'en' ? 'ltr' : 'rtl';
+    this.setState({ theme: th, lang });
+    setTimeout(() => { this._buildGlobe(); this._setupReveal(); }, 90);
+    this._waitCore();
+  }
+  /* هذه الصفحة كانت ترسم مرة واحدة عند التركيب ولا تنتظر النواة: فإن لم تكن
+     جاهزة تلك اللحظة بقيت الأقسام فارغة إلى الأبد. باقي الصفحات تتفقّدها في
+     حلقة — وهذا ما ينقصها. */
+  _waitCore(){
+    const P = window.Palmas;
+    if (!P) { this._coreTimer = setTimeout(() => this._waitCore(), 60); return; }
+    this.setState({ coreReady: true });
+    /* والكتالوج قد يتغيّر بعد ذلك (وصول بيانات السيرفر، إضافة عقار) */
+    if (!this._offAuth && P.API && P.API.onAuthChange) {
+      this._offAuth = P.API.onAuthChange(() => this._bump());
+    }
+    /* وإعادات رسم مؤكَّدة: لا نعلّق ظهور الأقسام على وصول إشعار واحد. لو
+       تأخّرت بيانات السيرفر أو ضاع الإشعار، تلتقطها هذه ولا تبقى الصفحة
+       فارغة — وهو أسوأ ما يمكن أن تراه. */
+    this._bumps = [500, 1500, 3500, 6000].map(ms => setTimeout(() => this._bump(), ms));
+  }
+  _bump(){ this.setState(s => ({ coreTick: (s.coreTick || 0) + 1 })); }
+  componentWillUnmount(){
+    if (this._raf) cancelAnimationFrame(this._raf);
+    if (this._io) this._io.disconnect();
+    if (this._mo) this._mo.disconnect();
+    if (this._globeCleanup) this._globeCleanup();
+    if (this._coreTimer) clearTimeout(this._coreTimer);
+    if (this._bumps) this._bumps.forEach(clearTimeout);
+    if (this._offAuth) this._offAuth();
+  }
+
+  /* الأقسام مخفية بالـ CSS حتى تظهر عند التمرير. كان البحث عنها مرة واحدة عند
+     التركيب، فأي قسم يُرسم بعدها (العقارات والمشاريع تصل من السيرفر لاحقاً، وبطاقات
+     الحصري تُعاد عند التنقّل) يبقى مخفياً للأبد. الآن نراقب كل عنصر جديد يظهر. */
+  _setupReveal(){
+    const on = this.props.enableMotion ?? true;
+    const show = (e) => e.classList.add('rv-in');
+    this._io = (on && 'IntersectionObserver' in window) ? new IntersectionObserver((ents) => {
+      ents.forEach(en => { if (en.isIntersecting) { show(en.target); this._io.unobserve(en.target); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }) : null;
+    const seen = new WeakSet();
+    const scan = () => {
+      document.querySelectorAll('[data-reveal]:not(.rv-in)').forEach(e => {
+        if (seen.has(e)) return;
+        seen.add(e);
+        if (!this._io) { show(e); return; }
+        this._io.observe(e);
+        setTimeout(() => show(e), 2200);          // لا يبقى أي قسم مخفياً مهما حدث
+      });
+    };
+    scan();
+    this._mo = new MutationObserver(scan);
+    this._mo.observe(document.body, { childList: true, subtree: true });
+  }
+
+  _buildGlobe(){
+    if (this._built) return;
+    const c = this.globeRef.current; if (!c) return;
+    const THREE = window.THREE;
+    if (!THREE) { this._tw = (this._tw || 0) + 1; if (this._tw < 90) this._globeTimer = setTimeout(() => this._buildGlobe(), 90); return; }
+    this._built = true;
+
+    const size = c.clientWidth || 460;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
+    camera.position.set(0, 0, 6.2);
+    const renderer = new THREE.WebGLRenderer({ canvas: c, antialias: true, alpha: true });
+    renderer.setPixelRatio(dpr);
+    renderer.setSize(size, size, false);
+
+    const R = 1.5;
+    const group = new THREE.Group();
+    scene.add(group);
+
+    const loader = new THREE.TextureLoader();
+    loader.setCrossOrigin('anonymous');
+    const G = 'https://cdn.jsdelivr.net/npm/three-globe/example/img/';
+    const load = (url, cb) => loader.load(url, t => { t.colorSpace = THREE.NoColorSpace; t.anisotropy = 8; if (cb) cb(); });
+    c.style.opacity = '0'; c.style.transition = 'opacity .9s ease';
+    const dayTex = load(G + 'earth-blue-marble.jpg', () => { c.style.opacity = '1'; });
+    const nightTex = load(G + 'earth-night.jpg');
+    const specTex = load(G + 'earth-water.png');
+    const cloudTex = load('https://cdn.jsdelivr.net/gh/turban/webgl-earth@master/images/fair_clouds_4k.png');
+
+    const sunDir = new THREE.Vector3(-0.4, 0.25, 0.92).normalize();
+    const vert = `varying vec2 vUv; varying vec3 vWorldNormal; varying vec3 vWorldPos;
+      void main(){ vUv=uv; vWorldNormal=normalize(mat3(modelMatrix)*normal); vec4 wp=modelMatrix*vec4(position,1.0); vWorldPos=wp.xyz; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`;
+
+    const earthMat = new THREE.ShaderMaterial({
+      uniforms: { dayTexture:{value:dayTex}, nightTexture:{value:nightTex}, specularMap:{value:specTex}, sunDirection:{value:sunDir} },
+      vertexShader: vert,
+      fragmentShader: `uniform sampler2D dayTexture; uniform sampler2D nightTexture; uniform sampler2D specularMap; uniform vec3 sunDirection;
+        varying vec2 vUv; varying vec3 vWorldNormal; varying vec3 vWorldPos;
+        void main(){
+          vec3 n=normalize(vWorldNormal); float I=dot(n,sunDirection);
+          vec3 dayCol=texture2D(dayTexture,vUv).rgb; vec3 nightRaw=texture2D(nightTexture,vUv).rgb;
+          float dayMix=smoothstep(-0.10,0.32,I);
+          vec3 night=nightRaw*vec3(1.25,1.02,0.7)*1.5;
+          vec3 lit=dayCol*(0.55+0.8*clamp(I,0.0,1.0));
+          vec3 col=mix(night,lit,dayMix);
+          vec3 V=normalize(cameraPosition-vWorldPos); vec3 Rf=reflect(-sunDirection,n);
+          float glint=pow(max(dot(V,Rf),0.0),18.0); float ocean=texture2D(specularMap,vUv).r;
+          col+=vec3(1.0,0.92,0.75)*glint*ocean*dayMix*0.4;
+          float rim=pow(1.0-abs(I),2.2)*dayMix; col+=vec3(0.5,0.38,0.28)*rim*0.35;
+          gl_FragColor=vec4(col,1.0);
+        }`
+    });
+    group.add(new THREE.Mesh(new THREE.SphereGeometry(R, 128, 128), earthMat));
+
+    const cloudMat = new THREE.ShaderMaterial({
+      uniforms: { cloudsTex:{value:cloudTex}, sunDirection:{value:sunDir} },
+      vertexShader: vert,
+      fragmentShader: `uniform sampler2D cloudsTex; uniform vec3 sunDirection; varying vec2 vUv; varying vec3 vWorldNormal;
+        void main(){ vec4 c=texture2D(cloudsTex,vUv); float d=max(c.a,c.r); float lit=smoothstep(-0.05,0.4,dot(normalize(vWorldNormal),sunDirection));
+          /* thinned way down — a light, professional haze instead of a heavy swirling cloud layer */
+          gl_FragColor=vec4(vec3(1.0)*(0.78+0.22*lit), d*(0.05+0.4*lit)*0.4); }`,
+      transparent: true, depthWrite: false
+    });
+    const clouds = new THREE.Mesh(new THREE.SphereGeometry(R*1.012, 96, 96), cloudMat);
+    group.add(clouds);
+
+    const glowMat = new THREE.ShaderMaterial({
+      uniforms: { c:{value:0.6}, p:{value:4.6}, glowColor:{value:new THREE.Color('#f68743')}, viewVector:{value:new THREE.Vector3(0,0,6.2)} },
+      vertexShader: `uniform vec3 viewVector; uniform float c; uniform float p; varying float intensity; void main(){ vec3 vN=normalize(normalMatrix*normal); vec3 vNe=normalize(normalMatrix*viewVector); intensity=pow(c-dot(vN,vNe),p); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+      fragmentShader: `uniform vec3 glowColor; varying float intensity; void main(){ gl_FragColor=vec4(glowColor,1.0)*clamp(intensity,0.0,1.0); }`,
+      side: THREE.BackSide, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false
+    });
+    scene.add(new THREE.Mesh(new THREE.SphereGeometry(R*1.16, 64, 64), glowMat));
+
+    /* -------- interactive pins, tied to the real catalog (not decorative dots) --------
+       Ramallah + the Palestine cluster are small city pins; Dubai and Amman stand in as
+       the UAE/Jordan hubs — three ringed "main" markers make the globe read as genuinely
+       international, not just a local map. Every pin is hoverable (tooltip) and clickable
+       (jumps straight to the filtered property list for that city/country). */
+    const pinVec = (latD, lonD) => { const la=latD*Math.PI/180, lo=lonD*Math.PI/180; return new THREE.Vector3(Math.cos(la)*Math.cos(lo), Math.sin(la), -Math.cos(la)*Math.sin(lo)); };
+    const PAL = window.Palmas;
+    const cityByKey = (k, fbLat, fbLon, fbAr, fbEn) => {
+      const c = PAL ? PAL.CITIES.filter(x => x.k === k)[0] : null;
+      return c ? { lat: c.center[0], lon: c.center[1], ar: c.ar, en: c.en } : { lat: fbLat, lon: fbLon, ar: fbAr, en: fbEn };
+    };
+    const ramallah = cityByKey('ramallah', 31.9038, 35.2034, 'رام الله', 'Ramallah');
+    const dubai = cityByKey('dubai', 25.2048, 55.2708, 'دبي', 'Dubai');
+    const amman = cityByKey('amman', 31.9539, 35.9106, 'عمّان', 'Amman');
+    const psCluster = (PAL ? PAL.CITIES.filter(c => c.c === 'ps' && c.k !== 'ramallah') : [])
+      .map(c => ({ lat: c.center[0], lon: c.center[1], ar: c.ar, en: c.en, kind: 'city', key: c.k, main: false }));
+    const cities = [
+      { ...ramallah, kind: 'city', key: 'ramallah', main: true },
+      ...psCluster,
+      { lat: dubai.lat, lon: dubai.lon, ar: (dubai.ar || 'دبي') + '، الإمارات', en: (dubai.en || 'Dubai') + ', UAE', kind: 'country', key: 'ae', main: true },
+      { lat: amman.lat, lon: amman.lon, ar: (amman.ar || 'عمّان') + '، الأردن', en: (amman.en || 'Amman') + ', Jordan', kind: 'country', key: 'jo', main: true },
+    ];
+    const ORANGE = new THREE.Color('#f68743');
+    const pins = [];
+    cities.forEach(ct => {
+      const v = pinVec(ct.lat, ct.lon);
+      const dot = new THREE.Mesh(new THREE.SphereGeometry(ct.main?0.052:0.032, 18, 18), new THREE.MeshBasicMaterial({ color:ORANGE, transparent:true }));
+      dot.position.copy(v).multiplyScalar(R*1.008); group.add(dot);
+      // slightly larger invisible sphere so hover/click are easy to land, even on the small dots
+      const hit = new THREE.Mesh(new THREE.SphereGeometry(ct.main?0.11:0.085, 10, 10), new THREE.MeshBasicMaterial({ visible:false }));
+      hit.position.copy(dot.position); group.add(hit);
+      let ring = null;
+      if (ct.main) { ring = new THREE.Mesh(new THREE.RingGeometry(0.06, 0.088, 40), new THREE.MeshBasicMaterial({ color:ORANGE, transparent:true, side:THREE.DoubleSide, depthWrite:false, depthTest:false })); scene.add(ring); }
+      const pin = { v, dot, hit, ring, main:ct.main, kind: ct.kind, key: ct.key, ar: ct.ar, en: ct.en };
+      hit.userData.pin = pin;
+      pins.push(pin);
+    });
+
+    /* hover panel — a real vertical property-preview card (name/location/price, up to 3 listings)
+       for whatever city/country the pointer is nearest to, not just a text label. Plain DOM overlay
+       (not part of the WebGL scene) so its rows can be genuine clickable links straight to each
+       property. Positioned each frame from the pin's projected screen coords. */
+    if (!document.getElementById('globe-panel-style')) {
+      const st = document.createElement('style');
+      st.id = 'globe-panel-style';
+      st.textContent = '.gp-row{display:block;padding:10px 13px;text-decoration:none;border-top:1px solid var(--line,rgba(20,20,22,.08));transition:background .2s ease}.gp-row:hover{background:rgba(246,135,67,.1)}.gp-more{display:block;text-align:center;padding:10px;font-weight:800;font-size:12px;color:#f68743;text-decoration:none;border-top:1px solid var(--line,rgba(20,20,22,.08));transition:background .2s ease}.gp-more:hover{background:rgba(246,135,67,.1)}';
+      document.head.appendChild(st);
+    }
+    const panel = document.createElement('div');
+    panel.style.cssText = 'position:absolute;z-index:6;width:210px;opacity:0;visibility:hidden;transition:opacity .18s ease;background:var(--card,#fff);border:1px solid var(--line,rgba(20,20,22,.1));box-shadow:0 16px 40px rgba(20,20,30,.22);border-radius:16px;overflow:hidden;font-family:Cairo,sans-serif';
+    if (c.parentElement) { c.parentElement.style.position = c.parentElement.style.position || 'relative'; c.parentElement.appendChild(panel); }
+    let panelHideTimer = null;
+    const cancelHide = () => { if (panelHideTimer) { clearTimeout(panelHideTimer); panelHideTimer = null; } };
+    panel.addEventListener('pointerenter', cancelHide);
+    panel.addEventListener('pointerleave', () => scheduleHidePanel());
+
+    let yaw = -2.18, pitch = 0.2, velYaw = 0, velPitch = 0, dragging = false, lastX = 0, lastY = 0, moved = 0, overCanvas = false, hovered = null;
+    const auto = 0.0016;
+
+    const raycaster = new THREE.Raycaster();
+    const ndc = new THREE.Vector2();
+    const pickAt = (clientX, clientY) => {
+      const rect = c.getBoundingClientRect();
+      ndc.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+      ndc.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(ndc, camera);
+      const hit = raycaster.intersectObjects(pins.map(p => p.hit));
+      return hit.length ? hit[0].object.userData.pin : null;
+    };
+    function scheduleHidePanel() {
+      cancelHide();
+      panelHideTimer = setTimeout(() => { panel.style.opacity = '0'; panel.style.visibility = 'hidden'; }, 160);
+    }
+    const fillPanel = (pin) => {
+      const lg = this.state.lang || 'ar';
+      const ar = lg !== 'en';
+      const all = PAL ? PAL.allProperties() : [];
+      const matches = all.filter(x => pin.kind === 'country' ? x.country === pin.key : x.cityKey === pin.key);
+      const shown = matches.slice(0, 3);
+      const name = ar ? pin.ar : pin.en;
+      const rows = shown.map(x => {
+        const nm = (x.name && (x.name[lg] || x.name.ar)) || '';
+        const loc = (x.loc && (x.loc[lg] || x.loc.ar)) || '';
+        const price = PAL ? PAL.displayPrice(x, lg) : '';
+        return '<a class="gp-row" href="PropertyDetails.dc.html?id=' + x.id + '">' +
+          '<div style="font-weight:800;font-size:12.5px;color:var(--ink,#141414);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + nm + '</div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:4px">' +
+          '<span style="font-size:10.5px;color:var(--dim,rgba(20,20,22,.5));white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + loc + '</span>' +
+          '<span style="font-size:11.5px;color:#f68743;font-weight:900;direction:ltr;white-space:nowrap">' + price + '</span></div></a>';
+      }).join('');
+      const emptyHtml = '<div style="padding:16px 14px;font-size:12px;color:var(--dim,rgba(20,20,22,.55));text-align:center;line-height:1.7">' + (ar ? 'لا عقارات متاحة هون حالياً' : 'No properties here yet') + '</div>';
+      const moreHref = 'PropertyList.dc.html?' + (pin.kind === 'country' ? 'country=' : 'city=') + encodeURIComponent(pin.key);
+      const moreLabel = ar ? ('عرض الكل (' + matches.length + ') ←') : ('View all (' + matches.length + ') →');
+      panel.style.direction = ar ? 'rtl' : 'ltr';
+      panel.innerHTML =
+        '<div style="padding:12px 14px;background:rgba(246,135,67,.08)"><div style="font-weight:900;font-size:13.5px;color:var(--ink,#141414)">' + name + '</div>' +
+        '<div style="font-size:10.5px;color:var(--dim,rgba(20,20,22,.55));margin-top:2px">' + (ar ? (matches.length + ' عقار متاح') : (matches.length + ' properties available')) + '</div></div>' +
+        (shown.length ? rows : emptyHtml) +
+        '<a class="gp-more" href="' + moreHref + '">' + moreLabel + '</a>';
+    };
+    const setHover = (pin) => {
+      if (hovered === pin) return;
+      hovered = pin;
+      c.style.cursor = pin ? 'pointer' : (dragging ? 'grabbing' : 'grab');
+      if (pin) { cancelHide(); fillPanel(pin); panel.style.visibility = 'visible'; panel.style.opacity = '1'; }
+      else { scheduleHidePanel(); }
+    };
+
+    const onEnter = () => { overCanvas = true; };
+    const onLeave = () => { overCanvas = false; setHover(null); };
+    const onDown = (e) => {
+      dragging = true; lastX = e.clientX; lastY = e.clientY; moved = 0; velYaw = 0; velPitch = 0;
+      try { c.setPointerCapture(e.pointerId); } catch(err){}
+      c.style.cursor = 'grabbing'; setHover(null);
+    };
+    const onMove = (e) => {
+      if (!dragging) { if (overCanvas) setHover(pickAt(e.clientX, e.clientY)); return; }
+      const k=0.0062; const dx=e.clientX-lastX, dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY;
+      velYaw=dx*k; velPitch=dy*k; yaw+=dx*k; pitch+=dy*k; moved += Math.abs(dx) + Math.abs(dy);
+    };
+    const onUp = (e) => {
+      dragging = false;
+      // a near-stationary press+release (not a rotate-drag) that lands on a pin navigates to it —
+      // works the same for mouse clicks and touch taps, since both go through pointer events
+      if (moved < 6) {
+        const pin = pickAt(e.clientX, e.clientY);
+        if (pin) { location.href = 'PropertyList.dc.html?' + (pin.kind === 'country' ? 'country=' : 'city=') + encodeURIComponent(pin.key); return; }
+      }
+      c.style.cursor = hovered ? 'pointer' : 'grab';
+    };
+    c.style.cursor='grab'; c.style.touchAction='none';
+    c.addEventListener('pointerdown', onDown);
+    c.addEventListener('pointerenter', onEnter);
+    c.addEventListener('pointerleave', onLeave);
+    window.addEventListener('pointermove', onMove); window.addEventListener('pointerup', onUp);
+    const onResize = () => { const s=c.clientWidth||size; renderer.setSize(s, s, false); };
+    window.addEventListener('resize', onResize);
+
+    const tmpN = new THREE.Vector3();
+    const clock = new THREE.Clock();
+    const draw = () => {
+      // ease off the auto-rotation while the visitor is exploring pins — a globe that keeps
+      // sliding away while you're trying to read/click a city is the opposite of "interactive"
+      const rot = (overCanvas && !dragging) ? auto * 0.12 : auto;
+      if (!dragging) { yaw += rot + velYaw; pitch += velPitch; velYaw *= 0.93; velPitch *= 0.93; }
+      pitch = Math.max(-0.95, Math.min(0.95, pitch));
+      group.rotation.set(pitch, yaw, 0);
+      group.updateMatrixWorld();
+      clouds.rotation.y += 0.00006;   // a light drift instead of a visibly swirling cloud layer
+      const t = clock.getElapsedTime();
+      pins.forEach(p => {
+        tmpN.copy(p.v).applyQuaternion(group.quaternion);
+        const vis = Math.max(0, Math.min(1, (tmpN.z + 0.04) / 0.34));
+        p.dot.material.opacity = vis; p.dot.visible = vis > 0.02;
+        p.hit.position.copy(p.dot.position);
+        if (p.ring) {
+          const ph = (t * 0.7) % 1;
+          p.ring.position.copy(p.v).applyQuaternion(group.quaternion).multiplyScalar(R*1.02);
+          p.ring.scale.setScalar(0.5 + ph*2.6);
+          p.ring.material.opacity = (1 - ph) * 0.75 * vis;
+          p.ring.lookAt(camera.position); p.ring.visible = vis > 0.02;
+        }
+        if (p === hovered) {
+          if (vis > 0.15) {
+            const sp = p.dot.position.clone().applyMatrix4(group.matrixWorld).project(camera);
+            const rect = c.getBoundingClientRect();
+            const px = (sp.x * 0.5 + 0.5) * rect.width, py = (-sp.y * 0.5 + 0.5) * rect.height;
+            const pw = panel.offsetWidth || 210, ph = panel.offsetHeight || 200;
+            // tall card: offset to whichever side has more room instead of centering over the pin,
+            // and clamp vertically so it never runs off the top/bottom of the globe
+            const onRight = px < rect.width / 2;
+            panel.style.left = (onRight ? (px + 16) : (px - 16 - pw)) + 'px';
+            panel.style.top = Math.max(4, Math.min(rect.height - ph - 4, py - ph / 2)) + 'px';
+            panel.style.opacity = '1'; panel.style.visibility = 'visible';
+          } else {
+            panel.style.opacity = '0'; panel.style.visibility = 'hidden';   // hovered pin rotated to the far side
+          }
+        }
+      });
+      glowMat.uniforms.viewVector.value.copy(camera.position);
+      renderer.render(scene, camera);
+      this._raf = requestAnimationFrame(draw);
+    };
+    draw();
+
+    this._globeCleanup = () => {
+      cancelAnimationFrame(this._raf);
+      if (this._globeTimer) clearTimeout(this._globeTimer);
+      cancelHide();
+      c.removeEventListener('pointerenter', onEnter); c.removeEventListener('pointerleave', onLeave);
+      if (panel.parentElement) panel.parentElement.removeChild(panel);
+      c.removeEventListener('pointerdown', onDown); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('resize', onResize);
+      try { renderer.dispose(); } catch(e){}
+    };
+  }
+
+  _toggleFav(id){
+    const P = window.Palmas;
+    const en = this.state.lang === 'en';
+    P.API.toggleFavorite(id).then(res => {
+      this.setState({ favTick: Date.now() });
+      P.toast(en ? (res.added ? 'Added to wishlist' : 'Removed from wishlist') : (res.added ? 'أُضيف للمفضلة' : 'أُزيل من المفضلة'));
+    }).catch(() => {
+      P.toast(en ? 'Sign in to save favourites' : 'سجّل الدخول لحفظ المفضلة');
+      setTimeout(() => { location.href = 'Auth.dc.html?next=' + encodeURIComponent(location.pathname + location.search); }, 900);
+    });
+  }
+
+  renderVals(){
+    const lang = this.state.lang || 'ar';
+    const ar = lang !== 'en';
+    const theme = this.state.theme || 'light';
+
+    /* both sections are derived from the shared property catalog (palmas-core.js) so what shows here
+       always matches PropertyList/Map/PropertyDetails — no page-local copy to drift out of sync. */
+    const P = window.Palmas;
+    const all = P ? P.allProperties() : [];
+    const L = P ? P.LABELS[lang] : null;
+    const specsStr = (x) => [
+      x.rooms ? (x.rooms + ' ' + L.rooms) : null,
+      x.baths ? (x.baths + ' ' + L.bath) : null,
+      x.area ? (x.area + ' ' + L.sqm) : null,
+    ].filter(Boolean).join(' · ');
+    const offerLabel = (x) => x.type === 'land' ? L.offer.landOffer : L.offer[x.offer];
+    const photoAlt = (x) => (ar ? 'صورة ' : 'Photo of ') + x.name[lang];
+
+    /* القلب كان رسماً ثابتاً ممتلئاً دائماً، والنقر عليه يفتح العقار — فيظنّ الزائر
+       أنه حفظه. الآن يعكس المفضلة فعلاً ويضيف ويزيل كما في صفحة العقارات. */
+    const favs = (P && P.API && P.API.favorites) ? P.API.favorites() : [];
+    const exclusive = all.filter(x => x.exc).slice(0, 4).map(x => {
+      const isFav = favs.indexOf(x.id) !== -1;
+      return {
+        id: x.id, href: 'PropertyDetails.dc.html?id=' + x.id, name: x.name[lang], loc: x.loc[lang],
+        price: P.displayPrice(x, lang), beds: String(x.rooms || 0), baths: String(x.baths || 0), area: (x.area || 0) + ' ' + L.sqm,
+        ph: photoAlt(x), slot: 'hp-x-' + x.id, tag: ar ? 'حصري' : 'Exclusive',
+        heartFill: isFav ? 'currentColor' : 'none',
+        favTitle: isFav ? (ar ? 'إزالة من المفضلة' : 'Remove from wishlist') : (ar ? 'أضف للمفضلة' : 'Save to wishlist'),
+        toggleFav: (e) => { e.preventDefault(); e.stopPropagation(); this._toggleFav(x.id); },
+      };
+    });
+
+    /* المختارات: عقارات بيع غير حصرية؛ وإن لم يوجد منها (كتالوج صغير) نعرض ما هو متاح
+       بدل قسم فارغ. */
+    const featPool = all.filter(x => !x.exc && x.offer === 'sale');
+    const featured = (featPool.length ? featPool : all).slice(0, 3).map(x => ({
+      id: x.id, href: 'PropertyDetails.dc.html?id=' + x.id, name: x.name[lang], loc: x.loc[lang],
+      price: P.displayPrice(x, lang), tag: offerLabel(x), specs: specsStr(x), ph: photoAlt(x), slot: 'hp-' + x.id,
+    }));
+
+    /* المشاريع الحقيقية من الكتالوج المشترك. كانت هنا ثلاثة مشاريع مكتوبة
+       يدوياً بأسماء ونِسَب إنجاز مخترعة — تظهر للزبون كأنها حقيقية ولا تتغيّر
+       مهما أضاف المدير أو عدّل. الآن هي نفسها التي تعرضها صفحة المشاريع. */
+    const projects = (P ? P.allProjects() : []).slice(0, 3).map(pr => {
+      const done = pr.state === 'done';
+      const pct = (pr.progress || 0) + '%';
+      const unit = (pr.stats || [])[0];
+      return {
+        id: pr.id,
+        href: 'ProjectDetails.dc.html?id=' + pr.id,
+        name: pr.name[lang],
+        meta: [pr.loc[lang], unit ? (unit.num + ' ' + unit.label[lang]) : null].filter(Boolean).join(' · '),
+        status: done ? (ar ? 'مكتمل' : 'Completed') : (ar ? 'قيد الإنشاء' : 'In progress'),
+        statusBg: done ? '#1f9d5c' : '#f68743',
+        barBg: done ? '#1f9d5c' : 'linear-gradient(90deg,#f68743,#ffb07f)',
+        pct,
+        progLabel: ar ? 'نسبة الإنجاز' : 'Completion',
+        ph: pr.name[lang],
+        slot: 'prj-' + pr.id,
+      };
+    });
+
+    const services = [
+      { name: ar?'بيع وشراء العقارات':'Buy & Sell', desc: ar?'قوائم موثّقة وأسعار حقيقية، ومرافقة كاملة حتى إتمام الصفقة.':'Verified listings, real prices, full support to closing.', svgPath:'M3 11.5 12 4l9 7.5M5 10v10h14V10' },
+      { name: ar?'التأجير وإدارة الأملاك':'Rent & Management', desc: ar?'إدارة عقاراتك وتأجيرها باحترافية ودخل مستقر بدون عناء.':'Professional leasing and hassle-free management.', svgPath:'M4 21V8l8-5 8 5v13M9 21v-7h6v7' },
+      { name: ar?'الاستشارات العقارية':'Advisory', desc: ar?'قرارات استثمارية مبنية على بيانات السوق وخبرة الخبراء.':'Data-driven investment decisions from real experts.', svgPath:'M3 3v18h18M7 14l3-3 3 2 4-5' },
+      { name: ar?'التمويل والرهن':'Financing', desc: ar?'حلول تمويل ورهن عقاري بأفضل الشروط ومن شركاء موثوقين.':'Mortgage and financing with the best terms and partners.', svgPath:'M3 8h15a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H4a1 1 0 0 1-1-1V8zM3 8l13-3v3M16 13h3' },
+    ];
+
+    /* الأرقام والآراء من مصدرين حقيقيين فقط: الكتالوج الحيّ، وما يكتبه الأدمن في
+       "محتوى الموقع". كانت هنا أرقام مكتوبة يدوياً (1,200 عقار، 950 عميل، 12 مدينة)
+       وآراء لأشخاص غير موجودين تحت عنوان "قصص نجاح حقيقية". */
+    const site = P && P.Site ? P.Site.get() : { stats: {}, testimonials: [], apps: {} };
+    const projCount = P ? P.allProjects().length : 0;
+    const cityCount = new Set(all.map(x => x.cityKey).filter(Boolean)).size;
+    const years = site.stats.years, clients = site.stats.clients;
+    const fmtN = (n) => Number(n).toLocaleString('en-US');
+
+    const values = [
+      years
+        ? { t: ar ? ('خبرة ' + years + ' سنة') : (years + ' years'), d: ar ? 'سجل حافل في السوق الفلسطيني' : 'A proven local track record' }
+        : { t: ar ? 'خبرة محلية' : 'Local expertise', d: ar ? 'معرفة عميقة بالسوق الفلسطيني' : 'Deep knowledge of the Palestinian market' },
+      { t: ar?'شفافية كاملة':'Transparency', d: ar?'أسعار وبيانات حقيقية بلا مفاجآت':'Real prices, no surprises' },
+      { t: ar?'تغطية واسعة':'Wide coverage', d: ar ? (cityCount + ' مدينة و' + fmtN(all.length) + ' عقار معروض') : (cityCount + ' cities, ' + fmtN(all.length) + ' listings') },
+      { t: ar?'دعم متواصل':'Always-on support', d: ar?'فريق يرافقك في كل خطوة':'A team with you at every step' },
+    ];
+
+    const testimonials = site.testimonials.map(x => ({
+      initial: String(x.name).trim().charAt(0), name: x.name, role: x.role || '', quote: x.quote,
+      stars: '★★★★★'.slice(0, Math.max(1, Math.min(5, Number(x.stars) || 5))),
+    }));
+
+    const stats = [
+      { n: fmtN(all.length), l: ar ? 'عقار معروض' : 'Listings' },
+      clients ? { n: clients, l: ar ? 'عميل سعيد' : 'Happy clients' } : null,
+      { n: String(cityCount), l: ar ? 'مدينة' : 'Cities' },
+      years ? { n: years, l: ar ? 'سنة خبرة' : 'Years' } : null,
+      { n: String(projCount), l: ar ? 'مشروع عمراني' : 'Developments' },
+    ].filter(Boolean).slice(0, 4);
+
+    const appIos = (site.apps || {}).ios || '', appAndroid = (site.apps || {}).android || '';
+
+    const contactRows = [
+      { svgPath:'M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z', label: ar?'الهاتف':'Phone', value:'+972 59 537 7421' },
+      { svgPath:'M2 4h20v16H2zM2 6l10 7L22 6', label: ar?'البريد':'Email', value:'info@palmas.ps' },
+      { svgPath:'M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11zM12 10.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z', label: ar?'العنوان':'Address', value: ar?'رام الله، فلسطين':'Ramallah, Palestine' },
+    ];
+
+    const t = {
+      navHome: ar?'الرئيسية':'Home', navProps: ar?'العقارات':'Properties', navProjects: ar?'المشاريع':'Projects', navServices: ar?'خدماتنا':'Services', navAbout: ar?'من نحن':'About', navContact: ar?'تواصل معنا':'Contact',
+      langLabel: ar?'EN':'ع', wishlist: ar?'المفضلة':'Wishlist',
+      themeTitle: theme === 'dark' ? (ar?'الوضع الفاتح':'Light mode') : (ar?'الوضع الداكن':'Dark mode'),
+      heroKicker: ar?'المنصّة العقارية الأولى في فلسطين':"Palestine's #1 property platform",
+      heroTitle1: ar?'ابحث عن عقارك':'Find your', heroTitle2: ar?'أينما':'home,', heroTitleAccent: ar?'كان':'anywhere',
+      heroSub: ar?'استكشف العقارات على خريطة تفاعلية، وقارن، واحجز معاينة — كل هذا من مكان واحد.':'Explore listings on an interactive map, compare, and book a viewing — all in one place.',
+      searchPh: ar?'ابحث بالمدينة أو المنطقة أو نوع العقار…':'Search by city, area, or type…', searchBtn: ar?'بحث':'Search',
+      popular: ar?'الأكثر بحثاً:':'Popular:',
+      exclKicker: ar?'عقارات حصرية':'Exclusive', exclTitle: ar?'متاحة عبر PALMAS فقط':'Only on PALMAS',
+      featKicker: ar?'عقارات مميزة':'Featured', featTitle: ar?'مختارات هذا الأسبوع':"This week's picks", viewAll: ar?'عرض الكل ←':'View all →',
+      projKicker: ar?'مشاريعنا العمرانية':'Our developments', projTitle: ar?'مشاريع تُبنى لتبقى':'Built to last',
+      servKicker: ar?'خدماتنا':'Services', servTitle: ar?'كل ما تحتاجه في مكان واحد':'Everything in one place',
+      aboutKicker: ar?'من نحن':'About us', aboutTitle: ar?'قصة PALMAS.ps':'The PALMAS.ps story',
+      aboutBody: ar
+        ? ('منصّة عقارية فلسطينية تربط الباحثين عن العقار بأفضل الفرص السكنية والاستثمارية' + (years ? '، بخبرة ' + years + ' سنة' : '') + '، وتغطية تشمل أهم مدن فلسطين.')
+        : ('A Palestinian platform connecting people to the best homes and investments' + (years ? ' — ' + years + ' years of experience' : '') + ' across Palestine\'s major cities.'),
+      testKicker: ar?'آراء العملاء':'Testimonials', testTitle: ar?'قصص نجاح حقيقية':'Real success stories',
+      appTitle: ar?'حمّل تطبيق PALMAS.ps':'Get the PALMAS.ps app', appBody: ar?'كل العقارات، الخريطة التفاعلية، وحجوزات المعاينة — بين إيديك أينما كنت.':'All listings, the interactive map, and viewing bookings — in your pocket.',
+      appStoreTop: appIos ? (ar?'حمّل من':'Download on') : (ar?'قريباً على':'Coming soon to'),
+      appPlayTop: appAndroid ? (ar?'متوفر على':'Get it on') : (ar?'قريباً على':'Coming soon to'),
+      contactKicker: ar?'تواصل معنا':'Contact', contactTitle: ar?'خلينا نساعدك تلاقي بيتك':'Let us help you find home',
+      contactBody: ar?'إبعتلنا رسالة وبنرد عليك بأسرع وقت عبر واتساب.':'Send us a message and we will reply on WhatsApp shortly.',
+      fName: ar?'الاسم الكامل':'Full name', fPhone: ar?'رقم الهاتف':'Phone number', fMsg: ar?'كيف نقدر نساعدك؟':'How can we help?',
+      fSend: ar?'أرسل عبر واتساب':'Send via WhatsApp', sentMsg: ar?'وصلتنا رسالتك، وفتحنا واتساب لتكمل المحادثة معنا.':'We got your message — WhatsApp is open so you can continue the chat.',
+      formErr: ar?'اكتب اسمك ورقم هاتفك حتى نقدر نرد عليك.':'Enter your name and phone number so we can reply.',
+    };
+
+    return {
+      t, dir: ar ? 'rtl' : 'ltr', exclusive,
+      /* القسم يتكيّف مع العدد: بطاقة أو اثنتان أو ثلاث، بلا تكرار نفس العقار لملء الفراغ */
+      hasExclusive: exclusive.length > 0,
+      exclBig: exclusive[this.state.exclIdx || 0] || {},
+      exclMed: exclusive[(this.state.exclIdx || 0) + 1] || {},
+      exclSm: exclusive[(this.state.exclIdx || 0) + 2] || {},
+      hasExclMed: !!exclusive[(this.state.exclIdx || 0) + 1],
+      hasExclSm: !!exclusive[(this.state.exclIdx || 0) + 2],
+      exclCols: ['minmax(0,640px)', '1.5fr 1.05fr', '1.5fr 1.05fr 0.75fr'][Math.min(exclusive.length, 3) - 1] || '1fr',
+      exclHasNav: exclusive.length > 3,
+      hasFeatured: featured.length > 0, hasProjects: projects.length > 0,
+      exclKey: this.state.exclIdx || 0,
+      exclPrev: this.exclPrev, exclNext: this.exclNext,
+      exclAnimName: this.state.exclFlip ? 'exclPopB' : 'exclPopA',
+      exclDots: (this.exclMax = Math.max(0, exclusive.length - 3), Array.from({ length: this.exclMax + 1 }, (_, i) => ({
+        go: () => this.setState(s => ({ exclIdx: i, exclFlip: !s.exclFlip })),
+        w: i === (this.state.exclIdx || 0) ? '30px' : '8px',
+        bg: i === (this.state.exclIdx || 0) ? 'var(--accent)' : 'rgba(120,120,130,.25)',
+      }))),
+      featured, projects, services, values, testimonials, contactRows,
+      hasTestimonials: testimonials.length > 0,
+      isDark: theme === 'dark', isLight: theme !== 'dark',
+      popular: [
+        { label: ar?'فلل رام الله':'Ramallah villas', href:'PropertyList.dc.html?city=ramallah&type=villa' },
+        { label: ar?'شقق البيرة':'Al-Bireh flats', href:'PropertyList.dc.html?city=albireh&type=apartment' },
+        { label: ar?'أراضٍ استثمارية':'Investment land', href:'PropertyList.dc.html?type=land' },
+      ],
+      stats, statsCols: 'repeat(' + stats.length + ',1fr)',
+      showStats: this.props.showStats ?? true,
+      showAppCta: this.props.showAppCta ?? true,
+      appIosHref: appIos || null, appAndroidHref: appAndroid || null,
+      appIosStyle: appIos ? '' : 'pointer-events:none;opacity:.72',
+      appAndroidStyle: appAndroid ? '' : 'pointer-events:none;opacity:.72',
+      sent: this.state.sent, formErrOn: !!this.state.formErr,
+      globeRef: this.globeRef, searchRef: this.searchRef, nameRef: this.nameRef, phoneRef: this.phoneRef, msgRef: this.msgRef,
+      toggleTheme: () => { const nt = (this.state.theme || 'light') === 'dark' ? 'light' : 'dark'; try { localStorage.setItem('palmas_theme', nt); } catch(e) {} document.documentElement.setAttribute('data-theme', nt); this.setState({ theme: nt }); },
+      toggleLang: () => { const nl = (this.state.lang === 'en') ? 'ar' : 'en'; try { localStorage.setItem('palmas_lang', nl); } catch(e) {} document.documentElement.lang = nl; document.documentElement.dir = nl === 'en' ? 'ltr' : 'rtl'; this.setState({ lang: nl }); },
+      doSearch: (e) => { e.preventDefault(); const q = (this.searchRef.current && this.searchRef.current.value || '').trim(); location.href = 'PropertyList.dc.html' + (q ? ('?q=' + encodeURIComponent(q)) : ''); },
+      sendWhats: (e) => {
+        e.preventDefault();
+        const nm = (this.nameRef.current ? this.nameRef.current.value : '').trim();
+        const ph = (this.phoneRef.current ? this.phoneRef.current.value : '').trim();
+        const ms = (this.msgRef.current ? this.msgRef.current.value : '').trim();
+        if (!nm || !ph) { this.setState({ formErr: true, sent: false }); return; }
+        /* الرسالة تُسجَّل في CRM أولاً (جسر السيرفر يلتقط هذه الكتابة ويرسلها)،
+           فلا تضيع لو أغلق الزائر واتساب قبل الإرسال — كما في صفحة التواصل. */
+        try {
+          const list = JSON.parse(localStorage.getItem('palmas_crm_messages') || '[]');
+          list.push({ id: 'm' + Date.now(), name: nm, phone: ph, msg: ms, lang, ts: Date.now() });
+          localStorage.setItem('palmas_crm_messages', JSON.stringify(list));
+        } catch (err) {}
+        const txt = (ar ? 'مرحباً، أنا ' : 'Hello, I am ') + nm + (ar ? ' — هاتفي: ' : ' — phone: ') + ph + (ms ? '\n' + ms : '');
+        window.open('https://wa.me/972595377421?text=' + encodeURIComponent(txt), '_blank');
+        [this.nameRef, this.phoneRef, this.msgRef].forEach(r => { if (r.current) r.current.value = ''; });
+        this.setState({ sent: true, formErr: false });
+        setTimeout(() => this.setState({ sent: false }), 5000);
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="uploads/palmas-icon.png">
+<title>Palmas.ps</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+html{scroll-behavior:smooth}
+*{box-sizing:border-box}
+:root{--page-bg:#edeef0;--heading:#141414;--body:#4b4b4d;--body-dim:rgba(20,20,22,.5);--panel:#ffffff;--panel-2:#e7e9ec;--panel-border:rgba(20,20,22,.1);--hairline:rgba(20,20,22,.1);--input-bg:#ffffff;--input-border:rgba(20,20,22,.16);--card:#ffffff;--card-fg:#181818;--accent-ink:#b53a0f;--elev:#ffffff}
+html[data-theme='dark']{--page-bg:#0d0d0f;--heading:#f7f7f5;--body:#d4d4d6;--body-dim:rgba(247,247,245,.55);--panel:rgba(255,255,255,.055);--panel-2:rgba(255,255,255,.03);--panel-border:rgba(255,255,255,.12);--hairline:rgba(255,255,255,.1);--input-bg:rgba(0,0,0,.3);--input-border:rgba(255,255,255,.16);--card:#ffffff;--card-fg:#181818;--accent-ink:#ffcdb0;--elev:#17171b}
+html,body{margin:0;padding:0;background:var(--page-bg);transition:background .5s ease}
+a{color:#f68743;text-decoration:none}
+a:hover{color:#ffab7a}
+::selection{background:#f68743;color:#fff}
+h1,h2,p{text-wrap:pretty}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@media (max-width:1100px){.wl-grid{grid-template-columns:repeat(2,1fr)!important}.wl-pad{padding-left:24px!important;padding-right:24px!important}}
+@media (max-width:700px){.wl-grid{grid-template-columns:1fr!important}}
+</style>
+<script src="image-slot.js"></script>
+<script src="palmas-photos.js"></script>
+<script src="palmas-core.js"></script>
+<script src="palmas-config.js"></script>
+<script src="palmas-backend.js"></script>
+</helmet>
+
+<div dir="{{ dir }}" style="position:relative;font-family:'Cairo',sans-serif;background:var(--page-bg);color:var(--body);min-height:100vh;display:flex;flex-direction:column;transition:background .5s ease,color .5s ease">
+
+<dc-import name="SiteHeader" dir="{{ dir }}" hint-size="100%,68px"></dc-import>
+
+<section class="wl-pad" style="position:relative;z-index:1;padding:72px 52px 24px;text-align:center;background:radial-gradient(circle at 50% -20%,rgba(246,135,67,.16),transparent 62%)">
+  <div style="max-width:760px;margin:0 auto;animation:fadeUp .8s ease both">
+    <div style="color:#f68743;font-weight:800;font-size:14px;letter-spacing:1.5px;margin-bottom:10px">{{ t.kicker }}</div>
+    <h1 style="margin:0;font-size:clamp(30px,3.4vw,44px);font-weight:900;color:var(--heading);line-height:1.3">{{ t.title }}</h1>
+    <p style="margin:14px auto 0;max-width:540px;font-size:16px;line-height:1.9;color:var(--body-dim)">{{ subtitle }}</p>
+  </div>
+</section>
+
+<section class="wl-pad" style="position:relative;z-index:1;padding:20px 52px 90px;flex:1">
+
+  <sc-if value="{{ needLogin }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:520px;margin:20px auto 0;text-align:center;background:var(--panel-2);border:1px solid var(--panel-border);border-radius:24px;padding:54px 40px;animation:fadeUp .8s ease both">
+      <div style="width:82px;height:82px;margin:0 auto 20px;border-radius:50%;background:rgba(246,135,67,.14);display:grid;place-items:center">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </div>
+      <div style="font-weight:900;font-size:22px;color:var(--heading);margin-bottom:10px">{{ t.lockTitle }}</div>
+      <p style="color:var(--body-dim);font-size:15px;line-height:1.9;margin:0 0 24px">{{ t.lockDesc }}</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="{{ loginHref }}" style="background:#f68743;color:#fff;font-weight:800;font-size:15px;padding:13px 30px;border-radius:14px;transition:background .35s ease,transform .4s cubic-bezier(.25,.8,.35,1)" style-hover="background:#ffab7a;transform:translateY(-2px)">{{ t.lockLogin }}</a>
+        <a href="{{ signupHref }}" style="background:transparent;border:1.5px solid var(--panel-border);color:var(--heading);font-weight:800;font-size:15px;padding:13px 30px;border-radius:14px;transition:border-color .35s ease,color .35s ease" style-hover="border-color:#f68743;color:#f68743">{{ t.lockSignup }}</a>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:520px;margin:20px auto 0;text-align:center;background:var(--panel-2);border:1px dashed var(--panel-border);border-radius:24px;padding:54px 40px;animation:fadeUp .8s ease both">
+      <div style="width:82px;height:82px;margin:0 auto 20px;border-radius:50%;background:rgba(246,135,67,.14);display:grid;place-items:center">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="1.7"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path></svg>
+      </div>
+      <div style="font-weight:900;font-size:22px;color:var(--heading);margin-bottom:10px">{{ t.emptyTitle }}</div>
+      <p style="color:var(--body-dim);font-size:15px;line-height:1.9;margin:0 0 24px">{{ t.emptyDesc }}</p>
+      <a href="PropertyList.dc.html" style="display:inline-block;background:#f68743;color:#fff;font-weight:800;font-size:15px;padding:13px 32px;border-radius:14px;transition:background .35s ease,transform .4s cubic-bezier(.25,.8,.35,1)" style-hover="background:#ffab7a;transform:translateY(-2px)">{{ t.browse }}</a>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasItems }}" hint-placeholder-val="{{ true }}">
+  <div style="max-width:min(1680px,94vw);margin:0 auto">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px">
+      <div style="font-weight:800;font-size:15px;color:var(--heading)">{{ countText }}</div>
+      <button type="button" onClick="{{ clearAll }}" style="margin-inline-start:auto;background:transparent;border:1px solid var(--panel-border);color:var(--body);font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;padding:9px 18px;border-radius:12px;cursor:pointer;transition:border-color .3s ease,color .3s ease" style-hover="border-color:#e0245e;color:#e0245e">{{ t.clearAll }}</button>
+    </div>
+
+    <div class="wl-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:26px">
+      <sc-for list="{{ items }}" as="w" hint-placeholder-count="3">
+        <div style="background:var(--card);color:var(--card-fg);border:1px solid var(--panel-border);border-radius:20px;overflow:hidden;box-shadow:0 12px 32px rgba(20,20,30,.08);animation:fadeUp .7s ease both;transition:transform .5s cubic-bezier(.25,.8,.35,1),box-shadow .5s ease" style-hover="transform:translateY(-6px);box-shadow:0 22px 50px rgba(20,20,30,.14)">
+          <div style="position:relative;height:210px;overflow:hidden">
+            <image-slot id="{{ w.slot }}" shape="rect" placeholder="{{ w.ph }}"></image-slot>
+            <div style="position:absolute;top:14px;inset-inline-start:14px;display:flex;gap:6px;pointer-events:none">
+              <div style="background:#f68743;color:#fff;font-weight:800;font-size:12.5px;padding:4px 13px;border-radius:14px">{{ w.offerLabel }}</div>
+              <div style="background:rgba(20,20,22,.82);color:#fff;font-weight:800;font-size:12.5px;padding:4px 13px;border-radius:14px">{{ w.typeLabel }}</div>
+            </div>
+            <button type="button" onClick="{{ w.remove }}" title="{{ t.remove }}" style="position:absolute;top:12px;inset-inline-end:12px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.94);display:grid;place-items:center;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.18);transition:transform .3s cubic-bezier(.25,.8,.35,1)" style-hover="transform:scale(1.12)">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="#f68743" stroke="#f68743" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path></svg>
+            </button>
+          </div>
+          <div style="padding:20px 22px 22px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+              <a href="{{ w.href }}" style="font-weight:800;font-size:18.5px;color:#181818" style-hover="color:#f68743">{{ w.name }}</a>
+              <div style="color:#f68743;font-weight:900;font-size:17.5px;white-space:nowrap">{{ w.priceLabel }}</div>
+            </div>
+            <div style="color:#6c6c70;font-size:13.5px;margin:6px 0 14px;display:flex;align-items:center;gap:6px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f68743" stroke-width="2"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+              {{ w.locLabel }}
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;border-top:1px solid #e4e5e8;padding-top:14px;font-size:13.5px;color:#6c6c70;font-weight:600">
+              <sc-for list="{{ w.specs }}" as="sp" hint-placeholder-count="3">
+                <span>{{ sp }}</span>
+              </sc-for>
+              <a href="Contact.dc.html" style="margin-inline-start:auto;background:rgba(246,135,67,.14);border:1px solid rgba(246,135,67,.4);color:#b53a0f;font-weight:800;font-size:12.5px;padding:6px 16px;border-radius:16px;white-space:nowrap;transition:background .3s ease,color .3s ease" style-hover="background:#f68743;color:#fff">{{ t.inquire }}</a>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  </sc-if>
+</section>
+
+<div style="margin-top:auto"><dc-import name="SiteFooter" dir="{{ dir }}" hint-size="100%,300px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1320,&quot;height&quot;:860}}">
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { lang: 'ar', theme: 'light', favs: [], authed: false, ready: false }; }
+
+  componentDidMount(){
+    try { const t = localStorage.getItem('palmas_theme'); const th = (t==='light'||t==='dark')?t:'light'; document.documentElement.setAttribute('data-theme', th); this.setState({ theme: th }); } catch(e){}
+    let lang = 'ar';
+    try { const l = localStorage.getItem('palmas_lang'); if (l==='ar'||l==='en') lang = l; } catch(e){}
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'en' ? 'ltr' : 'rtl';
+    this.setState({ lang });
+    this._sync();
+  }
+
+  _sync(){
+    const P = window.Palmas;
+    if (!P) { setTimeout(() => this._sync(), 60); return; }
+    this.setState({ authed: P.API.isAuthed(), favs: P.API.favorites(), ready: true });
+    if (!this._off) this._off = P.API.onAuthChange(() => this._sync());
+  }
+
+  componentWillUnmount(){ if (this._off) this._off(); }
+
+  _remove(id){
+    const P = window.Palmas;
+    P.API.toggleFavorite(id).then(res => {
+      this.setState({ favs: res.list });
+      P.toast(this.state.lang === 'en' ? 'Removed from wishlist' : 'أُزيل من المفضلة');
+    }).catch(() => {});
+  }
+
+  renderVals(){
+    const P = window.Palmas;
+    const lang = this.state.lang || 'ar';
+    const ar = lang !== 'en';
+    const dir = ar ? 'rtl' : 'ltr';
+
+    const t = ar ? {
+      kicker: 'المفضلة', title: 'عقاراتك المحفوظة', remove: 'إزالة', inquire: 'استفسر',
+      clearAll: 'إفراغ القائمة',
+      emptyTitle: 'قائمتك فارغة', emptyDesc: 'اضغط على القلب في أي عقار يعجبك وسيظهر هنا لتعود له لاحقاً.',
+      browse: 'تصفّح العقارات',
+      lockTitle: 'سجّل الدخول لعرض قائمتك',
+      lockDesc: 'المفضلة متاحة للأعضاء فقط. سجّل دخولك أو أنشئ حساباً لحفظ عقاراتك والوصول إليها من أي جهاز.',
+      lockLogin: 'تسجيل الدخول', lockSignup: 'إنشاء حساب'
+    } : {
+      kicker: 'WISHLIST', title: 'Your saved properties', remove: 'Remove', inquire: 'Inquire',
+      clearAll: 'Clear list',
+      emptyTitle: 'Your list is empty', emptyDesc: 'Tap the heart on any property you like and it will show up here for later.',
+      browse: 'Browse properties',
+      lockTitle: 'Sign in to view your list',
+      lockDesc: 'Your wishlist is for members only. Sign in or create an account to save properties and reach them from any device.',
+      lockLogin: 'Sign in', lockSignup: 'Create account'
+    };
+
+    if (!P || !this.state.ready) return { dir, t, items: [], hasItems: false, isEmpty: false, needLogin: false, subtitle: '' };
+
+    const L = P.LABELS[lang];
+    const items = this.state.favs.map(id => P.propBy(id)).filter(Boolean).map(x => ({
+      id: x.id, slot: x.slot, href: 'PropertyDetails.dc.html?id=' + x.id,
+      name: x.name[lang], locLabel: x.loc[lang], priceLabel: P.displayPrice(x, lang),
+      offerLabel: L.offer[x.offer] || '', typeLabel: L.type[x.type] || '',
+      ph: ar ? ('صورة ' + x.name.ar) : (x.name.en + ' photo'),
+      specs: [
+        x.rooms ? (x.rooms + ' ' + L.rooms) : null,
+        x.baths ? (x.baths + ' ' + L.bath) : null,
+        x.area ? (x.area + ' ' + L.sqm) : null
+      ].filter(Boolean),
+      remove: () => this._remove(x.id)
+    }));
+
+    const authed = this.state.authed;
+    const n = items.length;
+    const next = encodeURIComponent('Wishlist.dc.html');
+
+    return {
+      dir, t, items,
+      needLogin: !authed,
+      hasItems: authed && n > 0,
+      isEmpty: authed && n === 0,
+      countText: ar ? (n + ' عقار محفوظ') : (n + (n === 1 ? ' saved property' : ' saved properties')),
+      subtitle: !authed ? t.lockDesc
+        : (n > 0
+            ? (ar ? ('كل العقارات اللي حفظتها في مكان واحد.') : 'Everything you saved, in one place.')
+            : t.emptyDesc),
+      loginHref: 'Auth.dc.html?next=' + next,
+      signupHref: 'Auth.dc.html?mode=signup&next=' + next,
+      clearAll: () => {
+        const ids = this.state.favs.slice();
+        ids.reduce((chain, id) => chain.then(() => P.API.toggleFavorite(id)), Promise.resolve())
+          .then(() => { this.setState({ favs: P.API.favorites() }); P.toast(ar ? 'تم إفراغ المفضلة' : 'Wishlist cleared'); })
+          .catch(() => {});
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
