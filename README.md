@@ -13,8 +13,8 @@
   <a href="#بالعربي">بالعربي</a>
 </p>
 
-> **Status: in active development.** The core platform is live and working end to end; next up are
-> an AI sales assistant in the chat, mobile app store release, and launch on the Palmas.ps domain.
+> 🚧 **Status: in active development.** The core platform is live and working end to end —
+> see the [roadmap](#roadmap) for what's next.
 
 ![Home page](docs/screenshots/home.png)
 
@@ -123,6 +123,23 @@ listings, filters, map, property pages, wishlist, accounts, bookings.
 | Backend | Supabase: PostgreSQL, Auth, Storage, RLS policies |
 | Hosting | GitHub Pages (website) · EAS Build (app) |
 
+## Roadmap
+
+**Done** ✅ — website, admin panel, CRM, ERP, owners & contracts, property comparison,
+live chat to CRM, real analytics, mobile app connected to the same backend.
+
+**Next phases**
+1. **AI sales assistant** in the website chat — answers property questions and qualifies leads for the sales team
+2. **Mobile app release** on Google Play and the App Store
+3. **Official launch** on the Palmas.ps domain with real listings from partner owners and companies
+
+**Planned improvements**
+- Sales reports export (PDF / Excel) and monthly performance summaries for management
+- Automated follow-ups: viewing reminders and contract-renewal alerts by WhatsApp / email
+- Google sign-in and full Google Maps support on Android
+- Smarter search suggestions based on what visitors actually search for
+- Arabic Cairo font in the mobile app to match the website
+
 ## Repository layout
 
 ```
@@ -162,8 +179,12 @@ see [palmas-backend/README.md](palmas-backend/README.md).
 **بالماس (Palmas.ps)** منصّة وساطة عقارية متكاملة لفلسطين: موقع، لوحة إدارة، CRM و ERP، وتطبيق جوال —
 كلها على قاعدة بيانات واحدة.
 
-> **الحالة: قيد التطوير.** المنصّة الأساسية شغّالة بالكامل، والمراحل الجاية: مساعد مبيعات ذكي بالشات،
-> نشر التطبيق على المتاجر، والإطلاق على دومين Palmas.ps.
+> 🚧 **الحالة: قيد التطوير.** المنصّة الأساسية شغّالة بالكامل.
+
+**المراحل الجاية:** مساعد مبيعات ذكي بالشات · نشر التطبيق على Google Play و App Store · الإطلاق الرسمي على دومين Palmas.ps
+
+**تحسينات مخطّطة:** تصدير تقارير المبيعات (PDF / Excel) · تذكيرات تلقائية للمعاينات وتجديد العقود عبر واتساب والإيميل ·
+تسجيل الدخول بـ Google · اقتراحات بحث أذكى · خط Cairo بالتطبيق
 
 المالك أو الشركة بيسلّموا العقار للمكتب بعقد وساطة، المكتب بينشره، والزبون بيتواصل مع المكتب.
 المنصّة بتغطّي الدورة كاملة: طلب عرض عقار ← عقد مع المالك ← نشر العقار بالصور ← حجز معاينة أو محادثة ←
